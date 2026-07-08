@@ -108,26 +108,36 @@
     /* Chat Button - Positioned above controls */
     .chat-button {
       position: fixed;
-      bottom: 85px;
-      right: 15px;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+      bottom: 70px;
+      right: 20px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 20px;
       background: rgba(30, 30, 30, 0.85);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       z-index: 999;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .chat-button.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .chat-button:hover {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.6);
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
     .chat-button:active {
@@ -135,18 +145,26 @@
     }
 
     .chat-button svg {
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
       fill: white;
       filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+      flex-shrink: 0;
+    }
+
+    .chat-button-text {
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
     }
 
     /* Chat Panel */
     .chat-panel {
       position: fixed;
-      right: -360px;
+      right: -100%;
       top: 0;
-      width: 320px;
+      width: 25vw;
       height: 100vh;
       background: rgba(20, 20, 20, 0.95);
       border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -210,31 +228,40 @@
       background: rgba(10, 10, 10, 0.8);
     }
 
-    /* Fullscreen Mode - Adjust button position */
-    .shaka-video-container:fullscreen .chat-button,
-    video:fullscreen ~ .chat-button {
-      bottom: 85px;
-      right: 15px;
+    /* Fullscreen Mode - Adjust button and panel position */
+    .shaka-video-container:fullscreen .chat-button.show,
+    .shaka-video-container:fullscreen .chat-panel {
+      position: fixed;
       z-index: 9999;
     }
 
-    .shaka-video-container:fullscreen .chat-panel,
-    video:fullscreen ~ .chat-panel {
+    .shaka-video-container:fullscreen .chat-panel {
       z-index: 9998;
     }
 
     /* Mobile Responsive */
+    @media (max-width: 1200px) {
+      .chat-panel {
+        width: 30vw;
+      }
+    }
+
     @media (max-width: 768px) {
       .chat-button {
-        bottom: 70px;
-        right: 10px;
-        width: 44px;
-        height: 44px;
+        bottom: 60px;
+        right: 12px;
+        height: 34px;
+        padding: 0 10px;
+        gap: 6px;
       }
 
       .chat-button svg {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
+      }
+
+      .chat-button-text {
+        font-size: 11px;
       }
 
       .chat-panel {
@@ -249,33 +276,24 @@
 
     @media (max-width: 480px) {
       .chat-button {
-        bottom: 60px;
+        bottom: 50px;
         right: 8px;
-        width: 40px;
-        height: 40px;
+        height: 32px;
+        padding: 0 8px;
       }
 
       .chat-button svg {
-        width: 18px;
-        height: 18px;
+        width: 14px;
+        height: 14px;
+      }
+
+      .chat-button-text {
+        font-size: 10px;
+        display: none;
       }
 
       .chat-header h3 {
         font-size: 12px;
-      }
-    }
-
-    /* Overlay for mobile when chat is open */
-    @media (max-width: 768px) {
-      .chat-panel.open::before {
-        content: '';
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: -1;
       }
     }
   </style>
@@ -292,6 +310,7 @@
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
     </svg>
+    <span class="chat-button-text">Live Chat</span>
   </button>
 
   <!-- Chat Panel -->
@@ -310,6 +329,7 @@
     const chatBtn = document.getElementById('chatBtn');
     const chatPanel = document.getElementById('chatPanel');
     const chatClose = document.getElementById('chatClose');
+    let controlsVisible = false;
 
     chatBtn.addEventListener('click', () => {
       chatPanel.classList.toggle('open');
@@ -343,6 +363,26 @@
       }
     });
 
+    // Function to sync chat button with controls visibility
+    function syncChatButtonWithControls() {
+      const controlsContainer = document.querySelector('.shaka-controls-container');
+      if (controlsContainer) {
+        // Check if controls are visible
+        const isVisible = controlsContainer.style.opacity !== '0' && 
+                         controlsContainer.style.visibility !== 'hidden' &&
+                         !controlsContainer.classList.contains('shaka-hidden');
+        
+        if (isVisible && !controlsVisible) {
+          chatBtn.classList.add('show');
+          controlsVisible = true;
+        } else if (!isVisible && controlsVisible) {
+          chatBtn.classList.remove('show');
+          chatPanel.classList.remove('open');
+          controlsVisible = false;
+        }
+      }
+    }
+
     // Player initialization
     document.addEventListener('DOMContentLoaded', async () => {
       shaka.polyfill.installAll();
@@ -375,6 +415,29 @@
           played: 'rgb(255, 255, 255)'
         }
       });
+
+      // Sync chat button with controls visibility
+      setTimeout(() => {
+        const controlsContainer = document.querySelector('.shaka-controls-container');
+        if (controlsContainer) {
+          // Use MutationObserver to watch for class/style changes
+          const observer = new MutationObserver(() => {
+            syncChatButtonWithControls();
+          });
+
+          observer.observe(controlsContainer, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+          });
+
+          // Also sync on mouse/touch events
+          video.addEventListener('mousemove', syncChatButtonWithControls);
+          video.addEventListener('touchstart', syncChatButtonWithControls);
+          
+          // Initial sync
+          syncChatButtonWithControls();
+        }
+      }, 500);
 
       const drmConfig = {
         clearKeys: {
