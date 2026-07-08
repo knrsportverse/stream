@@ -54,14 +54,17 @@
       fill: #1e90ff !important;
     }
 
-    /* Logo overlay - Fixed position for fullscreen persistence */
+    /* Logo overlay - Fixed position with maximum z-index for fullscreen persistence */
     .video-logo {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      z-index: 10000;
-      pointer-events: none;
+      position: fixed !important;
+      top: 15px !important;
+      right: 15px !important;
+      z-index: 2147483647 !important; /* Maximum z-index value */
+      pointer-events: auto !important;
       transition: opacity 0.3s ease;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .video-logo img {
@@ -70,6 +73,8 @@
       opacity: 0.85;
       display: block;
       transition: opacity 0.3s ease;
+      max-width: 100%;
+      object-fit: contain;
     }
 
     .video-logo:hover img {
@@ -79,8 +84,8 @@
     /* Responsive sizing for different screen sizes */
     @media (max-width: 480px) {
       .video-logo {
-        top: 10px;
-        right: 10px;
+        top: 10px !important;
+        right: 10px !important;
       }
 
       .video-logo img {
@@ -90,8 +95,8 @@
 
     @media (max-width: 320px) {
       .video-logo {
-        top: 8px;
-        right: 8px;
+        top: 8px !important;
+        right: 8px !important;
       }
 
       .video-logo img {
@@ -101,8 +106,8 @@
 
     @media (min-width: 768px) {
       .video-logo {
-        top: 20px;
-        right: 20px;
+        top: 20px !important;
+        right: 20px !important;
       }
 
       .video-logo img {
@@ -112,13 +117,33 @@
 
     @media (min-width: 1200px) {
       .video-logo {
-        top: 25px;
-        right: 25px;
+        top: 25px !important;
+        right: 25px !important;
       }
 
       .video-logo img {
         height: 45px;
       }
+    }
+
+    /* Fullscreen specific styles */
+    body.fullscreen-active .video-logo {
+      position: fixed !important;
+      top: 15px !important;
+      right: 15px !important;
+      z-index: 2147483647 !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    /* Target video element in fullscreen */
+    video:fullscreen ~ .video-logo,
+    video:-webkit-full-screen ~ .video-logo,
+    video:-moz-full-screen ~ .video-logo,
+    video:-ms-fullscreen ~ .video-logo {
+      position: fixed !important;
+      z-index: 2147483647 !important;
     }
   </style>
 </head>
@@ -144,6 +169,7 @@
       }
 
       const video = document.querySelector('video');
+      const logo = document.querySelector('.video-logo');
       const player = new shaka.Player();
       await player.attach(video);
 
@@ -225,6 +251,81 @@
           video.volume = 1;
         }
       }, { once: true });
+
+      // ============================================
+      // 🎯 FULLSCREEN LOGO HANDLING
+      // ============================================
+
+      // Function to ensure logo stays visible
+      function ensureLogoVisible() {
+        if (logo) {
+          logo.style.position = 'fixed !important';
+          logo.style.zIndex = '2147483647 !important';
+          logo.style.display = 'flex';
+          logo.style.visibility = 'visible';
+          logo.style.opacity = '1';
+          console.log("Logo visibility ensured");
+        }
+      }
+
+      // Listen for fullscreen changes (standard API)
+      document.addEventListener('fullscreenchange', () => {
+        ensureLogoVisible();
+        if (document.fullscreenElement) {
+          document.body.classList.add('fullscreen-active');
+          console.log("Entered fullscreen mode");
+        } else {
+          document.body.classList.remove('fullscreen-active');
+          console.log("Exited fullscreen mode");
+        }
+      });
+
+      // WebKit fullscreen change
+      document.addEventListener('webkitfullscreenchange', () => {
+        ensureLogoVisible();
+        if (document.webkitFullscreenElement) {
+          document.body.classList.add('fullscreen-active');
+          console.log("Entered webkit fullscreen");
+        } else {
+          document.body.classList.remove('fullscreen-active');
+          console.log("Exited webkit fullscreen");
+        }
+      });
+
+      // Mozilla fullscreen change
+      document.addEventListener('mozfullscreenchange', () => {
+        ensureLogoVisible();
+        if (document.mozFullScreenElement) {
+          document.body.classList.add('fullscreen-active');
+          console.log("Entered moz fullscreen");
+        } else {
+          document.body.classList.remove('fullscreen-active');
+          console.log("Exited moz fullscreen");
+        }
+      });
+
+      // MS fullscreen change
+      document.addEventListener('msfullscreenchange', () => {
+        ensureLogoVisible();
+        if (document.msFullscreenElement) {
+          document.body.classList.add('fullscreen-active');
+          console.log("Entered ms fullscreen");
+        } else {
+          document.body.classList.remove('fullscreen-active');
+          console.log("Exited ms fullscreen");
+        }
+      });
+
+      // Periodic check to ensure logo stays visible (safety net)
+      setInterval(() => {
+        if (document.fullscreenElement || document.webkitFullscreenElement || 
+            document.mozFullScreenElement || document.msFullscreenElement) {
+          ensureLogoVisible();
+        }
+      }, 500);
+
+      // Ensure logo is visible on load
+      ensureLogoVisible();
     });
   </script>
 </body>
