@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KNR Stream</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    background:#000;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    overflow:hidden;
+}
+
+#permission,
+#admin,
+#player{
+    width:100%;
+    height:100%;
+    display:none;
+}
+
+#permission{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+}
+
+#admin{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    gap:15px;
+}
+
+input{
+    width:80%;
+    max-width:700px;
+    padding:15px;
+    font-size:18px;
+    border:none;
+    outline:none;
+    border-radius:8px;
+}
+
+button{
+    padding:15px 35px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="permission">
+    You have no permission to view this page.
+</div>
+
+<div id="admin">
+    <h2>Enter Iframe URL</h2>
+
+    <input
+        id="iframeUrl"
+        placeholder="https://example.com/embed"
+        autocomplete="off">
+
+    <button onclick="play()">Play</button>
+</div>
+
+<div id="player">
+    <iframe
+        id="frame"
+        allowfullscreen
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation">
+    </iframe>
+</div>
+
+<script>
+
+const params = new URLSearchParams(location.search);
+const value = params.get("url");
+
+const permission = document.getElementById("permission");
+const admin = document.getElementById("admin");
+const player = document.getElementById("player");
+const frame = document.getElementById("frame");
+
+if(!value){
+
+    permission.style.display="flex";
+
+}
+else if(value==="live"){
+
+    admin.style.display="flex";
+
+}
+else{
+
+    player.style.display="block";
+
+    frame.src=decodeURIComponent(value);
+
+}
+
+function play(){
+
+    let url=document.getElementById("iframeUrl").value.trim();
+
+    if(!url){
+
+        alert("Enter iframe URL");
+
+        return;
+
+    }
+
+    location.href="?url="+encodeURIComponent(url);
+
+}
+
+/* Basic protections */
+
+window.addEventListener("beforeunload",function(e){
+    e.stopPropagation();
+});
+
+document.addEventListener("contextmenu",e=>e.preventDefault());
+
+document.addEventListener("dragstart",e=>e.preventDefault());
+
+document.addEventListener("selectstart",e=>e.preventDefault());
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key==="F12")
+        e.preventDefault();
+
+    if(e.ctrlKey && e.shiftKey &&
+       ["I","J","C"].includes(e.key.toUpperCase()))
+        e.preventDefault();
+
+    if(e.ctrlKey && e.key.toUpperCase()==="U")
+        e.preventDefault();
+
+});
+
+</script>
+
+</body>
+</html>
