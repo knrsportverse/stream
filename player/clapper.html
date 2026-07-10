@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3U8 Clapper Video Player</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        /* Input Screen */
+        .input-screen {
+            display: none;
+        }
+
+        .input-screen.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .load-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .load-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .load-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f7ff;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Player Screen */
+        .player-screen {
+            display: none;
+        }
+
+        .player-screen.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .progress-bar::-webkit-slider-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .progress-bar::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .play-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .time-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+            flex: 1;
+        }
+
+        .time-display span:first-child {
+            font-weight: 600;
+            min-width: 50px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .time-display span:nth-child(2) {
+            color: #999;
+        }
+
+        .time-display span:last-child {
+            font-weight: 600;
+            min-width: 50px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 5px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .share-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .share-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .url-display {
+            display: flex;
+            gap: 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            align-items: center;
+        }
+
+        .url-display code {
+            font-size: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #666;
+            flex: 1;
+            word-break: break-all;
+            overflow-y: auto;
+            max-height: 60px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: transform 0.2s;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .share-note {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .icon {
+            font-size: inherit;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .control-buttons {
+                gap: 10px;
+            }
+
+            .time-display {
+                font-size: 12px;
+            }
+
+            .url-display {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .copy-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Clapper Player</h1>
+            <p>M3U8 Video Stream Player with URL Encoding</p>
+        </div>
+
+        <div class="content">
+            <!-- Input Screen -->
+            <div class="input-screen active" id="inputScreen">
+                <div class="form-group">
+                    <label for="m3u8Input">M3U8 Stream URL</label>
+                    <input 
+                        type="text" 
+                        id="m3u8Input" 
+                        placeholder="https://example.com/stream.m3u8"
+                        onkeypress="if(event.key === 'Enter') loadPlayer()"
+                    >
+                </div>
+
+                <button class="load-btn" onclick="loadPlayer()">
+                    <i class="icon ti ti-player-play"></i>
+                    Load Player
+                </button>
+
+                <div class="info-box">
+                    <h3>
+                        <i class="icon ti ti-info-circle"></i>
+                        About this player
+                    </h3>
+                    <p>
+                        Paste a valid M3U8 stream URL above. The player supports HLS streams with adaptive bitrate streaming. 
+                        Your shareable player URL will be automatically generated with an encoded hash.
+                    </p>
+                </div>
+
+                <div class="info-box" style="margin-top: 15px; background: #fff3cd; border-left-color: #ffc107;">
+                    <h3 style="color: #856404;">
+                        <i class="icon ti ti-bulb"></i>
+                        Test Stream
+                    </h3>
+                    <p style="color: #856404;">
+                        Try this public test URL: 
+                        <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">
+                            https://test-streams.mux.dev/x36xhzz/x3uxjf/playlist.m3u8
+                        </code>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Player Screen -->
+            <div class="player-screen" id="playerScreen">
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <span>Loading stream...</span>
+                </div>
+
+                <div class="video-container">
+                    <video id="videoPlayer" controls></video>
+                </div>
+
+                <div class="controls">
+                    <input 
+                        type="range" 
+                        id="progressBar" 
+                        class="progress-bar" 
+                        min="0" 
+                        value="0"
+                        onchange="seek(this.value)"
+                        oninput="seek(this.value)"
+                    >
+
+                    <div class="control-buttons">
+                        <button class="play-btn" onclick="togglePlayPause()" id="playBtn">
+                            <i class="icon ti ti-player-play"></i>
+                        </button>
+
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span>/</span>
+                            <span id="duration">0:00</span>
+                        </div>
+
+                        <div class="volume-control">
+                            <i class="icon ti ti-volume" style="color: #666;"></i>
+                            <input 
+                                type="range" 
+                                id="volumeSlider" 
+                                class="volume-slider" 
+                                min="0" 
+                                max="1" 
+                                step="0.1" 
+                                value="1"
+                                onchange="setVolume(this.value)"
+                                oninput="setVolume(this.value)"
+                            >
+                        </div>
+                    </div>
+
+                    <button class="back-btn" onclick="goBack()">
+                        <i class="icon ti ti-arrow-left"></i>
+                        Load Another Stream
+                    </button>
+                </div>
+
+                <div class="share-box">
+                    <h3>
+                        <i class="icon ti ti-link"></i>
+                        Shareable player URL
+                    </h3>
+                    <div class="url-display">
+                        <code id="playerUrl">https://example.com/player/?q=</code>
+                        <button class="copy-btn" onclick="copyToClipboard()">
+                            <i class="icon ti ti-copy"></i>
+                            Copy
+                        </button>
+                    </div>
+                    <p class="share-note">
+                        <i class="icon ti ti-info-circle"></i>
+                        Share this URL with anyone to play this stream
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+    <script>
+        let hls = null;
+        let currentUrl = '';
+        let encodedHash = '';
+
+        // Encode M3U8 URL to random hash
+        function encodeM3U8(url) {
+            const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-';
+            let hash = '';
+            const encoded = btoa(url);
+            
+            for (let i = 0; i < Math.min(32, encoded.length); i++) {
+                const charCode = encoded.charCodeAt(i);
+                hash += chars[charCode % chars.length];
+            }
+            
+            return hash.padEnd(32, chars[Math.floor(Math.random() * chars.length)]).substring(0, 32);
+        }
+
+        // Format time in mm:ss format
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Load player
+        function loadPlayer() {
+            const input = document.getElementById('m3u8Input');
+            const url = input.value.trim();
+
+            if (!url) {
+                alert('Please enter a valid M3U8 URL');
+                return;
+            }
+
+            currentUrl = url;
+            encodedHash = encodeM3U8(url);
+
+            // Switch screens
+            document.getElementById('inputScreen').classList.remove('active');
+            document.getElementById('playerScreen').classList.add('active');
+            document.getElementById('loadingIndicator').classList.add('active');
+
+            // Update shareable URL
+            const playerUrl = `https://example.com/player/?q=${encodedHash}`;
+            document.getElementById('playerUrl').textContent = playerUrl;
+
+            // Initialize video player
+            initializePlayer(url);
+        }
+
+        // Initialize HLS player
+        function initializePlayer(url) {
+            const video = document.getElementById('videoPlayer');
+
+            if (Hls.isSupported()) {
+                hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                });
+
+                hls.loadSource(url);
+                hls.attachMedia(video);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    document.getElementById('loadingIndicator').classList.remove('active');
+                    video.play();
+                    updatePlayButton();
+                });
+
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        document.getElementById('loadingIndicator').classList.remove('active');
+                        alert('Error loading stream: ' + data.details);
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                document.getElementById('loadingIndicator').classList.remove('active');
+                video.play();
+                updatePlayButton();
+            } else {
+                alert('HLS streaming is not supported in your browser');
+                goBack();
+            }
+        }
+
+        // Toggle play/pause
+        function togglePlayPause() {
+            const video = document.getElementById('videoPlayer');
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+            updatePlayButton();
+        }
+
+        // Update play button icon
+        function updatePlayButton() {
+            const video = document.getElementById('videoPlayer');
+            const btn = document.getElementById('playBtn');
+            const icon = btn.querySelector('i');
+
+            if (video.paused) {
+                icon.classList.remove('ti-player-pause');
+                icon.classList.add('ti-player-play');
+            } else {
+                icon.classList.remove('ti-player-play');
+                icon.classList.add('ti-player-pause');
+            }
+        }
+
+        // Seek video
+        function seek(value) {
+            const video = document.getElementById('videoPlayer');
+            video.currentTime = value;
+        }
+
+        // Set volume
+        function setVolume(value) {
+            const video = document.getElementById('videoPlayer');
+            video.volume = value;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            const playerUrl = document.getElementById('playerUrl').textContent;
+            navigator.clipboard.writeText(playerUrl).then(() => {
+                alert('URL copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy URL');
+            });
+        }
+
+        // Go back
+        function goBack() {
+            const video = document.getElementById('videoPlayer');
+            
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+            
+            video.src = '';
+            video.pause();
+            currentUrl = '';
+            encodedHash = '';
+
+            document.getElementById('playerScreen').classList.remove('active');
+            document.getElementById('inputScreen').classList.add('active');
+            document.getElementById('m3u8Input').value = '';
+            document.getElementById('m3u8Input').focus();
+        }
+
+        // Update progress bar and time display
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('videoPlayer');
+            const progressBar = document.getElementById('progressBar');
+            const currentTimeDisplay = document.getElementById('currentTime');
+            const durationDisplay = document.getElementById('duration');
+            const playBtn = document.getElementById('playBtn');
+
+            video.addEventListener('timeupdate', function() {
+                progressBar.max = video.duration;
+                progressBar.value = video.currentTime;
+                currentTimeDisplay.textContent = formatTime(video.currentTime);
+            });
+
+            video.addEventListener('durationchange', function() {
+                durationDisplay.textContent = formatTime(video.duration);
+            });
+
+            video.addEventListener('play', updatePlayButton);
+            video.addEventListener('pause', updatePlayButton);
+
+            // Focus input on load
+            document.getElementById('m3u8Input').focus();
+        });
+    </script>
+</body>
+</html>
