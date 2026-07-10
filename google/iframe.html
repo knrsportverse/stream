@@ -6,21 +6,19 @@
         * { margin: 0; padding: 0; }
         body { background: #1a1a1a; font-family: Arial; }
         .container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
-        .header { background: #2d2d2d; color: #fff; padding: 15px; font-size: 12px; border-bottom: 1px solid #444; }
+
         iframe { flex: 1; border: none; }
         .error { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; background: #2d2d2d; color: #fff; text-align: center; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header" id="header">📺 Loading embed...</div>
         <iframe id="viewer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen sandbox="allow-same-origin allow-scripts allow-presentation allow-autoplay"></iframe>
     </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
         const embedUrl = params.get('url');
-        const header = document.getElementById('header');
         const iframe = document.getElementById('viewer');
 
         if (!embedUrl) {
@@ -30,7 +28,6 @@
                 new URL(embedUrl);
                 
                 iframe.src = embedUrl;
-                header.textContent = `📺 ${embedUrl}`;
 
                 let loaded = false;
                 iframe.onload = () => {
@@ -58,7 +55,6 @@
                     if (!loaded && !embedUrl.includes('translate.google')) {
                         const proxyUrl = `https://cors.sh/?${encodeURIComponent(embedUrl)}`;
                         iframe.src = proxyUrl;
-                        header.textContent = `📺 ${embedUrl} (via proxy)`;
                     }
                 }, 3000);
 
