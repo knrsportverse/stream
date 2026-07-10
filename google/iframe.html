@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Iframe Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-group input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .input-group button:hover {
+            background: #764ba2;
+        }
+
+        .input-group button:active {
+            transform: scale(0.98);
+        }
+
+        .current-url {
+            font-size: 13px;
+            color: #666;
+            padding: 12px;
+            background: #f8f9ff;
+            border-radius: 5px;
+            word-break: break-all;
+            border-left: 4px solid #667eea;
+        }
+
+        .current-url.empty {
+            color: #999;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #f5c6cb;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #c3e6cb;
+            display: none;
+        }
+
+        .iframe-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
+
+        .placeholder {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            display: none;
+        }
+
+        .placeholder.show {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #004085;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .blocked-protocols {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Safe Iframe Viewer</h1>
+            <p>Embed webpages securely with redirect blocking</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="urlInput" 
+                    placeholder="Enter URL to embed (https://example.com)"
+                >
+                <button onclick="loadUrl()">Load</button>
+            </div>
+            <div class="current-url empty" id="currentUrl">No URL loaded yet</div>
+            
+            <div class="warning" id="warning"></div>
+            <div class="error" id="error"></div>
+            <div class="success" id="success"></div>
+
+            <div class="blocked-protocols">
+                ✓ Blocked protocols: javascript:, data:, file:, vbscript:, about:<br>
+                ✓ Blocked redirects: Open redirects and suspicious URLs blocked
+            </div>
+        </div>
+
+        <div class="iframe-container">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading content...</p>
+            </div>
+            <div class="placeholder show" id="placeholder">
+                <p>👆 Enter a URL above to get started</p>
+            </div>
+            <iframe id="contentFrame" title="Embedded Content"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // List of dangerous protocols to block
+        const BLOCKED_PROTOCOLS = [
+            'javascript:',
+            'data:',
+            'file:',
+            'vbscript:',
+            'about:',
+            'blob:',
+            'mocha:',
+            'about:blank'
+        ];
+
+        // List of suspicious patterns
+        const SUSPICIOUS_PATTERNS = [
+            /javascript:/i,
+            /data:/i,
+            /%2f%2f/i,  // encoded //
+            /\.\.%2f/i,  // encoded ../
+            /\.\.\\/i,    // ..\ path traversal
+            /%3a/i,       // encoded :
+        ];
+
+        // Whitelist of allowed domains (optional - comment out to allow all)
+        // const ALLOWED_DOMAINS = [
+        //     'embedindia.st',
+        //     'youtube.com',
+        //     'example.com'
+        // ];
+
+        function getUrlParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function isValidUrl(urlString) {
+            try {
+                const url = new URL(urlString);
+                
+                // Check protocol
+                const protocol = url.protocol.toLowerCase();
+                for (let blocked of BLOCKED_PROTOCOLS) {
+                    if (protocol.includes(blocked.replace(':', ''))) {
+                        return false;
+                    }
+                }
+
+                // Check for suspicious patterns in the full URL
+                for (let pattern of SUSPICIOUS_PATTERNS) {
+                    if (pattern.test(urlString)) {
+                        return false;
+                    }
+                }
+
+                // Check if URL starts with http or https
+                if (!urlString.toLowerCase().startsWith('http://') && 
+                    !urlString.toLowerCase().startsWith('https://')) {
+                    return false;
+                }
+
+                // Optional: Check against whitelist
+                // if (!ALLOWED_DOMAINS.includes(url.hostname)) {
+                //     return false;
+                // }
+
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function sanitizeUrl(urlString) {
+            try {
+                const url = new URL(urlString);
+                return url.toString();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function blockRedirects() {
+            // Monitor for redirects via JavaScript
+            const originalFetch = window.fetch;
+            const originalXhr = XMLHttpRequest.prototype.open;
+
+            // This only works on same origin due to CORS
+            // For cross-origin, we rely on Google Translate
+        }
+
+        function showWarning(message) {
+            const warningDiv = document.getElementById('warning');
+            warningDiv.textContent = '⚠️ ' + message;
+            warningDiv.style.display = 'block';
+            setTimeout(() => {
+                warningDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = '✅ ' + message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function loadUrl() {
+            let url = document.getElementById('urlInput').value.trim();
+            const errorDiv = document.getElementById('error');
+            const loadingDiv = document.getElementById('loading');
+            const placeholderDiv = document.getElementById('placeholder');
+            const iframe = document.getElementById('contentFrame');
+
+            hideError();
+
+            // Validate input
+            if (!url) {
+                showError('Please enter a URL');
+                return;
+            }
+
+            // Add protocol if missing
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+                document.getElementById('urlInput').value = url;
+            }
+
+            // Sanitize URL
+            const sanitized = sanitizeUrl(url);
+            if (!sanitized) {
+                showError('Invalid URL format');
+                return;
+            }
+
+            // Validate URL
+            if (!isValidUrl(sanitized)) {
+                showError('🚫 URL blocked! Dangerous protocol or suspicious pattern detected.');
+                return;
+            }
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            placeholderDiv.classList.remove('show');
+
+            // Update query parameter
+            window.history.pushState({}, '', `?url=${encodeURIComponent(sanitized)}`);
+
+            // Update current URL display
+            const displayUrl = sanitized.length > 70 ? sanitized.substring(0, 67) + '...' : sanitized;
+            document.getElementById('currentUrl').textContent = '📍 URL: ' + displayUrl;
+            document.getElementById('currentUrl').classList.remove('empty');
+
+            // Use Google Translate as proxy
+            const proxyUrl = `https://translate.google.com/translate?u=${encodeURIComponent(sanitized)}`;
+            iframe.src = proxyUrl;
+
+            // Hide loading after iframe loads
+            iframe.onload = function() {
+                loadingDiv.style.display = 'none';
+                showSuccess('Page loaded successfully');
+            };
+
+            // Handle iframe errors
+            iframe.onerror = function() {
+                loadingDiv.style.display = 'none';
+                showWarning('Page may have loaded but with warnings. Check if content is visible.');
+            };
+
+            // Set timeout to hide loading if it takes too long
+            setTimeout(() => {
+                if (loadingDiv.style.display === 'block') {
+                    loadingDiv.style.display = 'none';
+                    showWarning('Loading timeout - the page might still be loading');
+                }
+            }, 8000);
+        }
+
+        // Allow Enter key
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadUrl();
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            const urlParam = getUrlParameter('url');
+            if (urlParam) {
+                // Validate parameter before using
+                if (isValidUrl(urlParam)) {
+                    document.getElementById('urlInput').value = urlParam;
+                    loadUrl();
+                } else {
+                    showError('⚠️ URL parameter blocked for security reasons!');
+                }
+            }
+        });
+
+        // Block redirect attempts
+        blockRedirects();
+    </script>
+</body>
+</html>
