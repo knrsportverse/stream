@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Embed Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { background: #1a1a1a; font-family: Arial; }
+        .container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
+        .header { background: #2d2d2d; color: #fff; padding: 15px; font-size: 12px; border-bottom: 1px solid #444; }
+        iframe { flex: 1; border: none; }
+        .error { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; background: #2d2d2d; color: #fff; text-align: center; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="header">📺 Loading embed...</div>
+        <iframe id="viewer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen sandbox="allow-same-origin allow-scripts allow-presentation allow-autoplay"></iframe>
+    </div>
+
+    <script>
+        // REDIRECT BLOCKING
+        const blockedProtocols = ['javascript:', 'data:', 'file:', 'vbscript:', 'about:', 'blob:'];
+        const blockedPatterns = [/%2f%2f/, /%3a/, /\.\.%2f/, /\.\.\\/, /javascript:/i, /data:/i];
+
+        function isUrlSafe(url) {
+            if (!url) return false;
+            const lower = url.toLowerCase();
+            
+            // Check blocked protocols
+            for (let protocol of blockedProtocols) {
+                if (lower.startsWith(protocol)) return false;
+            }
+            
+            // Check patterns
+            for (let pattern of blockedPatterns) {
+                if (pattern.test(url)) return false;
+            }
+            
+            return true;
+        }
+
+        // HIDE TEXT AND LINKS - Inject CSS to hide content
+        const hideContentCSS = `
+            <style>
+                * {
+                    color: transparent !important;
+                    text-shadow: none !important;
+                }
+                body, div, p, span, h1, h2, h3, h4, h5, h6, a, button {
+                    color: transparent !important;
+                    font-size: 0 !important;
+                }
+                a, button, [onclick], input[type="button"], input[type="submit"] {
+                    pointer-events: none !important;
+                    display: none !important;
+                }
+                /* Keep video/media visible */
+                video, audio, img, svg {
+                    color: auto !important;
+                }
+                iframe {
+                    color: auto !important;
+                }
+            </style>
+            <script>
+                // Block all redirects
+                window.onbeforeunload = function(e) {
+                    return false;
+                };
+                
+                // Block location changes
+                Object.defineProperty(window, 'location', {
+                    writable: false,
+                    value: window.location
+                });
+                
+                // Block form submissions
+                document.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }, true);
+                
+                // Block all link clicks
+                document.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A' || e.target.closest('a')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }, true);
+                
+                // Hide all text content
+                function hideAllText() {
+                    const walker = document.createTreeWalker(
+                        document.body,
+                        NodeFilter.SHOW_TEXT,
+                        null,
+                        false
+                    );
+                    let node;
+                    while(node = walker.nextNode()) {
+                        if (node.textContent.trim()) {
+                            node.textContent = '';
+                        }
+                    }
+                }
+                
+                // Run immediately
+                hideAllText();
+                
+                // Run after DOM loads
+                document.addEventListener('DOMContentLoaded', hideAllText);
+                
+                // Run periodically for dynamic content
+                setInterval(hideAllText, 100);
+            <\/script>
+        `;
+
+        const params = new URLSearchParams(window.location.search);
+        let embedUrl = params.get('url');
+        const header = document.getElementById('header');
+        const iframe = document.getElementById('viewer');
+
+        if (!embedUrl) {
+            document.body.innerHTML = '<div class="error"><h2>❌ Error</h2><p>No URL parameter provided</p><p>Usage: ?url=https://example.com</p></div>';
+        } else {
+            try {
+                // Validate URL
+                if (!isUrlSafe(embedUrl)) {
+                    document.body.innerHTML = '<div class="error"><h2>🚫 Blocked</h2><p>URL contains blocked protocol or pattern</p></div>';
+                    return;
+                }
+
+                new URL(embedUrl);
+                
+                // Create HTML content with redirect blocking and content hiding
+                const blockedHtml = hideContentCSS;
+                
+                // Try direct embed first
+                iframe.src = embedUrl;
+                header.textContent = `📺 ${embedUrl}`;
+
+                let loaded = false;
+                iframe.onload = () => {
+                    loaded = true;
+                    try {
+                        // Inject blocking script into iframe
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (iframeDoc) {
+                            const style = document.createElement('style');
+                            style.textContent = `
+                                * {
+                                    color: transparent !important;
+                                    text-shadow: none !important;
+                                }
+                                body, div, p, span, h1, h2, h3, h4, h5, h6, a, button {
+                                    color: transparent !important;
+                                    font-size: 0 !important;
+                                }
+                                a, button, [onclick], input[type="button"], input[type="submit"] {
+                                    pointer-events: none !important;
+                                }
+                                video, audio, img { color: auto !important; }
+                                iframe { color: auto !important; }
+                            `;
+                            iframeDoc.head.appendChild(style);
+                            
+                            // Block redirects in iframe
+                            const script = document.createElement('script');
+                            script.textContent = `
+                                window.location.href = window.location.href;
+                                Object.defineProperty(window, 'location', {
+                                    writable: false
+                                });
+                                window.onbeforeunload = null;
+                                document.addEventListener('submit', (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return false;
+                                }, true);
+                                document.addEventListener('click', (e) => {
+                                    if (e.target.tagName === 'A') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return false;
+                                    }
+                                }, true);
+                            `;
+                            iframeDoc.body.appendChild(script);
+                        }
+                    } catch (e) {
+                        // Cross-origin, can't inject
+                    }
+                };
+
+                // After 3 seconds, if not loaded, try proxy
+                setTimeout(() => {
+                    if (!loaded && !embedUrl.includes('translate.google')) {
+                        const proxyUrl = `https://cors.sh/?${encodeURIComponent(embedUrl)}`;
+                        if (isUrlSafe(proxyUrl)) {
+                            iframe.src = proxyUrl;
+                            header.textContent = `📺 ${embedUrl} (via proxy)`;
+                        }
+                    }
+                }, 3000);
+
+                iframe.onerror = () => {
+                    const proxyUrl = `https://cors.sh/?${encodeURIComponent(embedUrl)}`;
+                    if (isUrlSafe(proxyUrl)) {
+                        iframe.src = proxyUrl;
+                        header.textContent = `📺 ${embedUrl} (via proxy)`;
+                    }
+                };
+
+            } catch (e) {
+                document.body.innerHTML = '<div class="error"><h2>❌ Invalid URL</h2></div>';
+            }
+        }
+
+        // Block main page redirects too
+        window.addEventListener('beforeunload', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, true);
+    </script>
+</body>
+</html>
