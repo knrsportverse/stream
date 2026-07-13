@@ -42,12 +42,21 @@
     }
 
     /* Mute Button Color Control - Red when muted, Green when unmuted */
-    .shaka-mute-button.shaka-activated {
+    .shaka-mute-button[aria-pressed="true"] svg,
+    .shaka-mute-button[aria-pressed="true"] {
       color: #22c55e !important;
+      fill: #22c55e !important;
     }
 
-    .shaka-mute-button:not(.shaka-activated) {
+    .shaka-mute-button[aria-pressed="false"] svg,
+    .shaka-mute-button[aria-pressed="false"] {
       color: #ef4444 !important;
+      fill: #ef4444 !important;
+    }
+
+    .shaka-mute-button svg {
+      stroke: currentColor !important;
+      fill: currentColor !important;
     }
 
     /* Error Badge - Classic Style */
@@ -97,18 +106,36 @@
       letter-spacing: 0.3px;
     }
 
-    /* Persistent Bottom-Right Watermark */
+    /* Channel Logo Watermark - Top Right Corner */
     .watermark {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
+      top: 15px;
+      right: 15px;
+      opacity: 0.4;
       z-index: 1000;
       pointer-events: none;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+      max-width: 80px;
+      height: auto;
+      aspect-ratio: auto;
+    }
+
+    @media (max-width: 480px) {
+      .watermark {
+        top: 10px;
+        right: 10px;
+        max-width: 60px;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .watermark {
+        top: 8px;
+        right: 8px;
+        max-width: 50px;
+      }
     }
 
     /* Logo overlay - Responsive */
@@ -167,7 +194,7 @@
   <div class="shaka-video-container" data-shaka-player>
     <video autoplay muted playsinline preload="metadata" poster=""></video>
     
-    <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
+    <img class="watermark" src="https://i.imgur.com/ljJjux3.jpeg" alt="KNR Sportverse" draggable="false" oncontextmenu="return false" ondragstart="return false">
     
     <div class="error-badge" id="errorBadge"></div>
   </div>
