@@ -42,6 +42,59 @@
       opacity: 0 !important;
     }
 
+    .shaka-controls-container {
+      background: linear-gradient(180deg, transparent 0%, rgba(30, 58, 138, 0.8) 100%) !important;
+    }
+
+    .shaka-bottom-controls {
+      background: rgba(30, 58, 138, 0.9) !important;
+    }
+
+    .shaka-progress-bar {
+      background: rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .shaka-progress-bar-buffer {
+      background: rgba(96, 165, 250, 0.6) !important;
+    }
+
+    .shaka-progress-bar-play-head {
+      background: #60a5fa !important;
+    }
+
+    .shaka-control-button {
+      color: #e0e7ff !important;
+    }
+
+    .shaka-control-button:hover {
+      color: #60a5fa !important;
+    }
+
+    .shaka-current-time,
+    .shaka-duration {
+      color: #e0e7ff !important;
+    }
+
+    .shaka-settings-menu,
+    .shaka-overflow-menu {
+      background: rgba(30, 58, 138, 0.95) !important;
+      border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    }
+
+    .shaka-menu-item {
+      color: #e0e7ff !important;
+    }
+
+    .shaka-menu-item:hover {
+      background: rgba(96, 165, 250, 0.2) !important;
+      color: #60a5fa !important;
+    }
+
+    .shaka-chosen-item {
+      background: rgba(96, 165, 250, 0.4) !important;
+      color: #60a5fa !important;
+    }
+
     .error-badge {
       position: absolute;
       top: 50%;
@@ -83,26 +136,26 @@
       position: absolute;
       top: 15px;
       left: 15px;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(30, 58, 138, 0.4);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1.5px solid rgba(96, 165, 250, 0.5);
       color: white;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 24px;
+      border-radius: 50px;
       cursor: pointer;
       z-index: 999;
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 13px;
+      gap: 10px;
+      font-size: 15px;
       font-weight: 500;
       transition: all 0.3s ease;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .unmute-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(30, 58, 138, 0.6);
+      border-color: rgba(96, 165, 250, 0.7);
     }
 
     .unmute-btn.hidden {
@@ -117,9 +170,10 @@
       .unmute-btn {
         top: 10px;
         left: 10px;
-        padding: 8px 12px;
-        font-size: 12px;
-        gap: 6px;
+        padding: 10px 18px;
+        font-size: 13px;
+        gap: 8px;
+        border-radius: 50px;
       }
 
       .unmute-btn i {
@@ -134,7 +188,7 @@
     <video autoplay muted playsinline preload="metadata" poster=""></video>
     
     <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
-      <i class="fas fa-volume-up"></i>
+      <i class="fas fa-volume-high"></i>
       <span>Click to Unmute</span>
     </button>
     
