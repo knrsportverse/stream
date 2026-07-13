@@ -1,35 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stream Status</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stream Not Started Yet</title>
 
-    body {
-      background: #000;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    h1 {
-      font-size: 3rem;
-      font-weight: bold;
-      text-align: center;
-      letter-spacing: 2px;
+body{
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    overflow:hidden;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* 16:9 Blue Gradient Panel */
+.stream-box{
+    width:100vw;          /* Full screen width */
+    aspect-ratio:16 / 9;  /* Keeps perfect 16:9 */
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+
+    background:linear-gradient(
+        135deg,
+        #00113a 0%,
+        #0057ff 30%,
+        #00aaff 65%,
+        #00113a 100%
+    );
+
+    position:relative;
+}
+
+/* Animated shine */
+.stream-box::before{
+    content:"";
+    position:absolute;
+    width:200%;
+    height:200%;
+    background:linear-gradient(
+        120deg,
+        transparent 40%,
+        rgba(255,255,255,.12) 50%,
+        transparent 60%
+    );
+    animation:shine 6s linear infinite;
+}
+
+@keyframes shine{
+    from{
+        transform:translateX(-100%) rotate(20deg);
     }
-  </style>
+    to{
+        transform:translateX(100%) rotate(20deg);
+    }
+}
+
+/* Text */
+.stream-text{
+    position:relative;
+    z-index:2;
+
+    font-size:clamp(36px,5vw,84px);
+    font-weight:900;
+    line-height:1.15;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:3px;
+
+    color:#fff;
+
+    background:linear-gradient(
+        90deg,
+        #ffffff,
+        #dff6ff,
+        #8fdcff,
+        #38b6ff,
+        #ffffff
+    );
+
+    background-size:200% auto;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,.15),
+        0 0 20px rgba(0,140,255,.35);
+
+    animation:
+        swipeDown 1s ease-out,
+        gradientMove 4s linear infinite;
+}
+
+@keyframes swipeDown{
+    0%{
+        opacity:0;
+        transform:translateY(-140px);
+        filter:blur(10px);
+    }
+    70%{
+        opacity:1;
+        transform:translateY(15px);
+        filter:blur(2px);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0);
+        filter:blur(0);
+    }
+}
+
+@keyframes gradientMove{
+    from{
+        background-position:0% center;
+    }
+    to{
+        background-position:200% center;
+    }
+}
+
+/* Responsive */
+@media (max-width:768px){
+    .stream-text{
+        font-size:clamp(24px,6vw,48px);
+        letter-spacing:1px;
+        padding:0 20px;
+    }
+}
+</style>
+
 </head>
 <body>
-  <h1>STREAM NOT STARTED !</h1>
+
+<div class="stream-box">
+    <div class="stream-text">
+        STREAM NOT STARTED YET<br>
+        OR ENDED!
+    </div>
+</div>
+
 </body>
 </html>
