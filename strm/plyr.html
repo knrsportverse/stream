@@ -42,21 +42,24 @@
     }
 
     /* Mute Button Color Control - Red when muted, Green when unmuted */
-    .shaka-mute-button[aria-pressed="true"] svg,
-    .shaka-mute-button[aria-pressed="true"] {
-      color: #22c55e !important;
-      fill: #22c55e !important;
-    }
-
-    .shaka-mute-button[aria-pressed="false"] svg,
-    .shaka-mute-button[aria-pressed="false"] {
-      color: #ef4444 !important;
+    .shaka-mute-button svg path {
       fill: #ef4444 !important;
+      stroke: #ef4444 !important;
     }
 
-    .shaka-mute-button svg {
-      stroke: currentColor !important;
-      fill: currentColor !important;
+    .shaka-mute-button.shaka-activated svg path {
+      fill: #22c55e !important;
+      stroke: #22c55e !important;
+    }
+
+    .shaka-mute-button svg circle,
+    .shaka-mute-button svg line {
+      stroke: #ef4444 !important;
+    }
+
+    .shaka-mute-button.shaka-activated svg circle,
+    .shaka-mute-button.shaka-activated svg line {
+      stroke: #22c55e !important;
     }
 
     /* Error Badge - Classic Style */
@@ -108,7 +111,7 @@
 
     /* Channel Logo Watermark - Top Right Corner */
     .watermark {
-      position: absolute;
+      position: fixed;
       top: 15px;
       right: 15px;
       opacity: 0.4;
@@ -117,16 +120,24 @@
       user-select: none;
       -webkit-user-drag: none;
       -webkit-touch-callout: none;
-      max-width: 80px;
+      max-width: 70px;
       height: auto;
-      aspect-ratio: auto;
+      width: auto;
+    }
+
+    @media (max-width: 768px) {
+      .watermark {
+        top: 12px;
+        right: 12px;
+        max-width: 60px;
+      }
     }
 
     @media (max-width: 480px) {
       .watermark {
         top: 10px;
         right: 10px;
-        max-width: 60px;
+        max-width: 50px;
       }
     }
 
@@ -134,7 +145,7 @@
       .watermark {
         top: 8px;
         right: 8px;
-        max-width: 50px;
+        max-width: 40px;
       }
     }
 
@@ -329,6 +340,35 @@
     }
 
     document.addEventListener('DOMContentLoaded', loadStream);
+
+    // Update mute button colors based on video state
+    function updateMuteButtonColor() {
+      const video = document.querySelector('video');
+      const muteButton = document.querySelector('.shaka-mute-button');
+      
+      if (video && muteButton) {
+        if (video.muted) {
+          muteButton.classList.remove('shaka-activated');
+        } else {
+          muteButton.classList.add('shaka-activated');
+        }
+      }
+    }
+
+    // Watch for mute button clicks and video mute changes
+    setInterval(updateMuteButtonColor, 100);
+
+    const observer = new MutationObserver(updateMuteButtonColor);
+    document.addEventListener('DOMContentLoaded', () => {
+      const muteButton = document.querySelector('.shaka-mute-button');
+      if (muteButton) {
+        observer.observe(muteButton, { attributes: true, attributeFilter: ['class'] });
+      }
+      const video = document.querySelector('video');
+      if (video) {
+        video.addEventListener('volumechange', updateMuteButtonColor);
+      }
+    });
   </script>
 </body>
 </html>
