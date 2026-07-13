@@ -8,6 +8,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,7 +42,6 @@
       opacity: 0 !important;
     }
 
-    /* Error Badge */
     .error-badge {
       position: absolute;
       top: 50%;
@@ -64,77 +64,80 @@
       display: block;
     }
 
-    /* Persistent Bottom-Left Watermark */
     .watermark {
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 7px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  z-index: 1000;
-  pointer-events: none;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  white-space: nowrap;
-}
-
-    /* Logo overlay - Responsive */
-    .video-logo {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      opacity: 0.8;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 1px;
       z-index: 1000;
-      transition: opacity 0.3s ease;
-      width: clamp(50px, 12vw, 65px);
-      height: auto;
-      aspect-ratio: 65/20;
+      pointer-events: none;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
     }
 
-    @media (min-width: 768px) {
-      .video-logo {
-        width: clamp(65px, 8vw, 80px);
-        top: 15px;
-        left: 15px;
-      }
+    .unmute-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(30, 58, 138, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(96, 165, 250, 0.5);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
-    @media (min-width: 1200px) {
-      .video-logo {
-        width: clamp(80px, 6vw, 100px);
-        top: 20px;
-        left: 20px;
-      }
+    .unmute-btn:hover {
+      background: rgba(30, 58, 138, 0.6);
+      border-color: rgba(96, 165, 250, 0.7);
+    }
+
+    .unmute-btn.hidden {
+      display: none;
+    }
+
+    .unmute-btn i {
+      font-size: 16px;
     }
 
     @media (max-width: 480px) {
-      .video-logo {
-        width: clamp(40px, 10vw, 50px);
-        top: 8px;
-        left: 8px;
+      .unmute-btn {
+        top: 10px;
+        left: 10px;
+        padding: 10px 18px;
+        font-size: 13px;
+        gap: 8px;
+        border-radius: 50px;
+      }
+
+      .unmute-btn i {
+        font-size: 14px;
       }
     }
-
-    @media (max-width: 320px) {
-      .video-logo {
-        width: clamp(30px, 8vw, 40px);
-        top: 5px;
-        left: 5px;
-      }
-    }
-
-    .video-logo:hover {
-      opacity: 1;
-    }
-
   </style>
 </head>
 
 <body>
   <div class="shaka-video-container" data-shaka-player>
     <video autoplay muted playsinline preload="metadata" poster=""></video>
+    
+    <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
+      <i class="fas fa-volume-high"></i>
+      <span>Click to Unmute</span>
+    </button>
     
     <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
     
@@ -145,7 +148,6 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-    // Firebase Config - Replace with your config
     const firebaseConfig = {
       apiKey: "AIzaSyBII2OvFCMb2ZbtrUj_2DrhexUcU3TxSS0",
       authDomain: "knrstream-47104.firebaseapp.com",
@@ -160,8 +162,9 @@
     const db = getFirestore(app);
 
     const errorBadge = document.getElementById('errorBadge');
+    const unmuteBtn = document.getElementById('unmuteBtn');
+    let firstUnmuteOccurred = false;
 
-    // Get stream ID from URL
     const params = new URLSearchParams(window.location.search);
     const streamId = params.get('q');
 
@@ -172,7 +175,6 @@
 
     async function loadStream() {
       try {
-        // Fetch stream data from Firestore
         const q = query(collection(db, 'streams'), where('stream_id', '==', streamId));
         const querySnapshot = await getDocs(q);
 
@@ -185,7 +187,6 @@
         const mpd_url = streamData.mpd_url;
         const drm_keys = streamData.drm_keys;
 
-        // Initialize Shaka Player
         shaka.polyfill.installAll();
 
         if (!shaka.Player.isBrowserSupported()) {
@@ -200,21 +201,19 @@
         const container = document.querySelector('.shaka-video-container');
         const ui = new shaka.ui.Overlay(player, container, video);
 
-        // Configure UI
         ui.configure({
-  controlPanelElements: [
-    'time_and_duration',
-    'spacer',
-    'mute',
-    'language',
-    'captions',
-    'picture_in_picture',
-    'quality',
-    'fullscreen'
-     ]
-     });
+          controlPanelElements: [
+            'time_and_duration',
+            'spacer',
+            'mute',
+            'language',
+            'captions',
+            'picture_in_picture',
+            'quality',
+            'fullscreen'
+          ]
+        });
 
-        // DRM Config
         const drmConfig = {
           clearKeys: drm_keys
         };
@@ -246,27 +245,29 @@
           showError('Error: ' + (event.detail.message || 'Failed to load stream'));
         });
 
-        // Load stream
         await player.load(mpd_url);
 
-        // Autoplay
         video.muted = true;
         const playPromise = video.play();
         if (playPromise !== undefined) {
           playPromise.catch(err => console.log("Autoplay blocked:", err));
         }
 
-        // Unmute on first click
-        document.addEventListener('click', () => {
-          if (video.muted) {
-            video.muted = false;
-            video.volume = 1;
-          }
-        }, { once: true });
+        unmuteBtn.addEventListener('click', handleUnmute);
 
       } catch (error) {
         console.error('Error:', error);
         showError('Failed to load stream: ' + error.message);
+      }
+    }
+
+    function handleUnmute() {
+      if (!firstUnmuteOccurred) {
+        const video = document.querySelector('video');
+        video.muted = false;
+        video.volume = 1;
+        firstUnmuteOccurred = true;
+        unmuteBtn.classList.add('hidden');
       }
     }
 
@@ -275,7 +276,6 @@
       errorBadge.innerHTML = `<div>KNR SPORTVERSE</div><div style="font-size: 12px; opacity: 0.9; margin-top: 8px;">${message}</div>`;
     }
 
-    // Load stream when DOM is ready
     document.addEventListener('DOMContentLoaded', loadStream);
   </script>
 </body>
