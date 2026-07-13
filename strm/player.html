@@ -199,21 +199,17 @@
 
         // Configure UI
         ui.configure({
-          controlPanelElements: [
-            'play_pause', 'mute', 'volume', 'time_and_duration',
-            'spacer', 'language', 'captions', 'picture_in_picture',
-            'quality', 'fullscreen'
-          ],
-          volumeBarColors: {
-            base: 'rgba(135, 206, 235, 0.35)',
-            level: 'rgb(255,255,255)'
-          },
-          seekBarColors: {
-            base: 'rgba(50, 55, 61)',
-            buffered: 'rgba(135, 206, 235, 0.6)',
-            played: 'rgb(255, 255, 255)'
-          }
-        });
+  controlPanelElements: [
+    'time_and_duration',
+    'spacer',
+    'mute',
+    'language',
+    'captions',
+    'picture_in_picture',
+    'quality',
+    'fullscreen'
+     ]
+     });
 
         // DRM Config
         const drmConfig = {
