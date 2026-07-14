@@ -24,8 +24,8 @@ body{
 
 /* 16:9 Blue Gradient Panel */
 .stream-box{
-    width:100vw;          /* Full screen width */
-    aspect-ratio:16 / 9;  /* Keeps perfect 16:9 */
+    width:100vw;
+    aspect-ratio:16 / 9;
 
     display:flex;
     justify-content:center;
@@ -67,7 +67,7 @@ body{
     }
 }
 
-/* Text */
+/* Main Text */
 .stream-text{
     position:relative;
     z-index:2;
@@ -78,8 +78,6 @@ body{
     text-align:center;
     text-transform:uppercase;
     letter-spacing:3px;
-
-    color:#fff;
 
     background:linear-gradient(
         90deg,
@@ -123,6 +121,66 @@ body{
     }
 }
 
+/* Bottom Query Text */
+.bottom-text{
+    position:absolute;
+    bottom:35px;
+    left:50%;
+    transform:translateX(-50%);
+
+    display:none;
+    z-index:2;
+
+    width:90%;
+
+    font-size:clamp(20px,2.5vw,40px);
+    font-weight:900;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:2px;
+
+    background:linear-gradient(
+        90deg,
+        #ffffff,
+        #dff6ff,
+        #8fdcff,
+        #38b6ff,
+        #ffffff
+    );
+
+    background-size:200% auto;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,.15),
+        0 0 20px rgba(0,140,255,.35);
+
+    animation:
+        swipeUp 1s ease-out,
+        gradientMove 4s linear infinite;
+}
+
+@keyframes swipeUp{
+    0%{
+        opacity:0;
+        transform:translate(-50%,120px);
+        filter:blur(10px);
+    }
+    70%{
+        opacity:1;
+        transform:translate(-50%,-10px);
+        filter:blur(2px);
+    }
+    100%{
+        opacity:1;
+        transform:translate(-50%,0);
+        filter:blur(0);
+    }
+}
+
 @keyframes gradientMove{
     from{
         background-position:0% center;
@@ -139,6 +197,12 @@ body{
         letter-spacing:1px;
         padding:0 20px;
     }
+
+    .bottom-text{
+        font-size:clamp(16px,4vw,28px);
+        bottom:20px;
+        letter-spacing:1px;
+    }
 }
 </style>
 
@@ -146,11 +210,26 @@ body{
 <body>
 
 <div class="stream-box">
+
     <div class="stream-text">
         STREAM NOT STARTED YET<br>
         OR ENDED!
     </div>
+
+    <div class="bottom-text" id="bottomText"></div>
+
 </div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const queryText = params.get("q");
+
+if (queryText && queryText.trim() !== "") {
+    const bottomText = document.getElementById("bottomText");
+    bottomText.textContent = decodeURIComponent(queryText);
+    bottomText.style.display = "block";
+}
+</script>
 
 </body>
 </html>
