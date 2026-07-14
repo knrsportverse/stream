@@ -103,24 +103,6 @@ body{
         gradientMove 4s linear infinite;
 }
 
-@keyframes swipeDown{
-    0%{
-        opacity:0;
-        transform:translateY(-140px);
-        filter:blur(10px);
-    }
-    70%{
-        opacity:1;
-        transform:translateY(15px);
-        filter:blur(2px);
-    }
-    100%{
-        opacity:1;
-        transform:translateY(0);
-        filter:blur(0);
-    }
-}
-
 /* Bottom Query Text */
 .bottom-text{
     position:absolute;
@@ -139,13 +121,15 @@ body{
     text-transform:uppercase;
     letter-spacing:2px;
 
+    /* NEW GOLD/ORANGE GRADIENT */
     background:linear-gradient(
         90deg,
-        #ffffff,
-        #dff6ff,
-        #8fdcff,
-        #38b6ff,
-        #ffffff
+        #fff8d6 0%,
+        #ffe082 20%,
+        #ffc107 40%,
+        #ff9800 60%,
+        #ffd54f 80%,
+        #fff8d6 100%
     );
 
     background-size:200% auto;
@@ -155,12 +139,31 @@ body{
     -webkit-text-fill-color:transparent;
 
     text-shadow:
-        0 0 10px rgba(255,255,255,.15),
-        0 0 20px rgba(0,140,255,.35);
+        0 0 8px rgba(255,193,7,.45),
+        0 0 18px rgba(255,152,0,.55),
+        0 0 28px rgba(255,255,255,.15);
 
     animation:
         swipeUp 1s ease-out,
         gradientMove 4s linear infinite;
+}
+
+@keyframes swipeDown{
+    0%{
+        opacity:0;
+        transform:translateY(-140px);
+        filter:blur(10px);
+    }
+    70%{
+        opacity:1;
+        transform:translateY(15px);
+        filter:blur(2px);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0);
+        filter:blur(0);
+    }
 }
 
 @keyframes swipeUp{
