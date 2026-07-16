@@ -43,21 +43,39 @@
     }
 
     .error-badge {
-      position: absolute;
-      top: 50%;
+      position: fixed;
+      top: 20px;
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-      color: white;
-      padding: 20px 40px;
-      border-radius: 8px;
-      font-size: 16px;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.95);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
       font-weight: 500;
       z-index: 500;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
       display: none;
-      max-width: 80%;
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
 
     .error-badge.show {
@@ -137,6 +155,13 @@
   .unmute-btn i {
     font-size: 14px;
   }
+
+  .error-badge {
+    top: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    border-radius: 50px;
+  }
 }
   </style>
 </head>
@@ -175,6 +200,7 @@
     const errorBadge = document.getElementById('errorBadge');
     const unmuteBtn = document.getElementById('unmuteBtn');
     let firstUnmuteOccurred = false;
+    let errorTimeout = null;
 
     const params = new URLSearchParams(window.location.search);
     const streamId = params.get('q');
@@ -253,7 +279,7 @@
 
         player.addEventListener('error', (event) => {
           console.error('Shaka Player Error:', event.detail);
-          showError('Error: ' + (event.detail.message || 'Failed to load stream'));
+          showError(event.detail.message || 'Failed to load stream');
         });
 
         await player.load(mpd_url);
@@ -268,7 +294,7 @@
 
       } catch (error) {
         console.error('Error:', error);
-        showError('Failed to load stream: ' + error.message);
+        showError(error.message);
       }
     }
 
@@ -283,8 +309,16 @@
     }
 
     function showError(message) {
+      if (errorTimeout) {
+        clearTimeout(errorTimeout);
+      }
+      
+      errorBadge.textContent = `KNR SPORTVERSE: ${message}`;
       errorBadge.classList.add('show');
-      errorBadge.innerHTML = `<div>KNR SPORTVERSE</div><div style="font-size: 12px; opacity: 0.9; margin-top: 8px;">${message}</div>`;
+      
+      errorTimeout = setTimeout(() => {
+        errorBadge.classList.remove('show');
+      }, 3000);
     }
 
     document.addEventListener('DOMContentLoaded', loadStream);
