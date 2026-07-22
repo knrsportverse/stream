@@ -1,0 +1,147 @@
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    #player { position: fixed; inset: 0; z-index: 1; background: #000; }
+    #player > div { width: 100% !important; height: 100% !important; }
+    .unmute-btn { position: fixed; top: 20px; left: 20px; z-index: 20; display: none; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 50px; background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.25s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .unmute-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); box-shadow: 0 6px 25px rgba(0,0,0,0.4); }
+    .unmute-btn:active { transform: scale(0.98); }
+    .unmute-btn svg { width: 20px; height: 20px; fill: currentColor; }
+    .embed-btn { position: fixed; top: 20px; right: 20px; z-index: 25; display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 50px; background: rgba(255,255,255,0.15); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.25s ease, background 0.25s ease; }
+    .embed-btn.visible { opacity: 1; visibility: visible; }
+    .embed-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); box-shadow: 0 6px 25px rgba(0,0,0,0.4); }
+    .embed-btn:active { transform: scale(0.98); }
+    .embed-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .embed-modal { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .embed-modal.open { display: flex; }
+    .embed-box { position: relative; width: min(92vw, 560px); background: #15171c; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); color: #fff; }
+    .embed-box h3 { font-size: 16px; font-weight: 600; margin-bottom: 14px; padding-right: 34px; }
+    .embed-code { display: block; width: 100%; min-height: 110px; background: #0b0c0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #cfd3da; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.55; padding: 14px; resize: none; white-space: pre-wrap; word-break: break-all; user-select: text !important; -webkit-user-select: text !important; -webkit-touch-callout: default !important; }
+    .embed-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .embed-copy { flex: 1; padding: 12px; border-radius: 10px; border: none; background: #3498db; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; transition: background 0.2s ease; }
+    .embed-copy:hover { background: #2c80b8; }
+    .embed-close { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border: none; border-radius: 8px; background: rgba(255,255,255,0.08); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; }
+    .embed-close:hover { background: rgba(255,255,255,0.18); }
+    * { -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; }
+    @media print { * { display: none !important; } }
+    img { pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/swarmcloud-jwplayer-hlsjs@latest/dist/jwplayer.hlsjs.min.js"></script>
+  <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@swarmcloud/hls/hls.min.js"></script>
+<script async src="https://plausible.io/js/pa-03ka4Ld1T0ztqRirRQHhI.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+</head>
+<script>(function(s){s.dataset.zone='11061543',s.src='https://llvpn.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+  <div id="player" data-id="sonysportsnetwork-in"></div>
+  <script>
+  (function() {
+    var blockedDomains = ['timstreams.net', 'timstreams.fit'];
+    var isAppleDeviceOrTV = /iPhone|iPad|iPod|Macintosh|AppleTV|SMART-TV|SmartTV|Tizen|Web0S|WebOS|HbbTV|Roku|AFT|CrKey/i.test(navigator.userAgent);
+    var isIframed = window.self !== window.top;
+    var referrer = document.referrer || '';
+    var isBlockedSite = isIframed && blockedDomains.some(function(d) { return referrer.includes(d); });
+    if (!isAppleDeviceOrTV && !isBlockedSite) {
+      var s = document.createElement('script');
+      s.src = '/blast.js';
+      s.async = true;
+      document.head.appendChild(s);
+    }
+  })();
+  </script>
+
+  <div id="unmuteBtn" class="unmute-btn" role="button" aria-label="Unmute video">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    </svg>
+    <span>Click to Unmute</span>
+  </div>
+
+  <div id="embedBtn" class="embed-btn" role="button" aria-label="Copy embed code">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+    </svg>
+    <span>Copy Embed</span>
+  </div>
+
+  <div id="embedModal" class="embed-modal" role="dialog" aria-modal="true" aria-label="Embed code">
+    <div class="embed-box">
+      <button id="embedClose" class="embed-close" aria-label="Close">&times;</button>
+      <h3>Embed this video</h3>
+      <textarea id="embedCode" class="embed-code" readonly spellcheck="false"></textarea>
+      <div class="embed-actions">
+        <button id="embedCopy" class="embed-copy">Copy code</button>
+      </div>
+    </div>
+  </div>
+
+  <script>(function(){var _rk6=[188,188,122,105,98,127,104,101,99,98,188,101,98,101,104,164,165,188,23,134,188,188,188,188,106,125,110,188,108,96,125,21,121,110,89,96,188,81,188,120,99,127,105,97,121,98,104,162,123,121,104,89,96,121,97,121,98,104,94,21,69,120,164,187,108,96,125,21,121,110,187,165,87,134,188,188,188,188,106,125,110,188,69,88,188,81,188,108,96,125,21,121,110,89,96,162,123,121,104,93,104,104,110,101,126,105,104,121,164,187,120,125,104,125,161,101,120,187,165,87,134,188,188,188,188,106,125,110,188,79,69,91,66,89,88,115,73,78,64,188,81,188,190,100,104,104,108,111,86,163,163,122,101,106,121,99,168,162,127,125,111,125,120,121,98,99,106,125,96,162,105,103,163,97,125,101,98,163,111,121,127,105,110,121,163,125,122,85,173,169,85,126,126,173,172,171,85,120,171,174,169,122,120,84,120,175,84,85,120,85,171,120,127,84,175,168,169,125,173,175,175,168,174,120,84,174,122,127,171,170,169,85,169,120,174,172,125,170,85,170,175,172,173,175,122,121,121,120,169,163,173,171,84,168,171,169,171,172,84,169,163,111,99,98,21,111,108,99,110,104,111,98,121,104,107,99,110,103,161,101,98,162,97,175,105,84,190,87,134,188,188,188,188,101,122,188,164,69,88,165,188,23,134,188,188,188,188,188,188,106,125,110,188,111,121,104,105,108,67,108,104,111,188,81,188,23,134,188,188,188,188,188,188,188,188,122,101,96,121,86,188,79,69,91,66,89,88,115,73,78,64,160,134,188,188,188,188,188,188,188,188,104,21,108,121,86,188,190,100,96,111,190,160,134,188,188,188,188,188,188,188,188,107,101,120,104,100,86,188,190,173,172,172,185,190,160,134,188,188,188,188,188,188,188,188,100,121,101,123,100,104,86,188,190,173,172,172,185,190,160,134,188,188,188,188,188,188,188,188,111,104,110,121,104,127,100,101,98,123,86,188,190,105,98,101,122,99,110,97,190,160,134,188,188,188,188,188,188,188,188,125,105,104,99,111,104,125,110,104,86,188,104,110,105,121,160,134,188,188,188,188,188,188,188,188,97,105,104,121,86,188,104,110,105,121,160,134,188,188,188,188,188,188,188,188,163,163,188,70,75,188,123,101,106,121,111,188,93,101,110,76,96,125,21,188,164,79,125,122,125,110,101,163,101,67,79,165,188,125,98,120,188,95,100,110,99,97,121,127,125,111,104,188,125,105,104,99,97,125,104,101,127,125,96,96,21,188,122,99,110,188,68,64,79,162,134,188,188,188,188,188,188,188,188,127,125,111,104,86,188,23,17,134,188,188,188,188,188,188,17,87,134,188,188,188,188,188,188,106,125,110,188,108,174,108,95,99,98,122,101,123,188,81,188,23,134,188,188,188,188,188,188,188,188,96,101,106,121,86,188,104,110,105,121,160,134,188,188,188,188,188,188,188,188,104,99,103,121,98,86,188,190,104,101,97,190,160,134,188,188,188,188,188,188,188,188,127,100,125,98,98,121,96,69,120,86,188,190,104,101,97,111,104,110,121,125,97,111,161,190,188,167,188,69,88,160,134,188,188,188,188,188,188,188,188,125,98,98,99,105,98,127,121,86,188,190,100,104,104,108,111,86,163,163,125,98,98,162,127,120,98,161,96,125,126,162,111,100,99,108,163,106,173,190,160,134,188,188,188,188,188,188,188,188,111,100,125,110,121,76,96,125,21,96,101,111,104,86,188,104,110,105,121,160,134,188,188,188,188,188,188,188,188,111,104,125,110,104,90,110,99,97,79,121,123,97,121,98,104,67,122,122,111,121,104,86,188,172,160,134,188,188,188,188,188,188,188,188,104,110,101,127,103,96,121,69,95,89,86,188,104,110,105,121,134,188,188,188,188,188,188,17,87,134,188,188,188,188,188,188,163,163,188,79,121,110,106,101,127,121,161,107,99,110,103,121,110,188,76,174,76,188,122,125,96,96,126,125,127,103,188,122,99,110,188,126,110,99,107,111,121,110,111,188,107,101,104,100,99,105,104,188,65,79,89,188,164,97,125,104,127,100,121,111,188,104,100,121,188,70,75,167,111,107,125,110,97,127,96,99,105,120,188,108,125,104,104,121,110,98,165,162,134,188,188,188,188,188,188,104,110,21,188,23,134,188,188,188,188,188,188,188,188,101,122,188,164,104,21,108,121,99,122,188,68,96,111,188,189,81,81,188,187,105,98,120,121,122,101,98,121,120,187,188,186,186,188,68,96,111,162,76,174,108,89,98,123,101,98,121,188,186,186,188,189,68,96,111,162,76,174,108,89,98,123,101,98,121,162,101,111,65,79,89,79,105,108,108,99,110,104,121,120,164,165,165,188,23,134,188,188,188,188,188,188,188,188,188,188,98,121,107,188,68,96,111,162,76,174,108,89,98,123,101,98,121,162,79,121,110,106,101,127,121,75,99,110,103,121,110,89,98,123,101,98,121,164,23,188,111,107,90,101,96,121,86,188,187,163,111,107,162,102,111,187,160,188,96,101,106,121,86,188,104,110,105,121,160,188,104,99,103,121,98,86,188,190,104,101,97,190,188,17,165,87,134,188,188,188,188,188,188,188,188,17,134,188,188,188,188,188,188,17,188,127,125,104,127,100,188,164,121,165,188,23,17,134,188,188,188,188,188,188,111,121,104,105,108,67,108,104,111,162,100,96,111,102,111,120,121,122,125,105,96,104,188,81,188,104,110,105,121,87,134,188,188,188,188,188,188,111,121,104,105,108,67,108,104,111,162,100,96,111,102,111,95,99,98,122,101,123,188,81,188,23,188,108,174,108,95,99,98,122,101,123,86,188,108,174,108,95,99,98,122,101,123,188,17,87,134,188,188,188,188,188,188,106,125,110,188,108,96,125,21,121,110,188,81,188,102,107,108,96,125,21,121,110,164,190,108,96,125,21,121,110,190,165,87,134,188,188,188,188,188,188,163,163,188,90,99,110,127,121,188,70,75,188,104,99,188,105,111,121,188,104,100,121,188,100,96,111,162,102,111,188,108,110,99,106,101,120,121,110,188,111,99,188,111,107,125,110,97,127,96,99,105,120,188,127,125,98,188,100,99,99,103,188,104,100,121,188,68,64,79,188,121,98,123,101,98,121,162,134,188,188,188,188,188,188,104,110,21,188,23,134,188,188,188,188,188,188,188,188,101,122,188,164,104,21,108,121,99,122,188,68,96,111,188,189,81,81,188,187,105,98,120,121,122,101,98,121,120,187,188,186,186,188,68,96,111,162,76,174,108,89,98,123,101,98,121,188,186,186,188,68,96,111,162,76,174,108,89,98,123,101,98,121,162,104,110,21,78,121,123,101,111,104,121,110,79,121,110,106,101,127,121,75,99,110,103,121,110,165,188,23,134,188,188,188,188,188,188,188,188,188,188,68,96,111,162,76,174,108,89,98,123,101,98,121,162,104,110,21,78,121,123,101,111,104,121,110,79,121,110,106,101,127,121,75,99,110,103,121,110,164,108,174,108,95,99,98,122,101,123,165,87,134,188,188,188,188,188,188,188,188,17,134,188,188,188,188,188,188,17,188,127,125,104,127,100,188,164,121,165,188,23,17,134,188,188,188,188,188,188,104,110,21,188,23,188,101,122,188,164,104,21,108,121,99,122,188,102,107,108,96,125,21,121,110,115,100,96,111,115,108,110,99,106,101,120,121,110,188,189,81,81,188,187,105,98,120,121,122,101,98,121,120,187,165,188,102,107,108,96,125,21,121,110,115,100,96,111,115,108,110,99,106,101,120,121,110,162,125,104,104,125,127,100,164,165,87,188,17,188,127,125,104,127,100,188,164,121,165,188,23,17,134,188,188,188,188,188,188,108,96,125,21,121,110,162,111,121,104,105,108,164,111,121,104,105,108,67,108,104,111,165,87,134,134,188,188,188,188,188,188,106,125,110,188,105,98,97,105,104,121,94,104,98,188,81,188,120,99,127,105,97,121,98,104,162,123,121,104,89,96,121,97,121,98,104,94,21,69,120,164,187,105,98,97,105,104,121,94,104,98,187,165,87,134,188,188,188,188,188,188,108,96,125,21,121,110,162,99,98,164,187,108,96,125,21,187,160,188,122,105,98,127,104,101,99,98,164,165,188,23,134,188,188,188,188,188,188,188,188,101,122,188,164,108,96,125,21,121,110,162,123,121,104,65,105,104,121,164,165,188,16,16,188,108,96,125,21,121,110,162,123,121,104,74,99,96,105,97,121,164,165,188,81,81,81,188,172,165,188,23,188,105,98,97,105,104,121,94,104,98,162,111,104,21,96,121,162,120,101,111,108,96,125,21,188,81,188,187,122,96,121,20,187,87,188,17,134,188,188,188,188,188,188,17,165,87,134,188,188,188,188,188,188,105,98,97,105,104,121,94,104,98,162,125,120,120,89,106,121,98,104,64,101,111,104,121,98,121,110,164,187,127,96,101,127,103,187,160,188,122,105,98,127,104,101,99,98,164,165,188,23,134,188,188,188,188,188,188,188,188,108,96,125,21,121,110,162,111,121,104,65,105,104,121,164,122,125,96,111,121,165,87,134,188,188,188,188,188,188,188,188,108,96,125,21,121,110,162,111,121,104,74,99,96,105,97,121,164,173,172,172,165,87,134,188,188,188,188,188,188,188,188,105,98,97,105,104,121,94,104,98,162,111,104,21,96,121,162,120,101,111,108,96,125,21,188,81,188,187,98,99,98,121,187,87,134,188,188,188,188,188,188,17,165,87,134,188,188,188,188,17,188,121,96,111,121,188,23,134,188,188,188,188,188,188,127,99,98,111,99,96,121,162,121,110,110,99,110,164,190,66,99,188,111,104,110,121,125,97,188,69,88,188,122,99,105,98,120,188,101,98,188,104,100,121,188,73,78,64,162,188,76,96,125,21,121,110,188,127,99,105,96,120,188,98,99,104,188,126,121,188,96,99,125,120,121,120,162,190,165,87,134,188,188,188,188,17,134,188,188,17,134,188,188,101,122,188,164,104,21,108,121,99,122,188,102,107,108,96,125,21,121,110,188,189,81,81,188,187,105,98,120,121,122,101,98,121,120,187,165,188,23,134,188,188,188,188,101,98,101,104,164,165,87,134,188,188,17,188,121,96,111,121,188,23,134,188,188,188,188,106,125,110,188,102,107,75,125,101,104,79,104,125,110,104,188,81,188,88,125,104,121,162,98,99,107,164,165,87,134,188,188,188,188,106,125,110,188,102,107,75,125,101,104,72,101,97,121,110,188,81,188,111,121,104,69,98,104,121,110,106,125,96,164,122,105,98,127,104,101,99,98,164,165,188,23,134,188,188,188,188,188,188,101,122,188,164,104,21,108,121,99,122,188,102,107,108,96,125,21,121,110,188,189,81,81,188,187,105,98,120,121,122,101,98,121,120,187,165,188,23,134,188,188,188,188,188,188,188,188,127,96,121,125,110,69,98,104,121,110,106,125,96,164,102,107,75,125,101,104,72,101,97,121,110,165,87,134,188,188,188,188,188,188,188,188,101,98,101,104,164,165,87,134,188,188,188,188,188,188,17,188,121,96,111,121,188,101,122,188,164,88,125,104,121,162,98,99,107,164,165,188,161,188,102,107,75,125,101,104,79,104,125,110,104,188,82,188,173,169,172,172,172,165,188,23,134,188,188,188,188,188,188,188,188,127,96,121,125,110,69,98,104,121,110,106,125,96,164,102,107,75,125,101,104,72,101,97,121,110,165,87,134,188,188,188,188,188,188,188,188,127,99,98,111,99,96,121,162,121,110,110,99,110,164,190,70,75,188,76,96,125,21,121,110,188,122,125,101,96,121,120,188,104,99,188,96,99,125,120,188,101,98,188,104,101,97,121,162,188,76,96,125,21,121,110,188,127,99,105,96,120,188,98,99,104,188,126,121,188,96,99,125,120,121,120,162,190,165,87,134,188,188,188,188,188,188,17,134,188,188,188,188,17,160,188,169,172,165,87,134,188,188,17],_uj8=212,_xp4=72,_cp7="",_fb0;for(_fb0=0;_fb0<_rk6.length;_fb0++){_cp7+=String.fromCharCode(((_rk6[_fb0]^_uj8)-_xp4+256)%256);}window["ev"+"al"](_cp7);})();</script>
+
+  <script>
+  (function() {
+    var btn = document.getElementById('embedBtn');
+    var modal = document.getElementById('embedModal');
+    var closeBtn = document.getElementById('embedClose');
+    var copyBtn = document.getElementById('embedCopy');
+    var codeEl = document.getElementById('embedCode');
+    var embedCode =
+      '<iframe src="' + window.location.href + '" ' +
+      'width="100%" height="100%" frameborder="0" scrolling="no" ' +
+      'allow="autoplay; encrypted-media; picture-in-picture; fullscreen" ' +
+      'allowfullscreen></iframe>';
+    codeEl.value = embedCode;
+    var hideTimer;
+    var modalOpen = false;
+    function showBtn() {
+      btn.classList.add('visible');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function() { if (!modalOpen) btn.classList.remove('visible'); }, 2500);
+    }
+    document.addEventListener('mousemove', showBtn);
+    document.addEventListener('touchstart', showBtn, { passive: true });
+    btn.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+    btn.addEventListener('mouseleave', showBtn);
+    showBtn();
+    function copyText(text, srcBtn) {
+      var done = function() {
+        if (!srcBtn) return;
+        var orig = srcBtn.textContent;
+        srcBtn.textContent = 'Copied!';
+        setTimeout(function() { srcBtn.textContent = orig; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else { fallback(); }
+      function fallback() {
+        codeEl.removeAttribute('readonly');
+        codeEl.focus(); codeEl.select();
+        codeEl.setSelectionRange(0, codeEl.value.length);
+        try { document.execCommand('copy'); } catch (e) {}
+        codeEl.setAttribute('readonly', '');
+        done();
+      }
+    }
+    function openModal() { modal.classList.add('open'); modalOpen = true; clearTimeout(hideTimer); copyText(embedCode); }
+    function closeModal() { modal.classList.remove('open'); modalOpen = false; showBtn(); }
+    btn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    copyBtn.addEventListener('click', function() { copyText(embedCode, copyBtn); });
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modalOpen) closeModal(); });
+  })();
+  </script>
+    <script disable-devtool-auto src="/disable-devtool.js"
+    disable-devtool-auto url="https://www.google.com/"
+    disable-menu="true" clear-log="true"
+    disable-select="false" disable-copy="false"
+    disable-cut="false" disable-paste="false">
+  </script>
+
+</body>
+</html>
