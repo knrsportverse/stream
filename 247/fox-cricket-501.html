@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOX CRICKET 501</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.video-container {
+    width: 80%;
+    max-width: 900px;
+    aspect-ratio: 16 / 9;
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+</style>
+
+</head>
+<body>
+
+<div class="video-container">
+    <iframe
+        src="https://knrsportverse.blogspot.com/p/knr-live-stream.html?q=aHR0cHMlM0ElMkYlMkZsb2dpYy5pY2VsYW5kZXJzLnN0JTJGZW1iZWQlMkZmb3gtc3BvcnRzLTUwMQ=="
+        allowfullscreen
+        allow="autoplay; encrypted-media; picture-in-picture">
+    </iframe>
+</div>
+<script>
+(function () {
+    const REDIRECT_URL = "https://knrsportverse.blogspot.com/";
+
+    function redirect() {
+        window.location.replace(REDIRECT_URL);
+    }
+
+    // Detect DevTools by window size
+    setInterval(() => {
+        const threshold = 160;
+
+        if (
+            window.outerWidth - window.innerWidth > threshold ||
+            window.outerHeight - window.innerHeight > threshold
+        ) {
+            redirect();
+        }
+    }, 500);
+
+    // Detect console opening (works in many Chromium browsers)
+    const element = new Image();
+    Object.defineProperty(element, 'id', {
+        get: function () {
+            redirect();
+        }
+    });
+
+    setInterval(() => {
+        console.log(element);
+    }, 1000);
+
+    // Block common shortcuts
+    document.addEventListener("keydown", function (e) {
+        if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey &&
+                ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+            (e.ctrlKey && e.key.toUpperCase() === "U")
+        ) {
+            e.preventDefault();
+            redirect();
+        }
+    });
+
+    // Disable right-click
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        redirect();
+    });
+})();
+</script>
+</body>
+</html>
