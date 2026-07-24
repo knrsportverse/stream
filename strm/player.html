@@ -81,25 +81,49 @@
       display: block;
     }
 
-    .watermark {
+    .discord-btn {
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      z-index: 1000;
-      pointer-events: none;
-      white-space: nowrap;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 50px;
       background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 12px 24px;
-      border-radius: 50px;
+      transition: all 0.25s ease;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      opacity: 1;
+    }
+
+    .discord-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .discord-btn:active {
+      transform: scale(0.98);
+    }
+
+    .discord-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .discord-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .unmute-btn {
@@ -158,16 +182,23 @@
         height: 16px;
       }
 
+      .discord-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 18px;
+        font-size: 13px;
+        gap: 8px;
+      }
+
+      .discord-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
       .error-badge {
         top: 10px;
         padding: 10px 16px;
         font-size: 12px;
-      }
-
-      .watermark {
-        bottom: 10px;
-        padding: 10px 16px;
-        font-size: 11px;
       }
     }
   </style>
@@ -184,7 +215,12 @@
       <span>Click to Unmute</span>
     </div>
     
-    <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
+    <a id="discordBtn" class="discord-btn" href="https://discord.com/invite/Q57TTcAuYu" target="_blank" rel="noopener noreferrer" title="Join our Discord">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.317 4.369c-1.578-.78-3.247-1.469-5.071-1.790a.074.074 0 0 0-.079.037c-.219.391-.461.901-.631 1.304-1.917-.287-3.827-.287-5.701 0-.17-.403-.412-.913-.634-1.304a.077.077 0 0 0-.079-.037c-1.824.321-3.493 1.01-5.071 1.79a.072.072 0 0 0-.033.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057c1.675 1.229 3.302 1.983 4.901 2.481a.077.077 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106c-.657-.249-1.282-.561-1.884-.923a.077.077 0 0 1 .009-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .076-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1 .009.128c-.603.362-1.228.675-1.885.923a.077.077 0 0 0-.041.107c.354.699.766 1.365 1.226 1.994a.076.076 0 0 0 .084.028c1.6-.498 3.227-1.252 4.902-2.481a.077.077 0 0 0 .032-.057c.5-4.788-.838-8.895-3.551-12.566a.061.061 0 0 0-.033-.027zM8.02 15.33c-1.183 0-2.157-.965-2.157-2.156 0-1.193.964-2.157 2.157-2.157 1.193 0 2.156.964 2.156 2.157 0 1.191-.963 2.156-2.156 2.156zm7.975 0c-1.183 0-2.157-.965-2.157-2.156 0-1.193.964-2.157 2.157-2.157 1.193 0 2.157.964 2.157 2.157 0 1.191-.964 2.156-2.157 2.156z"/>
+      </svg>
+      <span>DISCORD</span>
+    </a>
     
     <div class="error-badge" id="errorBadge"></div>
   </div>
@@ -208,8 +244,11 @@
 
     const errorBadge = document.getElementById('errorBadge');
     const unmuteBtn = document.getElementById('unmuteBtn');
+    const discordBtn = document.getElementById('discordBtn');
     let firstUnmuteOccurred = false;
     let errorTimeout = null;
+    let controlsHideTimeout = null;
+    let controlsVisible = true;
 
     const params = new URLSearchParams(window.location.search);
     const streamId = params.get('q');
@@ -305,6 +344,13 @@
 
         unmuteBtn.addEventListener('click', handleUnmute);
 
+        // Add event listeners for Discord button visibility
+        const container = document.querySelector('.shaka-video-container');
+        container.addEventListener('click', handleVideoInteraction);
+        container.addEventListener('mousemove', handleVideoInteraction);
+        container.addEventListener('touchstart', handleVideoInteraction);
+        container.addEventListener('touchmove', handleVideoInteraction);
+
       } catch (error) {
         console.error('Error:', error);
         showError(error.message);
@@ -318,6 +364,34 @@
         video.volume = 1;
         firstUnmuteOccurred = true;
         unmuteBtn.classList.add('hidden');
+      }
+    }
+
+    function showControls() {
+      controlsVisible = true;
+      discordBtn.classList.remove('hidden');
+      resetControlsHideTimer();
+    }
+
+    function hideControls() {
+      controlsVisible = false;
+      discordBtn.classList.add('hidden');
+    }
+
+    function resetControlsHideTimer() {
+      if (controlsHideTimeout) {
+        clearTimeout(controlsHideTimeout);
+      }
+      controlsHideTimeout = setTimeout(() => {
+        hideControls();
+      }, 5000);
+    }
+
+    function handleVideoInteraction() {
+      if (!controlsVisible) {
+        showControls();
+      } else {
+        resetControlsHideTimer();
       }
     }
 
