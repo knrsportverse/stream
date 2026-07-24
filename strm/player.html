@@ -8,6 +8,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -115,10 +116,8 @@
       transform: scale(0.98);
     }
 
-    .discord-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
+    .discord-btn i {
+      font-size: 18px;
     }
 
     .discord-btn.hidden {
@@ -190,9 +189,8 @@
         gap: 8px;
       }
 
-      .discord-btn svg {
-        width: 16px;
-        height: 16px;
+      .discord-btn i {
+        font-size: 16px;
       }
 
       .error-badge {
@@ -216,9 +214,7 @@
     </div>
     
     <a id="discordBtn" class="discord-btn" href="https://discord.com/invite/Q57TTcAuYu" target="_blank" rel="noopener noreferrer" title="Join our Discord">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20.317 4.369c-1.578-.78-3.247-1.469-5.071-1.790a.074.074 0 0 0-.079.037c-.219.391-.461.901-.631 1.304-1.917-.287-3.827-.287-5.701 0-.17-.403-.412-.913-.634-1.304a.077.077 0 0 0-.079-.037c-1.824.321-3.493 1.01-5.071 1.79a.072.072 0 0 0-.033.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057c1.675 1.229 3.302 1.983 4.901 2.481a.077.077 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106c-.657-.249-1.282-.561-1.884-.923a.077.077 0 0 1 .009-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .076-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1 .009.128c-.603.362-1.228.675-1.885.923a.077.077 0 0 0-.041.107c.354.699.766 1.365 1.226 1.994a.076.076 0 0 0 .084.028c1.6-.498 3.227-1.252 4.902-2.481a.077.077 0 0 0 .032-.057c.5-4.788-.838-8.895-3.551-12.566a.061.061 0 0 0-.033-.027zM8.02 15.33c-1.183 0-2.157-.965-2.157-2.156 0-1.193.964-2.157 2.157-2.157 1.193 0 2.156.964 2.156 2.157 0 1.191-.963 2.156-2.156 2.156zm7.975 0c-1.183 0-2.157-.965-2.157-2.156 0-1.193.964-2.157 2.157-2.157 1.193 0 2.157.964 2.157 2.157 0 1.191-.964 2.156-2.157 2.156z"/>
-      </svg>
+      <i class="fab fa-discord"></i>
       <span>DISCORD</span>
     </a>
     
