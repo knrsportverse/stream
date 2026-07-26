@@ -141,14 +141,21 @@
 
                 // Setup Clappr Player
                 var player = new Clappr.Player({
-                    source: decodedUrl,
-                    mimeType: "application/x-mpegURL", 
-                    parentId: "#player-wrapper",
-                    autoPlay: false, // Wait for user to click play
-                    mute: false,     // Allow sound right from the start
-                    width: '100%',
-                    height: '100%'
-                });
+    source: decodedUrl,
+    mimeType: "application/x-mpegURL", 
+    parentId: "#player-wrapper",
+    autoPlay: false, 
+    mute: false,     
+    width: '100%',
+    height: '100%',
+    
+    // Player Customization
+    mediacontrol: {
+        seekbar: "#1e88e5",
+        buttons: "#1e88e5"
+    }
+});
+
 
             } catch (error) {
                 alert("Invalid encoded URL. Redirecting back.");
