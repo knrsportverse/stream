@@ -107,7 +107,6 @@
 
         /* Glass Unmute Button */
         #unmute-btn {
-            display: none; /* Hidden until video loads */
             position: absolute;
             top: 25px;
             left: 25px;
@@ -121,12 +120,14 @@
             color: #ffffff;
             font-size: 15px;
             font-weight: bold;
-            display: flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: background 0.3s ease, transform 0.2s ease;
+            
+            /* Placed at the very bottom so it doesn't get overwritten */
+            display: none; 
         }
 
         #unmute-btn:hover {
@@ -173,18 +174,16 @@
         const urlInput = document.getElementById('stream-url');
         const unmuteBtn = document.getElementById('unmute-btn');
         
-        let unmuteDismissed = false; // Prevents button from coming back
+        let unmuteDismissed = false; 
 
         if (base64Query) {
             try {
-                // Safely decode Base64 URL
                 const decodedUrl = atob(base64Query);
 
                 inputSection.style.display = 'none';
                 streamSection.style.display = 'flex';
                 document.body.classList.add('streaming'); 
 
-                // Setup Clappr Player
                 var player = new Clappr.Player({
                     source: decodedUrl,
                     mimeType: "application/x-mpegURL", 
@@ -194,8 +193,8 @@
                     width: '100%',
                     height: '100%',
                     events: {
-                        // Triggers only when video actually begins playing
                         onPlay: function() {
+                            // Using JS to change it to flex ONLY after stream starts playing
                             if (!unmuteDismissed && player.getVolume() === 0) {
                                 unmuteBtn.style.display = 'flex';
                             }
@@ -203,7 +202,6 @@
                     }
                 });
 
-                // Unmute button logic
                 unmuteBtn.addEventListener('click', function() {
                     unmuteDismissed = true;
                     player.setVolume(100);
@@ -213,6 +211,9 @@
                         videoTag.muted = false;
                         videoTag.volume = 1.0;
                     }
+                    
+                    // Force the player to resume playing in case the browser paused it upon unmuting
+                    player.play();
 
                     this.style.display = 'none';
                 });
@@ -222,7 +223,6 @@
                 window.location.href = "?"; 
             }
         } else {
-            // Encode and redirect logic
             playBtn.addEventListener('click', function() {
                 const rawUrl = urlInput.value.trim();
                 if (rawUrl) {
