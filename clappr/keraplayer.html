@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KNR SPORTVERSE Player</title>
+  <title>KNR SPORTVERSE - Stream</title>
   <style>
     body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
     #player { width: 100%; height: 100%; }
@@ -29,30 +29,10 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-    // =========================================================================
-    // AES SECURITY LAYER 
-    // To generate your AES string, open browser console on this page and type:
-    // CryptoJS.AES.encrypt(JSON.stringify({ apiKey: "YOUR_KEY", authDomain: "YOUR_DOMAIN", projectId: "YOUR_PROJECT" ... }), "KNR_SECRET_2026").toString()
-    // =========================================================================
     
-    const AES_SECRET_KEY = "KNR_SECRET_2026"; 
-    
-    // Replace this string with your actual encrypted Firebase Config JSON.
-    // Right now, I've embedded the exact encrypted string of your provided Firebase config using the key above.
+    const AES_SECRET_KEY = "kerastreamfromchinachowkmadeinindiaaa"; 
     const ENCRYPTED_FIREBASE_CONFIG = "U2FsdGVkX1+QyCgV95sQ0g72n2m8K0fVp1G2+8E5fO5uVf0m7h2xG8k6sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1";
     
-    // ----------------------------------------------------
-    // UNENCRYPTED CONFIG (Comment out or delete in production)
-    const rawFirebaseConfig = {
-      apiKey: "AIzaSyBII2OvFCMb2ZbtrUj_2DrhexUcU3TxSS0",
-      authDomain: "knrstream-47104.firebaseapp.com",
-      projectId: "knrstream-47104",
-      storageBucket: "knrstream-47104.appspot.com",
-      messagingSenderId: "390036335226",
-      appId: "1:390036335226:web:38584b0002f224021369c3",
-      measurementId: "G-QD8RDB9CGC"
-    };
     // ----------------------------------------------------
 
     let firebaseConfig;
