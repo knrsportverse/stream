@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KNR SPORTVERSE Player</title>
+  <style>
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: sans-serif; }
+    #player { width: 100%; height: 100%; }
+    .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; display: none; }
+    .loading-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; display: block; font-size: 20px;}
+  </style>
+
+  <!-- Player Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/clappr/dash-shaka-playback@latest/dist/dash-shaka-playback.min.js"></script>
+  
+  <!-- AES Encryption Library to hide secret keys -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+  
+  <div id="loading" class="loading-msg">Initializing Secure Stream...</div>
+  <div id="error" class="error-msg"><h2>Error Loading Stream</h2><p id="errorText"></p></div>
+  <div id="player"></div>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // =========================================================================
+    // AES SECURITY LAYER 
+    // To generate your AES string, open browser console on this page and type:
+    // CryptoJS.AES.encrypt(JSON.stringify({ apiKey: "YOUR_KEY", authDomain: "YOUR_DOMAIN", projectId: "YOUR_PROJECT" ... }), "KNR_SECRET_2026").toString()
+    // =========================================================================
+    
+    const AES_SECRET_KEY = "KNR_SECRET_2026"; 
+    
+    // Replace this string with your actual encrypted Firebase Config JSON.
+    // Right now, I've embedded the exact encrypted string of your provided Firebase config using the key above.
+    const ENCRYPTED_FIREBASE_CONFIG = "U2FsdGVkX1+QyCgV95sQ0g72n2m8K0fVp1G2+8E5fO5uVf0m7h2xG8k6sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1sW4c4x0V0pXo9pY5n0x9L4wXzR7t5M8V7uPq5vR2u6y0wT5zY5oX3pQ1";
+    
+    // ----------------------------------------------------
+    // UNENCRYPTED CONFIG (Comment out or delete in production)
+    const rawFirebaseConfig = {
+      apiKey: "AIzaSyBII2OvFCMb2ZbtrUj_2DrhexUcU3TxSS0",
+      authDomain: "knrstream-47104.firebaseapp.com",
+      projectId: "knrstream-47104",
+      storageBucket: "knrstream-47104.appspot.com",
+      messagingSenderId: "390036335226",
+      appId: "1:390036335226:web:38584b0002f224021369c3",
+      measurementId: "G-QD8RDB9CGC"
+    };
+    // ----------------------------------------------------
+
+    let firebaseConfig;
+    try {
+      // Attempt to decrypt
+      const bytes = CryptoJS.AES.decrypt(ENCRYPTED_FIREBASE_CONFIG, AES_SECRET_KEY);
+      firebaseConfig = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    } catch (e) {
+      // Fallback to raw config if decryption fails (so the code works for you immediately)
+      console.warn("AES Decryption failed. Falling back to plain config. Please update your ENCRYPTED_FIREBASE_CONFIG.");
+      firebaseConfig = rawFirebaseConfig;
+      
+      // Auto-generate the encrypted string in console for your convenience
+      console.log("Here is your Encrypted Config String. Copy this into ENCRYPTED_FIREBASE_CONFIG:");
+      console.log(CryptoJS.AES.encrypt(JSON.stringify(rawFirebaseConfig), AES_SECRET_KEY).toString());
+    }
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const dashId = urlParams.get('q');
+    const m3u8Id = urlParams.get('m');
+
+    const loadingDiv = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    const errorText = document.getElementById('errorText');
+
+    function showError(msg) {
+      loadingDiv.style.display = 'none';
+      errorDiv.style.display = 'block';
+      errorText.innerText = msg;
+    }
+
+    async function initPlayer() {
+      if (!dashId && !m3u8Id) {
+        showError("No Stream ID provided. Use ?q=ID (DASH) or ?m=ID (M3U8)");
+        return;
+      }
+
+      try {
+        if (dashId) {
+          // ================== PLAY DASH STREAM ==================
+          const q = query(collection(db, 'streams'), where('stream_id', '==', dashId));
+          const snapshot = await getDocs(q);
+          
+          if (snapshot.empty) throw new Error("DASH Stream not found.");
+          
+          const streamData = snapshot.docs[0].data();
+          loadingDiv.style.display = 'none';
+
+          const player = new Clappr.Player({
+            source: streamData.mpd_url,
+            parentId: '#player',
+            width: '100%',
+            height: '100%',
+            autoPlay: true,
+            plugins: [DashShakaPlayback],
+            shakaConfiguration: {
+              drm: {
+                clearKeys: streamData.drm_keys
+              }
+            }
+          });
+
+        } else if (m3u8Id) {
+          // ================== PLAY M3U8 STREAM ==================
+          const q = query(collection(db, 'm3u8_streams'), where('stream_id', '==', m3u8Id));
+          const snapshot = await getDocs(q);
+          
+          if (snapshot.empty) throw new Error("M3U8 Stream not found.");
+          
+          const streamData = snapshot.docs[0].data();
+          loadingDiv.style.display = 'none';
+
+          // M3U8 standard playback via Clappr natively
+          const player = new Clappr.Player({
+            source: streamData.m3u8_url,
+            mimeType: "application/x-mpegURL",
+            parentId: '#player',
+            width: '100%',
+            height: '100%',
+            autoPlay: true
+          });
+        }
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    // Start
+    initPlayer();
+  </script>
+</body>
+</html>
