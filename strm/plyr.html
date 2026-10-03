@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,6 +30,25 @@
       height: 100%;
     }
 
+    /* ============ BITMOVIN BLUE THEME ============ */
+    /* Seekbar fill and marker */
+    .bmpui-ui-seekbar .bmpui-seekbar-playbackposition,
+    .bmpui-ui-seekbar .bmpui-seekbar-playbackposition-marker {
+      background-color: #60a5fa !important;
+    }
+    
+    /* Volume slider fill and marker */
+    .bmpui-ui-volumeslider .bmpui-volumeslider-playbackposition,
+    .bmpui-ui-volumeslider .bmpui-volumeslider-playbackposition-marker {
+      background-color: #60a5fa !important;
+    }
+
+    /* Huge play button hover glow */
+    .bmpui-ui-huge-playback-toggle-button:hover {
+      filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+    }
+
+    /* ============ ERROR BADGE ============ */
     .error-badge {
       position: fixed;
       top: 20px;
@@ -56,20 +75,12 @@
     }
 
     @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
+    .error-badge.show { display: block; }
 
-    .error-badge.show {
-      display: block;
-    }
-
+    /* ============ WATERMARK ============ */
     .watermark {
       position: absolute;
       bottom: 5px;
@@ -111,15 +122,8 @@
         transition: opacity 0.38s ease, transform 0.38s ease, background 0.18s ease;
         animation: unmutePulse 2.6s ease-in-out infinite;
     }
-
-    #unmuteBtn:hover {
-        background: rgba(18, 24, 48, 0.92);
-    }
-
-    #unmuteBtn:active {
-        transform: scale(0.95);
-    }
-
+    #unmuteBtn:hover { background: rgba(18, 24, 48, 0.92); }
+    #unmuteBtn:active { transform: scale(0.95); }
     #unmuteBtn.fade-out {
         opacity: 0 !important;
         transform: translateY(-10px) scale(0.84) !important;
@@ -128,23 +132,12 @@
     }
 
     @keyframes unmutePulse {
-        0%, 100% {
-            border-color: rgba(255, 255, 255, 0.13);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50);
-        }
-        50% {
-            border-color: rgba(96, 165, 250, 0.45);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50), 0 0 0 3px rgba(59, 130, 246, 0.20);
-        }
+        0%, 100% { border-color: rgba(255, 255, 255, 0.13); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50); }
+        50% { border-color: rgba(96, 165, 250, 0.45); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50), 0 0 0 3px rgba(59, 130, 246, 0.20); }
     }
 
     @media (max-width: 480px) {
-      .error-badge {
-        top: 10px;
-        padding: 10px 16px;
-        font-size: 12px;
-        border-radius: 50px;
-      }
+      .error-badge { top: 10px; padding: 10px 16px; font-size: 12px; border-radius: 50px; }
     }
   </style>
 </head>
@@ -228,9 +221,9 @@
           }));
         }
 
-        // Bitmovin Player Configuration
+        // Bitmovin Player Configuration with your assigned key
         const playerConfig = {
-          key: "54e72932-515c-4a8e-bb99-fed98b81f47c", // Replace with your actual Bitmovin License Key from dashboard
+          key: "54e72932-515c-4a8e-bb99-fed98b81f47c",
           playback: {
             autoplay: true,
             muted: true
