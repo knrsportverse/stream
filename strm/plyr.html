@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KNR SPORTVERSE - STREAM</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            background: #000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+        }
+
+        .shaka-video-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            object-fit: contain;
+        }
+
+        /* Hide Shaka default controls */
+        .shaka-spinner-container,
+        .shaka-spinner,
+        .shaka-spinner-svg { display: none !important; }
+        .shaka-controls-button-panel { display: none !important; }
+        .shaka-bottom-controls { display: none !important; }
+        .shaka-ui-menus-container { display: none !important; }
+
+        /* ═══ BUTTON SPINNER ═══ */
+        .button-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .button-spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ═══ QUALITY BUTTON ═══ */
+        #qualityBtn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            background: rgba(8, 12, 28, 0.80);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: opacity 0.3s ease, transform 0.3s ease, background 0.18s ease;
+        }
+
+        #qualityBtn.hidden {
+            display: none;
+        }
+
+        #qualityBtn:hover {
+            background: rgba(18, 24, 48, 0.92);
+        }
+
+        #qualityBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* ═══ QUALITY DROPDOWN ═══ */
+        .quality-menu {
+            position: absolute;
+            top: 60px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 0;
+            color: #f1f5f9;
+            font-size: 11px;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            width: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .quality-menu.show { display: block; }
+
+        .quality-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #cbd5e1;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .quality-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .quality-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        /* ═══ SETTINGS MENU ═══ */
+        .glass-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 0;
+            color: #f1f5f9;
+            font-size: 11px;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            transition: opacity 0.2s ease;
+            width: 160px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .glass-menu.show { display: block; }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            min-height: 32px;
+        }
+
+        .settings-header-title {
+            font-weight: 600;
+            font-size: 11px;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .settings-close-btn, .settings-back-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            font-size: 12px;
+        }
+
+        .settings-close-btn:hover, .settings-back-btn:hover {
+            color: #ffffff;
+        }
+
+        .settings-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #cbd5e1;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .settings-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .settings-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .settings-item-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .settings-item-sublabel {
+            font-size: 9px;
+            opacity: 0.6;
+        }
+
+        .settings-item-arrow {
+            margin-left: 4px;
+            opacity: 0.5;
+            font-size: 10px;
+        }
+
+        .official-link {
+            color: #3b82f6;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .official-link:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* ════ UNMUTE BUTTON ════ */
+        #unmuteBtn {
+            display: none;
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 30;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            background: rgba(8, 12, 28, 0.80);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: opacity 0.38s ease, transform 0.38s ease, background 0.18s ease;
+            animation: unmutePulse 2.6s ease-in-out infinite;
+        }
+
+        #unmuteBtn:hover {
+            background: rgba(18, 24, 48, 0.92);
+        }
+
+        #unmuteBtn:active {
+            transform: scale(0.95);
+        }
+
+        #unmuteBtn.fade-out {
+            opacity: 0 !important;
+            transform: translateY(-10px) scale(0.84) !important;
+            pointer-events: none;
+            animation: none !important;
+        }
+
+        @keyframes unmutePulse {
+            0%, 100% {
+                border-color: rgba(255, 255, 255, 0.13);
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50);
+            }
+            50% {
+                border-color: rgba(96, 165, 250, 0.45);
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50), 0 0 0 3px rgba(59, 130, 246, 0.20);
+            }
+        }
+
+        /* ════ ERROR OVERLAY ════ */
+        #errorOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+        }
+
+        #errorOverlay.show {
+            display: flex;
+        }
+
+        #errorMessage {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 12px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+        }
+
+        /* ════ UI LAYER ════ */
+        #uiLayer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        #uiLayer.hidden-controls {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .gradient-top {
+            position: absolute;
+            top: 0;
+            inset-x: 0;
+            height: 96px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+            pointer-events: none;
+        }
+
+        /* ════ CENTER PLAY/PAUSE ════ */
+        #centerPlayBtn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        #centerPlayBtn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #centerPlayBtn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        #centerPlayBtn.hidden-center {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.75);
+            pointer-events: none;
+        }
+
+        #centerPlayIcon { width: 24px; height: 24px; }
+        #centerPauseIcon { width: 24px; height: 24px; }
+        #centerLoadingSpinner { width: 20px; height: 20px; }
+
+        /* ════ BOTTOM CONTROLS ════ */
+        #bottomControls {
+            position: absolute;
+            bottom: 0;
+            inset-x: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4), transparent);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: auto;
+            z-index: 20;
+            gap: 16px;
+        }
+
+        .bottom-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bottom-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .control-button:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .control-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ════ VOLUME CONTROL ════ */
+        .volume-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #volumeSlider {
+            width: 64px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #volumeSlider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+        }
+
+        #volumeSlider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* ════ LIVE INDICATOR ════ */
+        #liveButton {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #liveButton.show {
+            display: flex;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ════ RESPONSIVE ════ */
+        @media (max-width: 480px) {
+            #qualityBtn {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 11px;
+                gap: 4px;
+            }
+
+            #unmuteBtn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 14px;
+                font-size: 11px;
+            }
+
+            #bottomControls {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            #volumeSlider {
+                width: 48px;
+            }
+
+            #centerPlayBtn {
+                width: 48px;
+                height: 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shaka-video-container" data-shaka-player>
+        <video id="videoElement" autoplay muted playsinline preload="metadata"></video>
+
+        <!-- ════ UNMUTE BUTTON ════ -->
+        <button id="unmuteBtn" onclick="handleUnmuteClick()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                 style="width:15px;height:15px;flex-shrink:0;color:#60a5fa;">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+            <span>Click to Unmute</span>
+        </button>
+
+        <!-- ════ QUALITY BUTTON ════ -->
+        <button id="qualityBtn" onclick="toggleQualityMenu()">
+            <span id="qualityText">Auto</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:12px;height:12px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+        </button>
+
+        <!-- ════ QUALITY DROPDOWN ════ -->
+        <div id="qualityMenu" class="quality-menu"></div>
+
+        <!-- ════ UI LAYER ════ -->
+        <div id="uiLayer" onmousemove="showControls()" onmouseleave="hideControls()" onclick="event.stopPropagation()">
+            <div class="gradient-top"></div>
+
+            <!-- Center play/pause button -->
+            <button id="centerPlayBtn" onclick="togglePlay(event)">
+                <svg id="centerPlayIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="centerPauseIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                <div id="centerLoadingSpinner" class="button-spinner"></div>
+            </button>
+
+            <!-- Bottom control bar -->
+            <div id="bottomControls">
+                <div class="bottom-left">
+                    <button class="control-button" onclick="togglePlay(event)">
+                        <svg id="bottomPlayIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg id="bottomPauseIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+
+                    <div class="volume-group">
+                        <button class="control-button" onclick="toggleMute()">
+                            <svg id="volumeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                            <svg id="muteIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" style="display: none;">
+                                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                            </svg>
+                        </button>
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)" />
+                    </div>
+
+                    <div id="liveButton">
+                        <div class="live-dot"></div>
+                        <span>Live</span>
+                    </div>
+                </div>
+
+                <div class="bottom-right">
+                    <button class="control-button" onclick="toggleSettings()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+
+                    <button class="control-button" onclick="togglePiP()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <rect x="3" y="4" width="18" height="16" rx="2" ry="2" />
+                            <rect x="12" y="11" width="7" height="5" rx="1" ry="1" fill="currentColor" />
+                        </svg>
+                    </button>
+
+                    <button class="control-button" id="fullscreenBtn" onclick="toggleFullscreen()">
+                        <svg id="enterFullscreenIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 4H4v4m12-4h4v4M8 20H4v-4m12 4h4v-4" />
+                        </svg>
+                        <svg id="exitFullscreenIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h4V4m12 4h-4V4M4 16h4v4m12-4h-4v4" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════ SETTINGS MENU ════ -->
+        <div id="settingsMenu" class="glass-menu">
+            <div id="settingsMain">
+                <div class="settings-header">
+                    <span class="settings-header-title">Settings</span>
+                    <button class="settings-close-btn" onclick="toggleSettings()">✕</button>
+                </div>
+                <div id="settingsMainContent"></div>
+            </div>
+
+            <div id="settingsSpeedSubmenu" style="display: none;">
+                <div class="settings-header">
+                    <button class="settings-back-btn" onclick="showSettingsMain()">←</button>
+                    <span class="settings-header-title">Playback Speed</span>
+                    <button class="settings-close-btn" onclick="toggleSettings()">✕</button>
+                </div>
+                <div id="speedOptions"></div>
+            </div>
+
+            <div id="settingsAboutSubmenu" style="display: none;">
+                <div class="settings-header">
+                    <button class="settings-back-btn" onclick="showSettingsMain()">←</button>
+                    <span class="settings-header-title">About</span>
+                    <button class="settings-close-btn" onclick="toggleSettings()">✕</button>
+                </div>
+                <div style="padding: 12px 16px; font-size: 10px; line-height: 1.5;">
+                    Official Site: <a href="https://knrsportverse.blogspot.com" target="_blank" class="official-link">KNR SPORTVERSE</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════ ERROR OVERLAY ════ -->
+        <div id="errorOverlay">
+            <div id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBII2OvFCMb2ZbtrUj_2DrhexUcU3TxSS0",
+            authDomain: "knrstream-47104.firebaseapp.com",
+            projectId: "knrstream-47104",
+            storageBucket: "knrstream-47104.firebasestorage.app",
+            messagingSenderId: "390036335226",
+            appId: "1:390036335226:web:38584b0002f224021369c3",
+            measurementId: "G-QD8RDB9CGC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ════ DOM ELEMENTS ════
+        const video = document.getElementById('videoElement');
+        const qualityBtn = document.getElementById('qualityBtn');
+        const qualityMenu = document.getElementById('qualityMenu');
+        const qualityText = document.getElementById('qualityText');
+        const unmuteBtn = document.getElementById('unmuteBtn');
+        const settingsMenu = document.getElementById('settingsMenu');
+        const errorOverlay = document.getElementById('errorOverlay');
+        const errorMessage = document.getElementById('errorMessage');
+        const liveButton = document.getElementById('liveButton');
+        const uiLayer = document.getElementById('uiLayer');
+        const centerPlayBtn = document.getElementById('centerPlayBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const muteIcon = document.getElementById('muteIcon');
+
+        // ════ PLAYER STATE ════
+        let player = null;
+        let isLiveStream = false;
+        let currentQuality = 'Auto';
+        let currentQualityIndex = -1;
+        let hasMultipleQualities = false;
+        let isPlayingVideo = false;
+        let isControlsVisible = true;
+        let uiTimeout = null;
+        let audioUnlocked = false;
+
+        const params = new URLSearchParams(window.location.search);
+        const streamId = params.get('q');
+
+        // ════ INITIALIZE APP ════
+        async function initializeApp() {
+            if (!streamId) {
+                showError('No stream ID provided');
+                return;
+            }
+
+            try {
+                const q = query(collection(db, 'streams'), where('stream_id', '==', streamId));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    showError(`Stream not found`);
+                    return;
+                }
+
+                const streamData = querySnapshot.docs[0].data();
+                const mpd_url = streamData.mpd_url;
+                const drm_keys = streamData.drm_keys;
+
+                await initializeShaka(mpd_url, drm_keys);
+                updateSettingsMenu();
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+            }
+        }
+
+        // ════ SHAKA PLAYER INIT ════
+        async function initializeShaka(mpdUrl, drmKeys) {
+            try {
+                shaka.polyfill.installAll();
+
+                if (!shaka.Player.isBrowserSupported()) {
+                    showError('Browser not supported');
+                    return;
+                }
+
+                player = new shaka.Player();
+                await player.attach(video);
+
+                const container = document.querySelector('.shaka-video-container');
+                const ui = new shaka.ui.Overlay(player, container, video);
+
+                ui.configure({
+                    controlPanelElements: []
+                });
+
+                const drmConfig = {
+                    clearKeys: drmKeys
+                };
+
+                player.configure({
+                    drm: drmConfig,
+                    streaming: {
+                        lowLatencyMode: true,
+                        bufferingGoal: 15,
+                        rebufferingGoal: 2,
+                        bufferBehind: 15,
+                        retryParameters: {
+                            timeout: 10000,
+                            maxAttempts: 5,
+                            baseDelay: 300,
+                            backoffFactor: 1.2
+                        },
+                        segmentRequestTimeout: 8000,
+                        segmentPrefetchLimit: 2,
+                        useNativeHlsOnSafari: true
+                    },
+                    manifest: {
+                        retryParameters: { timeout: 8000, maxAttempts: 3 }
+                    }
+                });
+
+                player.addEventListener('error', (event) => {
+                    console.error('Shaka Player Error:', event.detail);
+                    showError(event.detail.message || 'Failed to load stream');
+                });
+
+                await player.load(mpdUrl);
+
+                // Setup quality menu after manifest is parsed
+                if (player.getVariantTracks && player.getVariantTracks().length > 0) {
+                    updateQualityMenuFromVariants();
+                }
+
+                video.muted = true;
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => console.log("Autoplay blocked:", err));
+                }
+
+                isPlayingVideo = true;
+                showUnmuteButton();
+                updatePlayUI(false);
+
+                video.addEventListener('playing', hideCenterLoading);
+                video.addEventListener('waiting', showCenterLoading);
+                video.addEventListener('loadedmetadata', () => {
+                    if (video.duration === Infinity) {
+                        isLiveStream = true;
+                        liveButton.classList.add('show');
+                    }
+                    hideCenterLoading();
+                }, { once: true });
+
+            } catch (error) {
+                console.error('Shaka Error:', error);
+                showError(error.message);
+            }
+        }
+
+        // ════ QUALITY MANAGEMENT ════
+        function updateQualityMenuFromVariants() {
+            if (!player) return;
+
+            const variants = player.getVariantTracks();
+            qualityMenu.innerHTML = '';
+
+            // Add Auto
+            const autoItem = document.createElement('div');
+            autoItem.className = 'quality-item active';
+            autoItem.innerHTML = 'Auto';
+            autoItem.onclick = () => selectQuality(-1, 'Auto');
+            qualityMenu.appendChild(autoItem);
+
+            // Add quality levels
+            const uniqueHeights = new Set();
+            const heightMap = {};
+
+            variants.forEach((variant, idx) => {
+                if (variant.height) {
+                    uniqueHeights.add(variant.height);
+                    if (!heightMap[variant.height]) {
+                        heightMap[variant.height] = [];
+                    }
+                    heightMap[variant.height].push(idx);
+                }
+            });
+
+            const sortedHeights = Array.from(uniqueHeights).sort((a, b) => b - a);
+
+            sortedHeights.forEach(height => {
+                const label = `${height}P`;
+                const item = document.createElement('div');
+                item.className = 'quality-item';
+                item.innerHTML = label;
+                item.onclick = () => selectQualityByHeight(height, label);
+                qualityMenu.appendChild(item);
+            });
+
+            hasMultipleQualities = sortedHeights.length > 0;
+            updateQualityButtonDisplay();
+        }
+
+        function selectQuality(index, label) {
+            currentQuality = label;
+            currentQualityIndex = index;
+            qualityText.textContent = label;
+            updateQualityMenuUI();
+            qualityMenu.classList.remove('show');
+        }
+
+        function selectQualityByHeight(height, label) {
+            if (!player) return;
+            const variants = player.getVariantTracks();
+            const matchingVariants = variants.filter(v => v.height === height);
+            matchingVariants.forEach(v => {
+                player.selectVariantTrack(v);
+            });
+            selectQuality(null, label);
+        }
+
+        function updateQualityMenuUI() {
+            const items = qualityMenu.querySelectorAll('.quality-item');
+            items.forEach(item => {
+                item.classList.remove('active');
+                if (item.textContent.trim() === currentQuality) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function updateQualityButtonDisplay() {
+            if (hasMultipleQualities) {
+                qualityBtn.classList.remove('hidden');
+            } else {
+                qualityBtn.classList.add('hidden');
+            }
+        }
+
+        window.toggleQualityMenu = function() {
+            if (hasMultipleQualities) {
+                qualityMenu.classList.toggle('show');
+                resetUiTimeout();
+            }
+        };
+
+        // ════ SETTINGS MANAGEMENT ════
+        let currentSettings = { speed: 1 };
+
+        function updateSettingsMenu() {
+            const settingsMainContent = document.getElementById('settingsMainContent');
+            settingsMainContent.innerHTML = `
+                <div class="settings-item" onclick="showSettingsSubmenu('speed')">
+                    <span class="settings-item-label">Playback Speed <span class="settings-item-sublabel">${currentSettings.speed}x</span></span>
+                    <span class="settings-item-arrow">›</span>
+                </div>
+                <div class="settings-item" onclick="showSettingsSubmenu('about')">
+                    <span class="settings-item-label">About</span>
+                    <span class="settings-item-arrow">›</span>
+                </div>
+            `;
+        }
+
+        window.showSettingsSubmenu = function(submenu) {
+            document.getElementById('settingsMain').style.display = 'none';
+            switch(submenu) {
+                case 'speed':
+                    populateSpeedOptions();
+                    document.getElementById('settingsSpeedSubmenu').style.display = 'block';
+                    break;
+                case 'about':
+                    document.getElementById('settingsAboutSubmenu').style.display = 'block';
+                    break;
+            }
+        };
+
+        window.showSettingsMain = function() {
+            document.getElementById('settingsMain').style.display = 'block';
+            document.getElementById('settingsSpeedSubmenu').style.display = 'none';
+            document.getElementById('settingsAboutSubmenu').style.display = 'none';
+        };
+
+        function populateSpeedOptions() {
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+            const speedOptions = document.getElementById('speedOptions');
+            speedOptions.innerHTML = '';
+
+            speeds.forEach(speed => {
+                const isActive = currentSettings.speed === speed;
+                const item = document.createElement('div');
+                item.className = `settings-item ${isActive ? 'active' : ''}`;
+                item.textContent = `${speed}x`;
+                item.onclick = () => changeSpeed(speed);
+                speedOptions.appendChild(item);
+            });
+        }
+
+        window.changeSpeed = function(speed) {
+            currentSettings.speed = speed;
+            video.playbackRate = speed;
+            const speedOptions = document.getElementById('speedOptions');
+            const items = speedOptions.querySelectorAll('.settings-item');
+            items.forEach(item => {
+                item.classList.remove('active');
+                if (item.textContent === `${speed}x`) {
+                    item.classList.add('active');
+                }
+            });
+        };
+
+        window.toggleSettings = function() {
+            settingsMenu.classList.toggle('show');
+            resetUiTimeout();
+        };
+
+        // ════ UI CONTROLS ════
+        const centerPlayIcon = document.getElementById('centerPlayIcon');
+        const centerPauseIcon = document.getElementById('centerPauseIcon');
+        const centerLoadingSpinner = document.getElementById('centerLoadingSpinner');
+        const bottomPlayIcon = document.getElementById('bottomPlayIcon');
+        const bottomPauseIcon = document.getElementById('bottomPauseIcon');
+
+        function showCenterLoading() {
+            centerLoadingSpinner.classList.add('show');
+            centerPlayIcon.style.display = 'none';
+            centerPauseIcon.style.display = 'none';
+        }
+
+        function hideCenterLoading() {
+            centerLoadingSpinner.classList.remove('show');
+            updatePlayUI(video.paused);
+        }
+
+        window.togglePlay = function(event) {
+            if (event) event.stopPropagation();
+            if (video.paused) {
+                video.play().catch(e => console.log(`Play blocked: ${e.message}`));
+            } else {
+                video.pause();
+            }
+        };
+
+        function updatePlayUI(isPaused) {
+            if (!isPaused) {
+                centerPlayIcon.style.display = 'none';
+                centerPauseIcon.style.display = 'block';
+                bottomPlayIcon.style.display = 'none';
+                bottomPauseIcon.style.display = 'block';
+                centerPlayBtn.classList.add('hidden-center');
+                resetUiTimeout();
+            } else {
+                centerPlayIcon.style.display = 'block';
+                centerPauseIcon.style.display = 'none';
+                bottomPlayIcon.style.display = 'block';
+                bottomPauseIcon.style.display = 'none';
+                centerPlayBtn.classList.remove('hidden-center');
+                showControls();
+            }
+        }
+
+        video.addEventListener('play', () => updatePlayUI(false));
+        video.addEventListener('pause', () => updatePlayUI(true));
+
+        // ════ UNMUTE ════
+        function showUnmuteButton() {
+            unmuteBtn.style.display = 'flex';
+            unmuteBtn.classList.remove('fade-out');
+        }
+
+        function hideUnmuteButton() {
+            unmuteBtn.classList.add('fade-out');
+            setTimeout(() => {
+                unmuteBtn.style.display = 'none';
+                unmuteBtn.classList.remove('fade-out');
+            }, 420);
+        }
+
+        window.handleUnmuteClick = function() {
+            if (audioUnlocked) return;
+            video.muted = false;
+            video.volume = 1.0;
+            const promise = video.play();
+            if (promise !== undefined) {
+                promise.then(() => {
+                    audioUnlocked = true;
+                    hideUnmuteButton();
+                }).catch(err => {
+                    console.error('Play failed:', err);
+                    audioUnlocked = true;
+                    hideUnmuteButton();
+                });
+            } else {
+                audioUnlocked = true;
+                hideUnmuteButton();
+            }
+        };
+
+        // ════ VOLUME ════
+        window.changeVolume = function(val) {
+            const v = parseFloat(val);
+            video.volume = v;
+            video.muted = (v === 0);
+            updateMuteIcon();
+        };
+
+        window.toggleMute = function() {
+            if (video.muted) {
+                video.muted = false;
+                video.volume = 1.0;
+                volumeSlider.value = 1.0;
+            } else {
+                video.muted = true;
+                volumeSlider.value = 0;
+            }
+            updateMuteIcon();
+        };
+
+        function updateMuteIcon() {
+            const isMuted = video.muted || video.volume === 0;
+            if (isMuted) {
+                volumeIcon.style.display = 'none';
+                muteIcon.style.display = 'block';
+            } else {
+                volumeIcon.style.display = 'block';
+                muteIcon.style.display = 'none';
+            }
+        }
+
+        video.addEventListener('volumechange', updateMuteIcon);
+
+        // ════ PIP & FULLSCREEN ════
+        window.togglePiP = async function() {
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else if (document.pictureInPictureEnabled) {
+                    await video.requestPictureInPicture();
+                }
+            } catch (e) {
+                console.error('PiP Error:', e);
+            }
+        };
+
+        window.toggleFullscreen = async function() {
+            const container = document.querySelector('.shaka-video-container');
+            if (!document.fullscreenElement) {
+                try {
+                    await container.requestFullscreen();
+                    if (screen.orientation?.lock) {
+                        try {
+                            await screen.orientation.lock('landscape');
+                        } catch(e) {
+                            console.warn('Auto-rotation blocked');
+                        }
+                    }
+                } catch(e) {
+                    console.error('Fullscreen Error:', e);
+                }
+            } else {
+                try {
+                    await document.exitFullscreen();
+                    if (screen.orientation?.unlock) {
+                        screen.orientation.unlock();
+                    }
+                } catch(e) {
+                    console.error('Exit fullscreen Error:', e);
+                }
+            }
+        };
+
+        document.addEventListener('fullscreenchange', () => {
+            const enterIcon = document.getElementById('enterFullscreenIcon');
+            const exitIcon = document.getElementById('exitFullscreenIcon');
+
+            if (document.fullscreenElement) {
+                enterIcon.style.display = 'none';
+                exitIcon.style.display = 'block';
+            } else {
+                enterIcon.style.display = 'block';
+                exitIcon.style.display = 'none';
+            }
+        });
+
+        // ════ UI VISIBILITY ════
+        function showControls() {
+            isControlsVisible = true;
+            uiLayer.classList.remove('hidden-controls');
+            qualityBtn.style.opacity = '1';
+            qualityBtn.style.pointerEvents = 'auto';
+            resetUiTimeout();
+        }
+
+        window.showControls = showControls;
+
+        function hideControls() {
+            if (!video.paused) {
+                isControlsVisible = false;
+                uiLayer.classList.add('hidden-controls');
+                settingsMenu.classList.remove('show');
+                qualityMenu.classList.remove('show');
+            }
+        }
+
+        window.hideControls = hideControls;
+
+        function resetUiTimeout() {
+            clearTimeout(uiTimeout);
+            if (!video.paused) {
+                uiTimeout = setTimeout(hideControls, 3000);
+            }
+        }
+
+        // ════ ERROR HANDLING ════
+        function showError(message) {
+            errorMessage.textContent = `ERROR: ${message}`;
+            errorOverlay.classList.add('show');
+        }
+
+        window.showError = showError;
+
+        // ════ CLOSE MENUS ON CLICK ════
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#settingsMenu') && !e.target.closest('button[onclick="toggleSettings()"]')) {
+                settingsMenu.classList.remove('show');
+            }
+            if (!e.target.closest('#qualityMenu') && !e.target.closest('#qualityBtn')) {
+                qualityMenu.classList.remove('show');
+            }
+        });
+
+        // ════ START APP ════
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
