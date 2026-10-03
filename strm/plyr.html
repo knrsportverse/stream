@@ -6,14 +6,8 @@
   <title>KNR SPORTVERSE - STREAM</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
   
-  <!-- Shaka Player Engine (Invisible Backend for DRM) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.min.js"></script>
-  
-  <!-- Plyr Player (Beautiful, Smooth UI) -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,22 +19,26 @@
       font-family: system-ui, -apple-system, sans-serif;
     }
 
-    /* Custom Plyr Brand Color */
-    :root {
-      --plyr-color-main: #1D4ED8; 
-    }
-
-    .video-container {
+    .shaka-video-container {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
     }
 
-    /* Force Plyr to take full screen bounds */
-    .plyr {
-      height: 100%;
+    video {
       width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
+
+    .shaka-spinner-container,
+    .shaka-spinner,
+    .shaka-spinner-svg {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
     }
 
     .error-badge {
@@ -92,14 +90,18 @@
       white-space: nowrap;
     }
 
+    /* Updated Unmute Button Design */
     .unmute-btn {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      top: 20px;
+      right: 20px; /* Moved to right */
+      left: auto;
+      background: linear-gradient(45deg, #a855f7, #7e22ce, #9333ea, #a855f7);
+      background-size: 300% 300%;
+      animation: purpleGradient 3s ease infinite;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       color: #fff;
       padding: 12px 24px;
       border-radius: 50px;
@@ -108,30 +110,48 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
     }
 
     .unmute-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 10px 35px rgba(255, 255, 255, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.4);
-      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6);
+      transform: scale(1.05);
+    }
+
+    .unmute-btn:active {
+      transform: scale(0.98);
     }
 
     .unmute-btn.hidden {
       display: none;
     }
 
+    .unmute-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    @keyframes purpleGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     @media (max-width: 480px) {
       .unmute-btn {
-        top: 10px;
-        left: 10px;
+        top: 15px;
+        right: 15px;
         padding: 10px 18px;
         font-size: 13px;
         gap: 8px;
+      }
+      .unmute-btn svg {
+        width: 18px;
+        height: 18px;
       }
       .error-badge {
         top: 10px;
@@ -143,11 +163,14 @@
 </head>
 
 <body>
-  <div class="video-container">
-    <video id="videoPlayer" autoplay playsinline></video>
+  <div class="shaka-video-container" data-shaka-player>
+    <video autoplay muted playsinline preload="metadata" poster=""></video>
     
+    <!-- Button updated with SVG inline -->
     <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
-      <i class="fas fa-volume-mute"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM17.78 9.22a.75.75 0 1 0-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L20.56 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72z" />
+      </svg>
       <span>Click to Unmute</span>
     </button>
     
@@ -200,51 +223,67 @@
         const drm_keys = streamData.drm_keys;
 
         shaka.polyfill.installAll();
+
         if (!shaka.Player.isBrowserSupported()) {
           showError('Browser not supported');
           return;
         }
 
-        const video = document.getElementById('videoPlayer');
-        
-        // 1. Initialize Shaka Engine (Invisible DRM handler)
-        const shakaEngine = new shaka.Player();
-        await shakaEngine.attach(video);
-        
-        shakaEngine.configure({
-          drm: { clearKeys: drm_keys },
+        const video = document.querySelector('video');
+        const player = new shaka.Player();
+        await player.attach(video);
+
+        const container = document.querySelector('.shaka-video-container');
+        const ui = new shaka.ui.Overlay(player, container, video);
+
+        ui.configure({
+          controlPanelElements: [
+            'time_and_duration',
+            'spacer',
+            'mute',
+            'language',
+            'captions',
+            'picture_in_picture',
+            'quality',
+            'fullscreen'
+          ]
+        });
+
+        const drmConfig = {
+          clearKeys: drm_keys
+        };
+
+        player.configure({
+          drm: drmConfig,
           streaming: {
             lowLatencyMode: true,
             bufferingGoal: 15,
             rebufferingGoal: 2,
-            bufferBehind: 15
+            bufferBehind: 15,
+            retryParameters: { timeout: 10000, maxAttempts: 5, baseDelay: 300, backoffFactor: 1.2 },
+            segmentRequestTimeout: 8000,
+            segmentPrefetchLimit: 2,
+            useNativeHlsOnSafari: true
+          },
+          manifest: {
+            retryParameters: { timeout: 8000, maxAttempts: 3 }
           }
         });
 
-        shakaEngine.addEventListener('error', (event) => {
-          console.error('Playback Error:', event.detail);
-          showError(event.detail.message || 'Stream failed to load');
+        player.addEventListener('error', (event) => {
+          console.error('Shaka Player Error:', event.detail);
+          showError(event.detail.message || 'Failed to load stream');
         });
 
-        // Load the manifest into the engine
-        await shakaEngine.load(mpd_url);
+        await player.load(mpd_url);
 
-        // 2. Wrap the video with Plyr (Beautiful UI layer)
-        const plyrPlayer = new Plyr(video, {
-          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
-          autoplay: true,
-          muted: true // Start muted to allow autoplay
-        });
+        video.muted = true;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => console.log("Autoplay blocked:", err));
+        }
 
-        // 3. Handle Custom Unmute Button
-        unmuteBtn.addEventListener('click', () => {
-          if (!firstUnmuteOccurred) {
-            plyrPlayer.muted = false;
-            plyrPlayer.volume = 1;
-            firstUnmuteOccurred = true;
-            unmuteBtn.classList.add('hidden');
-          }
-        });
+        unmuteBtn.addEventListener('click', handleUnmute);
 
       } catch (error) {
         console.error('Error:', error);
@@ -252,11 +291,26 @@
       }
     }
 
+    function handleUnmute() {
+      if (!firstUnmuteOccurred) {
+        const video = document.querySelector('video');
+        video.muted = false;
+        video.volume = 1;
+        firstUnmuteOccurred = true;
+        unmuteBtn.classList.add('hidden');
+      }
+    }
+
     function showError(message) {
-      if (errorTimeout) clearTimeout(errorTimeout);
+      if (errorTimeout) {
+        clearTimeout(errorTimeout);
+      }
       errorBadge.textContent = `KNR SPORTVERSE: ${message}`;
       errorBadge.classList.add('show');
-      errorTimeout = setTimeout(() => { errorBadge.classList.remove('show'); }, 3000);
+      
+      errorTimeout = setTimeout(() => {
+        errorBadge.classList.remove('show');
+      }, 3000);
     }
 
     document.addEventListener('DOMContentLoaded', loadStream);
