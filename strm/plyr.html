@@ -14,6 +14,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      /* Shaka Player Global Color Override */
+      --shaka-color-primary: #60a5fa; /* Match unmute blue */
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       background: #000;
@@ -71,14 +76,8 @@
     }
 
     @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
     .error-badge.show {
@@ -100,9 +99,72 @@
       white-space: nowrap;
     }
 
+    /* ============ MODERN SHAKA UI OVERRIDES ============ */
+    
+    /* Remove default ugly gradients */
+    .shaka-controls-container {
+        background: transparent !important;
+    }
+    
+    /* Floating, Glassmorphic Control Bar */
+    .shaka-bottom-controls {
+      width: calc(100% - 32px) !important;
+      margin: 0 auto 16px auto !important;
+      padding: 12px 18px !important;
+      border-radius: 16px !important;
+      background: rgba(8, 12, 28, 0.70) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+      transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    /* Button Hover Effects (Glowing Blue) */
+    .shaka-controls-button-panel button:hover {
+      color: #60a5fa !important;
+      filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.5)) !important;
+      transform: scale(1.05) !important;
+    }
+    .shaka-controls-button-panel button {
+      transition: all 0.2s ease !important;
+    }
+
+    /* Modernize Giant Play Button (Center) */
+    .shaka-play-button {
+      background: rgba(8, 12, 28, 0.70) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+      color: #60a5fa !important;
+      border-radius: 50% !important;
+      padding: 18px !important;
+      transition: all 0.3s ease !important;
+    }
+    .shaka-play-button:hover {
+      background: rgba(18, 24, 48, 0.9) !important;
+      transform: scale(1.1) !important;
+      border-color: rgba(96, 165, 250, 0.45) !important;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    /* Smoother menus */
+    .shaka-settings-menu {
+      border-radius: 12px !important;
+      background: rgba(8, 12, 28, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7) !important;
+    }
+    .shaka-settings-menu button:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+
     /* ============ UNMUTE BUTTON ============ */
     #unmuteBtn {
-        display: flex; /* Changed from none to flex to render properly */
+        display: flex;
         position: absolute;
         top: 16px;
         left: 16px;
@@ -159,6 +221,11 @@
         padding: 10px 16px;
         font-size: 12px;
         border-radius: 50px;
+      }
+      .shaka-bottom-controls {
+        width: calc(100% - 16px) !important;
+        padding: 8px 12px !important;
+        border-radius: 12px !important;
       }
     }
   </style>
