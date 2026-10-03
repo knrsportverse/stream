@@ -6,11 +6,11 @@
   <title>KNR SPORTVERSE - STREAM</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
   
-  <!-- Bitmovin Player V8 CDN -->
+  <!-- Bitmovin Player V8 & UI CSS/JS -->
   <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css">
   
-  <!-- Plus Jakarta Sans font for the Unmute Button -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
 
   <style>
@@ -214,20 +214,24 @@
         const mpd_url = streamData.mpd_url;
         const drm_keys = streamData.drm_keys;
 
-        // Convert key-value object to Bitmovin ClearKey DRM format if required
+        // Bitmovin ClearKey DRM requires array of objects: [{ kid: '...', key: '...' }]
         let clearkeyConfig = [];
         if (Array.isArray(drm_keys)) {
-          clearkeyConfig = drm_keys;
+          clearkeyConfig = drm_keys.map(item => ({
+            kid: item.kid || item.keyId,
+            key: item.key
+          }));
         } else if (typeof drm_keys === 'object' && drm_keys !== null) {
           clearkeyConfig = Object.keys(drm_keys).map(kid => ({
-            keyId: kid,
+            kid: kid,
             key: drm_keys[kid]
           }));
         }
 
         // Bitmovin Player Configuration
         const playerConfig = {
-          key: "54e72932-515c-4a8e-bb99-fed98b81f47c",
+          key: "54e72932-515c-4a8e-bb99-fed98b81f47c", // Replace with your actual Bitmovin License Key from dashboard
+          playback: {
             autoplay: true,
             muted: true
           },
@@ -254,6 +258,7 @@
         };
 
         await bitmovinPlayer.load(sourceConfig);
+        bitmovinPlayer.play();
 
         unmuteBtn.addEventListener('click', handleUnmute);
 
