@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KNR SPORTVERSE - STREAM</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
+  
+  <!-- Bitmovin Player V8 & UI CSS/JS -->
+  <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+  <link rel="stylesheet" href="https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    #player-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ============ BITMOVIN BLUE THEME ============ */
+    /* Seekbar fill and marker */
+    .bmpui-ui-seekbar .bmpui-seekbar-playbackposition,
+    .bmpui-ui-seekbar .bmpui-seekbar-playbackposition-marker {
+      background-color: #60a5fa !important;
+    }
+    
+    /* Volume slider fill and marker */
+    .bmpui-ui-volumeslider .bmpui-volumeslider-playbackposition,
+    .bmpui-ui-volumeslider .bmpui-volumeslider-playbackposition-marker {
+      background-color: #60a5fa !important;
+    }
+
+    /* Huge play button hover glow */
+    .bmpui-ui-huge-playback-toggle-button:hover {
+      filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+    }
+
+    /* ============ ERROR BADGE ============ */
+    .error-badge {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.95);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 500;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+      display: none;
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    .error-badge.show { display: block; }
+
+    /* ============ WATERMARK ============ */
+    .watermark {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      z-index: 1000;
+      pointer-events: none;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+    }
+
+    /* ============ UNMUTE BUTTON ============ */
+    #unmuteBtn {
+        display: flex;
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 30;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        border-radius: 9999px;
+        background: rgba(8, 12, 28, 0.80);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: opacity 0.38s ease, transform 0.38s ease, background 0.18s ease;
+        animation: unmutePulse 2.6s ease-in-out infinite;
+    }
+    #unmuteBtn:hover { background: rgba(18, 24, 48, 0.92); }
+    #unmuteBtn:active { transform: scale(0.95); }
+    #unmuteBtn.fade-out {
+        opacity: 0 !important;
+        transform: translateY(-10px) scale(0.84) !important;
+        pointer-events: none;
+        animation: none !important;
+    }
+
+    @keyframes unmutePulse {
+        0%, 100% { border-color: rgba(255, 255, 255, 0.13); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50); }
+        50% { border-color: rgba(96, 165, 250, 0.45); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.50), 0 0 0 3px rgba(59, 130, 246, 0.20); }
+    }
+
+    @media (max-width: 480px) {
+      .error-badge { top: 10px; padding: 10px 16px; font-size: 12px; border-radius: 50px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="player-container"></div>
+  
+  <!-- ═══ UNMUTE BUTTON ═══ -->
+  <button id="unmuteBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+           style="width:15px;height:15px;flex-shrink:0;color:#60a5fa;">
+          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2
+                   1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86
+                   5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25
+                   1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12
+                   4L9.91 6.09 12 8.18V4z"/>
+      </svg>
+      <span>Click to Unmute</span>
+  </button>
+  
+  <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
+  
+  <div class="error-badge" id="errorBadge"></div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBII2OvFCMb2ZbtrUj_2DrhexUcU3TxSS0",
+      authDomain: "knrstream-47104.firebaseapp.com",
+      projectId: "knrstream-47104",
+      storageBucket: "knrstream-47104.firebasestorage.app",
+      messagingSenderId: "390036335226",
+      appId: "1:390036335226:web:38584b0002f224021369c3",
+      measurementId: "G-QD8RDB9CGC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const errorBadge = document.getElementById('errorBadge');
+    const unmuteBtn = document.getElementById('unmuteBtn');
+    let bitmovinPlayer = null;
+    let firstUnmuteOccurred = false;
+    let errorTimeout = null;
+
+    const params = new URLSearchParams(window.location.search);
+    const streamId = params.get('q');
+
+    if (!streamId) {
+      showError('No stream ID provided. Use ?q=stream_id');
+      throw new Error('No stream ID');
+    }
+
+    async function loadStream() {
+      try {
+        const q = query(collection(db, 'streams'), where('stream_id', '==', streamId));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          showError(`Stream "${streamId}" not found`);
+          return;
+        }
+
+        const streamData = querySnapshot.docs[0].data();
+        const mpd_url = streamData.mpd_url;
+        const drm_keys = streamData.drm_keys;
+
+        // Bitmovin ClearKey DRM requires array of objects: [{ kid: '...', key: '...' }]
+        let clearkeyConfig = [];
+        if (Array.isArray(drm_keys)) {
+          clearkeyConfig = drm_keys.map(item => ({
+            kid: item.kid || item.keyId,
+            key: item.key
+          }));
+        } else if (typeof drm_keys === 'object' && drm_keys !== null) {
+          clearkeyConfig = Object.keys(drm_keys).map(kid => ({
+            kid: kid,
+            key: drm_keys[kid]
+          }));
+        }
+
+        // Bitmovin Player Configuration with your assigned key
+        const playerConfig = {
+          key: "54e72932-515c-4a8e-bb99-fed98b81f47c",
+          playback: {
+            autoplay: true,
+            muted: true
+          },
+          tweaks: {
+            max_buffer_level: 15
+          }
+        };
+
+        const container = document.getElementById('player-container');
+        bitmovinPlayer = new bitmovin.player.Player(container, playerConfig);
+
+        // Register error listener
+        bitmovinPlayer.on(bitmovin.player.PlayerEvent.Error, (event) => {
+          console.error('Bitmovin Player Error:', event);
+          showError(event.message || 'Failed to load stream');
+        });
+
+        // Source Configuration
+        const sourceConfig = {
+          dash: mpd_url,
+          drm: {
+            clearkey: clearkeyConfig
+          }
+        };
+
+        await bitmovinPlayer.load(sourceConfig);
+        bitmovinPlayer.play();
+
+        unmuteBtn.addEventListener('click', handleUnmute);
+
+      } catch (error) {
+        console.error('Error:', error);
+        showError(error.message);
+      }
+    }
+
+    function handleUnmute() {
+      if (!firstUnmuteOccurred && bitmovinPlayer) {
+        bitmovinPlayer.unmute();
+        bitmovinPlayer.setVolume(100);
+        firstUnmuteOccurred = true;
+        unmuteBtn.classList.add('fade-out');
+      }
+    }
+
+    function showError(message) {
+      if (errorTimeout) {
+        clearTimeout(errorTimeout);
+      }
+      
+      errorBadge.textContent = `KNR SPORTVERSE: ${message}`;
+      errorBadge.classList.add('show');
+      
+      errorTimeout = setTimeout(() => {
+        errorBadge.classList.remove('show');
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadStream);
+  </script>
+</body>
+</html>
