@@ -6,8 +6,8 @@
   <title>KNR SPORTVERSE - STREAM</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
   
-  <!-- Bitmovin Player -->
-  <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+  <!-- Dash.js Player (Free & Open Source) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.4/dash.all.min.js" crossorigin="anonymous"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
 
@@ -21,12 +21,18 @@
       font-family: system-ui, -apple-system, sans-serif;
     }
 
-    #player-container {
+    .video-container {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
       background: #000;
+      object-fit: contain;
     }
 
     .error-badge {
@@ -140,16 +146,18 @@
 </head>
 
 <body>
-  <div id="player-container"></div>
-  
-  <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
-    <i class="fas fa-volume-mute"></i>
-    <span>Click to Unmute</span>
-  </button>
-  
-  <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
-  
-  <div class="error-badge" id="errorBadge"></div>
+  <div class="video-container">
+    <video id="videoPlayer" controls autoplay muted playsinline></video>
+    
+    <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
+      <i class="fas fa-volume-mute"></i>
+      <span>Click to Unmute</span>
+    </button>
+    
+    <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
+    
+    <div class="error-badge" id="errorBadge"></div>
+  </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -172,7 +180,6 @@
     const unmuteBtn = document.getElementById('unmuteBtn');
     let firstUnmuteOccurred = false;
     let errorTimeout = null;
-    let playerInstance = null;
 
     const params = new URLSearchParams(window.location.search);
     const streamId = params.get('q');
@@ -194,61 +201,60 @@
 
         const streamData = querySnapshot.docs[0].data();
         const mpd_url = streamData.mpd_url;
-        const drm_keys = streamData.drm_keys; // Assumed object: { 'kid': 'key' }
+        const drm_keys = streamData.drm_keys; 
 
-        // Convert DRM keys to Bitmovin format
-        const bitmovinClearKeys = [];
-        if (drm_keys) {
-          for (const [kid, key] of Object.entries(drm_keys)) {
-            bitmovinClearKeys.push({ kid: kid, key: key });
-          }
-        }
-
-        const container = document.getElementById('player-container');
+        const video = document.getElementById('videoPlayer');
         
-        // Bitmovin Player Configuration
-        const config = {
-          key: 'YOUR_BITMOVIN_LICENSE_KEY', // <-- REPLACE WITH YOUR BITMOVIN KEY
-          playback: {
-            autoplay: true,
-            muted: true
-          },
-          tweaks: {
-            max_buffer_level: 15,
-            startup_threshold: 2
-          }
-        };
-
-        playerInstance = new bitmovin.player.Player(container, config);
-
-        playerInstance.on(bitmovin.player.PlayerEvent.Error, (event) => {
-          console.error('Bitmovin Player Error:', event);
-          showError(event.message || 'Failed to load stream');
+        // Initialize Dash.js player
+        const player = dashjs.MediaPlayer().create();
+        
+        // Configure standard latency and buffering rules
+        player.updateSettings({
+            streaming: {
+                lowLatencyEnabled: true,
+                buffer: {
+                    bufferTimeAtTopQuality: 15,
+                    bufferTimeAtTopQualityLongForm: 15
+                }
+            }
         });
 
-        // Source Configuration
-        const sourceConfig = {
-          dash: mpd_url,
-          drm: {
-            clearkey: bitmovinClearKeys
-          }
-        };
+        // Initialize before setting DRM
+        player.initialize(video, mpd_url, true);
 
-        await playerInstance.load(sourceConfig);
-        unmuteBtn.addEventListener('click', handleUnmute);
+        // Map DRM configuration
+        if (drm_keys && Object.keys(drm_keys).length > 0) {
+          const protData = {
+            "org.w3.clearkey": {
+              "clearkeys": drm_keys // Pass the raw object containing {kid: key} directly
+            }
+          };
+          player.setProtectionData(protData);
+        }
+
+        // Handle native Dash.js errors
+        player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
+            console.error('Dash.js Error:', e);
+            if (e.error === 'download') {
+                showError('Network error while loading stream.');
+            } else {
+                showError('Failed to load stream');
+            }
+        });
+
+        // Setup the custom UI unmute button
+        unmuteBtn.addEventListener('click', () => {
+          if (!firstUnmuteOccurred) {
+            video.muted = false;
+            video.volume = 1;
+            firstUnmuteOccurred = true;
+            unmuteBtn.classList.add('hidden');
+          }
+        });
 
       } catch (error) {
         console.error('Error:', error);
         showError(error.message);
-      }
-    }
-
-    function handleUnmute() {
-      if (!firstUnmuteOccurred && playerInstance) {
-        playerInstance.unmute();
-        playerInstance.setVolume(100);
-        firstUnmuteOccurred = true;
-        unmuteBtn.classList.add('hidden');
       }
     }
 
