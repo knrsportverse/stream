@@ -6,19 +6,14 @@
   <title>KNR SPORTVERSE - STREAM</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+  <!-- Dash.js CDN Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.4/dash.all.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
   
   <!-- Added Plus Jakarta Sans font for the Unmute Button -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      /* Shaka Player Global Color Override */
-      --shaka-color-primary: #60a5fa; /* Match unmute blue */
-    }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       background: #000;
@@ -28,7 +23,7 @@
       font-family: system-ui, -apple-system, sans-serif;
     }
 
-    .shaka-video-container {
+    .dash-video-container {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -40,14 +35,6 @@
       height: 100%;
       background: #000;
       object-fit: contain;
-    }
-
-    .shaka-spinner-container,
-    .shaka-spinner,
-    .shaka-spinner-svg {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
     }
 
     .error-badge {
@@ -76,8 +63,14 @@
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
 
     .error-badge.show {
@@ -98,69 +91,6 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
       white-space: nowrap;
     }
-
-    /* ============ MODERN SHAKA UI OVERRIDES ============ */
-    
-    /* Remove default ugly gradients */
-    .shaka-controls-container {
-        background: transparent !important;
-    }
-    
-    /* Floating, Glassmorphic Control Bar */
-    .shaka-bottom-controls {
-      width: calc(100% - 32px) !important;
-      margin: 0 auto 16px auto !important;
-      padding: 12px 18px !important;
-      border-radius: 16px !important;
-      background: rgba(8, 12, 28, 0.70) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-      transition: opacity 0.3s ease, transform 0.3s ease !important;
-    }
-
-    /* Button Hover Effects (Glowing Blue) */
-    .shaka-controls-button-panel button:hover {
-      color: #60a5fa !important;
-      filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.5)) !important;
-      transform: scale(1.05) !important;
-    }
-    .shaka-controls-button-panel button {
-      transition: all 0.2s ease !important;
-    }
-
-    /* Modernize Giant Play Button (Center) */
-    .shaka-play-button {
-      background: rgba(8, 12, 28, 0.70) !important;
-      backdrop-filter: blur(12px) !important;
-      -webkit-backdrop-filter: blur(12px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-      color: #60a5fa !important;
-      border-radius: 50% !important;
-      padding: 18px !important;
-      transition: all 0.3s ease !important;
-    }
-    .shaka-play-button:hover {
-      background: rgba(18, 24, 48, 0.9) !important;
-      transform: scale(1.1) !important;
-      border-color: rgba(96, 165, 250, 0.45) !important;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
-    }
-
-    /* Smoother menus */
-    .shaka-settings-menu {
-      border-radius: 12px !important;
-      background: rgba(8, 12, 28, 0.85) !important;
-      backdrop-filter: blur(16px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7) !important;
-    }
-    .shaka-settings-menu button:hover {
-      background: rgba(255, 255, 255, 0.1) !important;
-    }
-
 
     /* ============ UNMUTE BUTTON ============ */
     #unmuteBtn {
@@ -222,18 +152,13 @@
         font-size: 12px;
         border-radius: 50px;
       }
-      .shaka-bottom-controls {
-        width: calc(100% - 16px) !important;
-        padding: 8px 12px !important;
-        border-radius: 12px !important;
-      }
     }
   </style>
 </head>
 
 <body>
-  <div class="shaka-video-container" data-shaka-player>
-    <video autoplay muted playsinline preload="metadata" poster=""></video>
+  <div class="dash-video-container">
+    <video id="videoPlayer" autoplay muted playsinline preload="metadata"></video>
     
     <!-- ═══ UNMUTE BUTTON ═══ -->
     <button id="unmuteBtn">
@@ -295,67 +220,49 @@
 
         const streamData = querySnapshot.docs[0].data();
         const mpd_url = streamData.mpd_url;
-        const drm_keys = streamData.drm_keys;
+        const drm_keys = streamData.drm_keys; // e.g., { keyId: "...", key: "..." } format from Firebase
 
-        shaka.polyfill.installAll();
+        const video = document.getElementById('videoPlayer');
+        const player = dashjs.MediaPlayer().create();
 
-        if (!shaka.Player.isBrowserSupported()) {
-          showError('Browser not supported');
-          return;
-        }
-
-        const video = document.querySelector('video');
-        const player = new shaka.Player();
-        await player.attach(video);
-
-        const container = document.querySelector('.shaka-video-container');
-        const ui = new shaka.ui.Overlay(player, container, video);
-
-        ui.configure({
-          controlPanelElements: [
-            'time_and_duration',
-            'spacer',
-            'mute',
-            'language',
-            'captions',
-            'picture_in_picture',
-            'quality',
-            'fullscreen'
-          ]
-        });
-
-        const drmConfig = {
-          clearKeys: drm_keys
-        };
-
-        player.configure({
-          drm: drmConfig,
+        // Configure Dash.js settings for live/low-latency optimization
+        player.updateSettings({
           streaming: {
-            lowLatencyMode: true,
-            bufferingGoal: 15,
-            rebufferingGoal: 2,
-            bufferBehind: 15,
-            retryParameters: {
-              timeout: 10000,
-              maxAttempts: 5,
-              baseDelay: 300,
-              backoffFactor: 1.2
+            lowLatencyEnabled: true,
+            delay: {
+              liveDelay: 3
             },
-            segmentRequestTimeout: 8000,
-            segmentPrefetchLimit: 2,
-            useNativeHlsOnSafari: true
-          },
-          manifest: {
-            retryParameters: { timeout: 8000, maxAttempts: 3 }
+            buffer: {
+              stableBufferTime: 12,
+              bufferTimeAtTopQuality: 15
+            }
           }
         });
 
-        player.addEventListener('error', (event) => {
-          console.error('Shaka Player Error:', event.detail);
-          showError(event.detail.message || 'Failed to load stream');
+        // Set up ClearKey DRM protection if drm_keys are provided
+        if (drm_keys) {
+          // Format keys for dashjs if stored as key/value pairs
+          let clearkeys = {};
+          if (typeof drm_keys === 'object' && !Array.isArray(drm_keys)) {
+            // If it maps keyId -> key
+            for (let kid in drm_keys) {
+              clearkeys[kid] = drm_keys[kid];
+            }
+          }
+          
+          player.setProtectedContentConfiguration({
+            clearkey: clearkeys
+          });
+        }
+
+        // Error handling listener
+        player.on(dashjs.MediaPlayer.events.ERROR, (event) => {
+          console.error('Dash.js Error:', event);
+          showError(event.error ? event.error.message : 'Failed to load stream');
         });
 
-        await player.load(mpd_url);
+        // Initialize player with the video element and manifest source
+        player.initialize(video, mpd_url, true);
 
         video.muted = true;
         const playPromise = video.play();
@@ -373,11 +280,11 @@
 
     function handleUnmute() {
       if (!firstUnmuteOccurred) {
-        const video = document.querySelector('video');
+        const video = document.getElementById('videoPlayer');
         video.muted = false;
         video.volume = 1;
         firstUnmuteOccurred = true;
-        unmuteBtn.classList.add('fade-out'); // Uses the custom animation class to disappear
+        unmuteBtn.classList.add('fade-out');
       }
     }
 
