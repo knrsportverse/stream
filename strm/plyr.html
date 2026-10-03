@@ -6,9 +6,13 @@
   <title>KNR SPORTVERSE - STREAM</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231D4ED8'/><stop offset='100%' stop-color='%2360A5FA'/></linearGradient></defs><rect x='4' y='4' width='52' height='52' rx='12' fill='url(%23grad)' stroke='white' stroke-width='1.5'/><text x='30' y='38' text-anchor='middle' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='white'>KNR</text></svg>">
   
-  <!-- Dash.js Player (Free & Open Source) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.4/dash.all.min.js" crossorigin="anonymous"></script>
+  <!-- Shaka Player Engine (Invisible Backend for DRM) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.min.js"></script>
   
+  <!-- Plyr Player (Beautiful, Smooth UI) -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
@@ -21,6 +25,11 @@
       font-family: system-ui, -apple-system, sans-serif;
     }
 
+    /* Custom Plyr Brand Color */
+    :root {
+      --plyr-color-main: #1D4ED8; 
+    }
+
     .video-container {
       position: absolute;
       inset: 0;
@@ -28,11 +37,10 @@
       height: 100%;
     }
 
-    video {
-      width: 100%;
+    /* Force Plyr to take full screen bounds */
+    .plyr {
       height: 100%;
-      background: #000;
-      object-fit: contain;
+      width: 100%;
     }
 
     .error-badge {
@@ -113,16 +121,8 @@
       transform: translateY(-2px);
     }
 
-    .unmute-btn:active {
-      transform: translateY(0);
-    }
-
     .unmute-btn.hidden {
       display: none;
-    }
-
-    .unmute-btn i {
-      font-size: 16px;
     }
 
     @media (max-width: 480px) {
@@ -132,14 +132,11 @@
         padding: 10px 18px;
         font-size: 13px;
         gap: 8px;
-        border-radius: 50px;
       }
-      .unmute-btn i { font-size: 14px; }
       .error-badge {
         top: 10px;
         padding: 10px 16px;
         font-size: 12px;
-        border-radius: 50px;
       }
     }
   </style>
@@ -147,7 +144,7 @@
 
 <body>
   <div class="video-container">
-    <video id="videoPlayer" controls autoplay muted playsinline></video>
+    <video id="videoPlayer" autoplay playsinline></video>
     
     <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
       <i class="fas fa-volume-mute"></i>
@@ -155,7 +152,6 @@
     </button>
     
     <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
-    
     <div class="error-badge" id="errorBadge"></div>
   </div>
 
@@ -201,52 +197,50 @@
 
         const streamData = querySnapshot.docs[0].data();
         const mpd_url = streamData.mpd_url;
-        const drm_keys = streamData.drm_keys; 
+        const drm_keys = streamData.drm_keys;
+
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          showError('Browser not supported');
+          return;
+        }
 
         const video = document.getElementById('videoPlayer');
         
-        // Initialize Dash.js player
-        const player = dashjs.MediaPlayer().create();
+        // 1. Initialize Shaka Engine (Invisible DRM handler)
+        const shakaEngine = new shaka.Player();
+        await shakaEngine.attach(video);
         
-        // Configure standard latency and buffering rules
-        player.updateSettings({
-            streaming: {
-                lowLatencyEnabled: true,
-                buffer: {
-                    bufferTimeAtTopQuality: 15,
-                    bufferTimeAtTopQualityLongForm: 15
-                }
-            }
+        shakaEngine.configure({
+          drm: { clearKeys: drm_keys },
+          streaming: {
+            lowLatencyMode: true,
+            bufferingGoal: 15,
+            rebufferingGoal: 2,
+            bufferBehind: 15
+          }
         });
 
-        // Initialize before setting DRM
-        player.initialize(video, mpd_url, true);
-
-        // Map DRM configuration
-        if (drm_keys && Object.keys(drm_keys).length > 0) {
-          const protData = {
-            "org.w3.clearkey": {
-              "clearkeys": drm_keys // Pass the raw object containing {kid: key} directly
-            }
-          };
-          player.setProtectionData(protData);
-        }
-
-        // Handle native Dash.js errors
-        player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
-            console.error('Dash.js Error:', e);
-            if (e.error === 'download') {
-                showError('Network error while loading stream.');
-            } else {
-                showError('Failed to load stream');
-            }
+        shakaEngine.addEventListener('error', (event) => {
+          console.error('Playback Error:', event.detail);
+          showError(event.detail.message || 'Stream failed to load');
         });
 
-        // Setup the custom UI unmute button
+        // Load the manifest into the engine
+        await shakaEngine.load(mpd_url);
+
+        // 2. Wrap the video with Plyr (Beautiful UI layer)
+        const plyrPlayer = new Plyr(video, {
+          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+          autoplay: true,
+          muted: true // Start muted to allow autoplay
+        });
+
+        // 3. Handle Custom Unmute Button
         unmuteBtn.addEventListener('click', () => {
           if (!firstUnmuteOccurred) {
-            video.muted = false;
-            video.volume = 1;
+            plyrPlayer.muted = false;
+            plyrPlayer.volume = 1;
             firstUnmuteOccurred = true;
             unmuteBtn.classList.add('hidden');
           }
@@ -259,16 +253,10 @@
     }
 
     function showError(message) {
-      if (errorTimeout) {
-        clearTimeout(errorTimeout);
-      }
-      
+      if (errorTimeout) clearTimeout(errorTimeout);
       errorBadge.textContent = `KNR SPORTVERSE: ${message}`;
       errorBadge.classList.add('show');
-      
-      errorTimeout = setTimeout(() => {
-        errorBadge.classList.remove('show');
-      }, 3000);
+      errorTimeout = setTimeout(() => { errorBadge.classList.remove('show'); }, 3000);
     }
 
     document.addEventListener('DOMContentLoaded', loadStream);
