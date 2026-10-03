@@ -8,6 +8,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -67,8 +68,14 @@
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
 
     .error-badge.show {
@@ -90,18 +97,14 @@
       white-space: nowrap;
     }
 
-    /* Updated Unmute Button Design */
     .unmute-btn {
       position: absolute;
-      top: 20px;
-      right: 20px; /* Moved to right */
-      left: auto;
-      background: linear-gradient(45deg, #a855f7, #7e22ce, #9333ea, #a855f7);
-      background-size: 300% 300%;
-      animation: purpleGradient 3s ease infinite;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      top: 15px;
+      left: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       color: #fff;
       padding: 12px 24px;
       border-radius: 50px;
@@ -110,55 +113,58 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
-    }
+      transition: all 0.3s ease;
+      box-shadow:
+   0 8px 32px rgba(255, 255, 255, 0.15),
+   inset 0 1px 1px rgba(255, 255, 255, 0.3);
+   }
 
-    .unmute-btn:hover {
-      box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6);
-      transform: scale(1.05);
+   .unmute-btn:hover {
+     background: rgba(255, 255, 255, 0.3);
+     border-color: rgba(255, 255, 255, 0.6);
+     box-shadow:
+   0 10px 35px rgba(255, 255, 255, 0.2),
+   inset 0 1px 2px rgba(255, 255, 255, 0.4);
+     transform: translateY(-2px);
     }
 
     .unmute-btn:active {
-      transform: scale(0.98);
+     transform: translateY(0);
     }
 
     .unmute-btn.hidden {
-      display: none;
+     display: none;
     }
 
-    .unmute-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
+   .unmute-btn svg {
+    width: 16px;
+    height: 16px;
+   }
 
-    @keyframes purpleGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+@media (max-width: 480px) {
+  .unmute-btn {
+    top: 10px;
+    left: 10px;
+    padding: 10px 18px;
+    font-size: 13px;
+    gap: 8px;
+    border-radius: 50px;
+  }
 
-    @media (max-width: 480px) {
-      .unmute-btn {
-        top: 15px;
-        right: 15px;
-        padding: 10px 18px;
-        font-size: 13px;
-        gap: 8px;
-      }
-      .unmute-btn svg {
-        width: 18px;
-        height: 18px;
-      }
-      .error-badge {
-        top: 10px;
-        padding: 10px 16px;
-        font-size: 12px;
-      }
-    }
+  .unmute-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .error-badge {
+    top: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    border-radius: 50px;
+  }
+}
   </style>
 </head>
 
@@ -166,15 +172,15 @@
   <div class="shaka-video-container" data-shaka-player>
     <video autoplay muted playsinline preload="metadata" poster=""></video>
     
-    <!-- Button updated with SVG inline -->
     <button class="unmute-btn" id="unmuteBtn" title="Click to Unmute">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM17.78 9.22a.75.75 0 1 0-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L20.56 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72z" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.59 3L14 9.41 15.41 8 18 10.59 20.59 8 22 9.41 19.41 12 22 14.59 20.59 16 18 13.41 15.41 16 14 14.59 16.59 12z"/>
       </svg>
       <span>Click to Unmute</span>
     </button>
     
     <div class="watermark">WEBSITE: KNR SPORTVERSE</div>
+    
     <div class="error-badge" id="errorBadge"></div>
   </div>
 
@@ -260,7 +266,12 @@
             bufferingGoal: 15,
             rebufferingGoal: 2,
             bufferBehind: 15,
-            retryParameters: { timeout: 10000, maxAttempts: 5, baseDelay: 300, backoffFactor: 1.2 },
+            retryParameters: {
+              timeout: 10000,
+              maxAttempts: 5,
+              baseDelay: 300,
+              backoffFactor: 1.2
+            },
             segmentRequestTimeout: 8000,
             segmentPrefetchLimit: 2,
             useNativeHlsOnSafari: true
@@ -305,6 +316,7 @@
       if (errorTimeout) {
         clearTimeout(errorTimeout);
       }
+      
       errorBadge.textContent = `KNR SPORTVERSE: ${message}`;
       errorBadge.classList.add('show');
       
