@@ -156,14 +156,32 @@
 
     /* ============ APPLE GLASS CONTROLLER STYLING ============ */
     .shaka-controls-container {
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.15) 50%, transparent 100%) !important;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.15) 60%, transparent 100%) !important;
     }
 
     .shaka-bottom-controls {
-      padding: 0 24px 20px 24px !important;
+      padding: 0 32px 24px 32px !important;
       display: flex !important;
       flex-direction: column !important;
-      align-items: center !important;
+      justify-content: flex-end !important;
+      width: 100% !important;
+    }
+
+    /* Properly space the seekbar and control panel */
+    .shaka-seek-bar-container {
+      height: 6px !important;
+      border-radius: 99px !important;
+      margin-bottom: 16px !important;
+      width: 100% !important;
+      max-width: 1000px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    
+    /* Make the drag handle on the timeline pop */
+    .shaka-seek-bar::-webkit-slider-thumb {
+      background: #60a5fa !important;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.6) !important;
     }
 
     .shaka-control-panel {
@@ -176,8 +194,11 @@
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
       gap: 6px !important;
       align-items: center !important;
-      max-width: 900px !important;
+      max-width: 1000px !important;
       width: 100% !important;
+      margin: 0 auto !important; /* Center the glass panel */
+      display: flex !important;
+      flex-direction: row !important;
     }
 
     /* Buttons & Icons */
@@ -206,32 +227,11 @@
     .shaka-current-time,
     .shaka-duration {
       font-family: 'Plus Jakarta Sans', sans-serif !important;
-      font-size: 12px !important;
+      font-size: 13px !important;
       font-weight: 600 !important;
       color: rgba(255, 255, 255, 0.85) !important;
       letter-spacing: 0.02em !important;
-    }
-
-    /* Seekbar Styling */
-    .shaka-seek-bar-container {
-      height: 6px !important;
-      border-radius: 99px !important;
-      margin-bottom: 8px !important;
-    }
-
-    .shaka-seek-bar {
-      background: rgba(255, 255, 255, 0.22) !important;
-      border-radius: 99px !important;
-    }
-
-    .shaka-buffer-bar {
-      background: rgba(255, 255, 255, 0.35) !important;
-      border-radius: 99px !important;
-    }
-
-    .shaka-played-bar {
-      background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%) !important;
-      border-radius: 99px !important;
+      padding: 0 8px !important; /* Space it out slightly */
     }
 
     /* Glass Menus & Settings Overlays */
@@ -250,7 +250,8 @@
     .shaka-settings-menu button,
     .shaka-overflow-menu button {
       font-family: 'Plus Jakarta Sans', sans-serif !important;
-      font-size: 13px !weight: 500 !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
       color: rgba(255, 255, 255, 0.9) !important;
       border-radius: 10px !important;
       padding: 8px 14px !important;
@@ -263,15 +264,9 @@
       color: #ffffff !important;
     }
 
-    @media (max-width: 480px) {
-      .error-badge {
-        top: 10px;
-        padding: 10px 16px;
-        font-size: 12px;
-        border-radius: 50px;
-      }
+    @media (max-width: 768px) {
       .shaka-bottom-controls {
-        padding: 0 12px 14px 12px !important;
+        padding: 0 16px 20px 16px !important;
       }
     }
   </style>
@@ -357,17 +352,26 @@
         const container = document.querySelector('.shaka-video-container');
         const ui = new shaka.ui.Overlay(player, container, video);
 
+        // CONFIGURE PROPER LAYOUT & TIMELINE COLORS HERE
         ui.configure({
+          addSeekBar: true,
           controlPanelElements: [
-            'time_and_duration',
-            'spacer',
+            'play_pause',
             'mute',
+            'spacer',
+            'time_and_duration',
             'language',
             'captions',
             'picture_in_picture',
             'quality',
             'fullscreen'
-          ]
+          ],
+          seekBarColors: {
+            base: 'rgba(255, 255, 255, 0.2)',
+            buffered: 'rgba(255, 255, 255, 0.4)',
+            played: '#3b82f6', // Correct blue gradient color injected via Shaka API
+            adBreaks: '#f59e0b'
+          }
         });
 
         const drmConfig = {
