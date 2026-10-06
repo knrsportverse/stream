@@ -1,0 +1,27 @@
+
+            setTimeout(() => {
+                toast.className = "fixed bottom-5 right-5 bg-emerald-500 text-black font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm z-50 transform translate-y-20 opacity-0 transition-all duration-300";
+            }, 2500);
+        }
+
+        // Utilities
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        function escapeJs(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+    </script>
+</body>
+</html>
