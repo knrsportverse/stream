@@ -1,27 +1,326 @@
-
-            setTimeout(() => {
-                toast.className = "fixed bottom-5 right-5 bg-emerald-500 text-black font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm z-50 transform translate-y-20 opacity-0 transition-all duration-300";
-            }, 2500);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Event Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Tailwind slate-900 */
+            color: #f8fafc; /* Tailwind slate-50 */
+        }
+        
+        /* Custom sleek scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
         }
 
-        // Utilities
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"']/g, function(m) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                }[m];
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-slate-800/80 backdrop-blur-md shadow-lg border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <span class="font-bold text-xl tracking-tight text-white" id="nav-title">Sports Hub</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="https://knrsportverse.blogspot.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold transition duration-200 bg-slate-700/50 hover:bg-slate-600/50 px-4 py-2 rounded-lg text-sm border border-emerald-500/20 shadow-sm">
+                        KNR Sportverse
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4 bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 relative overflow-hidden">
+            <!-- Decorative gradient blob -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            
+            <div class="relative z-10">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="page-title">Event Schedule</h1>
+                <p class="text-slate-400 text-sm mt-2 flex items-center gap-2 font-medium">
+                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span id="last-update">Syncing latest data...</span>
+                </p>
+            </div>
+            
+            <div class="flex gap-4 relative z-10">
+                <div class="bg-slate-900/80 backdrop-blur-sm px-5 py-3 rounded-xl border border-slate-700 text-center min-w-[100px] shadow-inner">
+                    <span class="block text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Live</span>
+                    <span class="block text-2xl font-black text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" id="live-count">0</span>
+                </div>
+                <div class="bg-slate-900/80 backdrop-blur-sm px-5 py-3 rounded-xl border border-slate-700 text-center min-w-[100px] shadow-inner">
+                    <span class="block text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Upcoming</span>
+                    <span class="block text-2xl font-black text-sky-500 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" id="upcoming-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="flex flex-col justify-center items-center h-64 text-slate-400">
+            <svg class="animate-spin h-12 w-12 mb-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="font-medium tracking-wide">Loading premium sports data...</p>
+        </div>
+
+        <div id="error" class="hidden text-center text-rose-400 py-12 bg-rose-950/30 rounded-2xl border border-rose-900/50 backdrop-blur-sm">
+            <svg class="w-12 h-12 mx-auto mb-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p class="text-lg font-semibold">Unable to fetch event data.</p>
+            <p class="text-sm mt-1 text-rose-300/70">Please check your connection and try again later.</p>
+        </div>
+
+        <div id="matches-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+            <!-- Cards injected via JavaScript -->
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; <span id="current-year"></span> Event Dashboard. All Rights Reserved.</p>
+            <a href="https://knrsportverse.blogspot.com" target="_blank" class="text-slate-400 hover:text-emerald-400 transition-colors">
+                Visit KNR Sportverse
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        const API_URL = "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json";
+
+        function convertTimeBDTtoNPT(timeStr) {
+            if (!timeStr) return '';
+            
+            // Regex to find patterns like "7:30 PM BDT" or "9 PM BDT"
+            const regex = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\s*BDT/i;
+            
+            let convertedStr = timeStr.replace(regex, (match, hrStr, minStr, ampm) => {
+                let hr = parseInt(hrStr, 10);
+                let min = minStr ? parseInt(minStr, 10) : 0;
+                const isPM = ampm.toUpperCase() === 'PM';
+                
+                // Convert 12h to 24h
+                if (isPM && hr !== 12) hr += 12;
+                if (!isPM && hr === 12) hr = 0;
+                
+                // Subtract 15 minutes for NPT (UTC+5:45 is 15 mins behind UTC+6 BDT)
+                let totalMins = hr * 60 + min - 15;
+                
+                // Handle negative minutes (previous day wrapping)
+                if (totalMins < 0) totalMins += 24 * 60;
+                
+                // Convert back to hours and minutes
+                let newHr = Math.floor(totalMins / 60) % 24;
+                let newMin = totalMins % 60;
+                
+                // Convert 24h back to 12h formatting
+                let newAmpm = newHr >= 12 ? 'PM' : 'AM';
+                let formattedHr = newHr % 12;
+                if (formattedHr === 0) formattedHr = 12; 
+                
+                let formattedMin = newMin < 10 ? '0' + newMin : newMin;
+                
+                return `${formattedHr}:${formattedMin} ${newAmpm} NPT`;
+            });
+
+            // Global fallback replacement just in case there's an unmatched "BDT"
+            return convertedStr.replace(/\bBDT\b/g, 'NPT');
+        }
+
+        async function init() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('matches-grid').classList.remove('hidden');
+
+                renderHeader(data.HeaderInfo, data.Stats);
+                renderMatches(data.Matches);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+
+        function renderHeader(headerInfo, stats) {
+            if (headerInfo) {
+                if (headerInfo.PlaylistName) {
+                    // Update titles without owner names or watermarks
+                    document.getElementById('page-title').textContent = "Sports Coverage";
+                    document.getElementById('nav-title').textContent = "Live Sports";
+                }
+                if (headerInfo.LastUpdate) {
+                    document.getElementById('last-update').innerHTML = `Last Update: <span class="text-slate-300">${headerInfo.LastUpdate}</span>`;
+                }
+            }
+            if (stats) {
+                document.getElementById('live-count').textContent = stats.LiveCount !== undefined ? stats.LiveCount : 0;
+                document.getElementById('upcoming-count').textContent = stats.UpcomingCount !== undefined ? stats.UpcomingCount : 0;
+            }
+        }
+
+        function renderMatches(matches) {
+            const grid = document.getElementById('matches-grid');
+            if (!matches || matches.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-12 bg-slate-800 rounded-xl border border-slate-700">No events currently scheduled.</div>';
+                return;
+            }
+
+            matches.forEach((match, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-700 flex flex-col fade-in-up group hover:border-slate-600 transition-colors duration-300';
+                card.style.animationDelay = `${index * 0.05}s`;
+
+                // Badge styling depending on status
+                const statusUpper = (match.status || '').toUpperCase();
+                let statusBadge = '';
+                
+                if (statusUpper === 'LIVE') {
+                    statusBadge = `
+                        <span class="bg-rose-500 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse border border-rose-400 flex items-center gap-1.5 backdrop-blur-md">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full"></span> LIVE
+                        </span>`;
+                } else {
+                    statusBadge = `
+                        <span class="bg-sky-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg border border-sky-400/50 backdrop-blur-md">
+                            ${statusUpper || 'UPCOMING'}
+                        </span>`;
+                }
+
+                // Process time through the BDT to NPT converter
+                const nptTime = convertTimeBDTtoNPT(match.time || 'Time TBD');
+                const imageUrl = match.cover_image || 'https://placehold.co/600x400/1e293b/94a3b8?text=Event+Poster';
+
+                card.innerHTML = `
+                    <div class="relative h-48 w-full bg-slate-900 overflow-hidden">
+                        <img src="${imageUrl}" alt="Event Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out" onerror="this.src='https://placehold.co/600x400/1e293b/94a3b8?text=Image+Unavailable'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute top-3 left-3 z-10">
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex flex-col flex-grow relative z-10">
+                        <h2 class="text-[1.05rem] font-bold text-slate-100 line-clamp-2 leading-snug mb-3 group-hover:text-emerald-400 transition-colors" title="${match.title}">${match.title}</h2>
+                        
+                        <div class="text-sm font-medium text-slate-300 mb-5 flex-grow flex flex-col gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>${nptTime}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions Container (Only visible if links exist) -->
+                        <div class="mt-auto space-y-2.5">
+                            ${(match.stream_url_alpha && match.stream_url_alpha.trim() !== "") 
+                                ? `<button onclick="copyToClipboard(this, '${match.stream_url_alpha.replace(/'/g, "\\'")}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 active:scale-[0.98]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                    Copy Stream URL
+                                   </button>` 
+                                : ''}
+                            
+                            ${(match.drm_key && match.drm_key.trim() !== "") 
+                                ? `<button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-md active:scale-[0.98]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                                    Copy DRM Key
+                                   </button>` 
+                                : ''}
+                                
+                            ${(!match.stream_url_alpha && !match.drm_key) 
+                                ? `<div class="w-full bg-slate-800/80 text-slate-500 font-medium py-2.5 px-4 rounded-xl text-center text-sm border border-slate-700/80 border-dashed cursor-not-allowed select-none">
+                                    Links Unavailable
+                                   </div>`
+                                : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
         }
 
-        function escapeJs(str) {
-            if (!str) return '';
-            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        function copyToClipboard(buttonElement, textToCopy) {
+            // Using textarea element fallback because navigator.clipboard can be blocked in some iFrame scenarios
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            
+            // Hide the textarea off-screen
+            textArea.style.position = "absolute";
+            textArea.style.opacity = "0";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            
+            textArea.focus();
+            textArea.select();
+            
+            let isCopied = false;
+            try {
+                isCopied = document.execCommand('copy');
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+            
+            document.body.removeChild(textArea);
+
+            if (isCopied) {
+                // Save original state
+                const originalHtml = buttonElement.innerHTML;
+                const originalClasses = buttonElement.className;
+                
+                // Show success state
+                buttonElement.innerHTML = `
+                    <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Copied!
+                `;
+                buttonElement.className = 'w-full bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-lg';
+
+                // Revert to original state after 2 seconds
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHtml;
+                    buttonElement.className = originalClasses;
+                }, 2000);
+            } else {
+                alert("Copy failed. Your browser might restrict this action.");
+            }
         }
+
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
