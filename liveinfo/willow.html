@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Event Dashboard</title>
+    <title>KNR Sportverse - Event Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -29,9 +29,9 @@
         }
 
         .fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
+            animation: fadeInUp 0.4s ease-out forwards;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
         }
 
         @keyframes fadeInUp {
@@ -42,31 +42,32 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col relative">
 
-    <nav class="bg-slate-800/80 backdrop-blur-md shadow-lg border-b border-slate-700 sticky top-0 z-50">
+    <!-- Navigation -->
+    <nav class="bg-slate-800/80 backdrop-blur-md shadow-lg border-b border-slate-700 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
                     <svg class="w-8 h-8 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                     </svg>
-                    <span class="font-bold text-xl tracking-tight text-white" id="nav-title">Sports Hub</span>
+                    <span class="font-bold text-xl tracking-tight text-white">KNR Sportverse</span>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <div id="telegram-nav-container"></div>
-                    <a href="https://knrsportverse.blogspot.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold transition duration-200 bg-slate-700/50 hover:bg-slate-600/50 px-3.5 py-2 rounded-lg text-sm border border-emerald-500/20 shadow-sm">
-                        KNR Sportverse
+                    <a href="https://knrsportverse.blogspot.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold transition duration-200 bg-slate-700/50 hover:bg-slate-600/50 px-4 py-2 rounded-lg text-sm border border-emerald-500/20 shadow-sm">
+                        Visit Blog
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
+        <!-- Header Banner -->
         <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4 bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 relative overflow-hidden">
-            <!-- Decorative gradient blob -->
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
             
             <div class="relative z-10">
@@ -89,41 +90,77 @@
             </div>
         </div>
 
+        <!-- Loading Indicator -->
         <div id="loading" class="flex flex-col justify-center items-center h-64 text-slate-400">
             <svg class="animate-spin h-12 w-12 mb-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="font-medium tracking-wide">Loading premium sports data...</p>
+            <p class="font-medium tracking-wide">Loading sports schedule...</p>
         </div>
 
+        <!-- Error State -->
         <div id="error" class="hidden text-center text-rose-400 py-12 bg-rose-950/30 rounded-2xl border border-rose-900/50 backdrop-blur-sm">
             <svg class="w-12 h-12 mx-auto mb-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <p class="text-lg font-semibold">Unable to fetch event data.</p>
             <p class="text-sm mt-1 text-rose-300/70">Please check your connection and try again later.</p>
         </div>
 
+        <!-- Cards Grid -->
         <div id="matches-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
             <!-- Cards injected via JavaScript -->
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; <span id="current-year"></span> <span id="footer-owner">Event Dashboard</span>. All Rights Reserved.</p>
+            <p>&copy; <span id="current-year"></span> KNR Sportverse. All Rights Reserved.</p>
             <a href="https://knrsportverse.blogspot.com" target="_blank" class="text-slate-400 hover:text-emerald-400 transition-colors">
                 Visit KNR Sportverse
             </a>
         </div>
     </footer>
 
+    <!-- POPUP MODAL FOR STREAM LINKS -->
+    <div id="stream-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-slate-700/80 flex justify-between items-start gap-4 bg-slate-800/50">
+                <div>
+                    <span id="modal-status-badge"></span>
+                    <h3 id="modal-title" class="text-lg font-bold text-white mt-2 leading-snug"></h3>
+                    <p id="modal-time" class="text-xs text-emerald-400 font-medium mt-1 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span></span>
+                    </p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white bg-slate-700/50 hover:bg-slate-700 p-2 rounded-xl transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="p-5 space-y-4 overflow-y-auto flex-grow" id="modal-body">
+                <!-- Stream links and DRM key will be injected here -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-900/50 border-t border-slate-700/80 text-right">
+                <button onclick="closeModal()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium text-sm rounded-xl transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
         const API_URL = "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json";
+        let globalMatches = [];
 
         function convertTimeBDTtoNPT(timeStr) {
             if (!timeStr) return '';
-            
             const regex = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\s*BDT/i;
             
             let convertedStr = timeStr.replace(regex, (match, hrStr, minStr, ampm) => {
@@ -158,12 +195,13 @@
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
+                globalMatches = data.Matches || [];
                 
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('matches-grid').classList.remove('hidden');
 
                 renderHeader(data.HeaderInfo, data.Stats);
-                renderMatches(data.Matches);
+                renderMatches(globalMatches);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -174,24 +212,9 @@
 
         function renderHeader(headerInfo, stats) {
             if (headerInfo) {
-                if (headerInfo.PlaylistName) {
-                    document.getElementById('page-title').textContent = headerInfo.PlaylistName;
-                    document.getElementById('nav-title').textContent = headerInfo.PlaylistName;
-                }
+                document.getElementById('page-title').textContent = "Sports Coverage";
                 if (headerInfo.LastUpdate) {
                     document.getElementById('last-update').innerHTML = `Last Update: <span class="text-slate-300">${headerInfo.LastUpdate}</span>`;
-                }
-                if (headerInfo.Telegram) {
-                    const tgContainer = document.getElementById('telegram-nav-container');
-                    tgContainer.innerHTML = `
-                        <a href="${headerInfo.Telegram}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:text-sky-300 font-semibold transition duration-200 bg-sky-500/10 hover:bg-sky-500/20 px-3.5 py-2 rounded-lg text-sm border border-sky-500/20 shadow-sm flex items-center gap-1.5">
-                            <svg class="w-4 h-4 fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.25.38-.51 1.05-.78 4.11-1.79 6.85-2.97 8.22-3.55 3.91-1.67 4.72-1.96 5.25-1.97.12 0 .39.03.56.17.14.12.18.28.2.4-.01.07.01.21 0 .28z"/></svg>
-                            Telegram
-                        </a>
-                    `;
-                }
-                if (headerInfo.Owner) {
-                    document.getElementById('footer-owner').textContent = headerInfo.Owner;
                 }
             }
             if (stats) {
@@ -209,8 +232,9 @@
 
             matches.forEach((match, index) => {
                 const card = document.createElement('div');
-                card.className = 'bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-700 flex flex-col fade-in-up group hover:border-slate-600 transition-colors duration-300';
-                card.style.animationDelay = `${index * 0.05}s`;
+                card.className = 'bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-700 flex flex-col fade-in-up group hover:border-slate-500 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1';
+                card.style.animationDelay = `${index * 0.04}s`;
+                card.onclick = () => openModal(index);
 
                 const statusUpper = (match.status || '').toUpperCase();
                 let statusBadge = '';
@@ -230,50 +254,6 @@
                 const nptTime = convertTimeBDTtoNPT(match.time || 'Time TBD');
                 const imageUrl = match.cover_image || 'https://placehold.co/600x400/1e293b/94a3b8?text=Event+Poster';
 
-                // Build buttons for multiple stream servers (Alpha and Bravo)
-                let streamButtonsHtml = '';
-                
-                if (match.stream_url_alpha && typeof match.stream_url_alpha === 'object') {
-                    for (const [serverName, url] of Object.entries(match.stream_url_alpha)) {
-                        if (url && url.trim() !== '') {
-                            streamButtonsHtml += `
-                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/30 active:scale-[0.98]">
-                                    <span class="truncate">Alpha: ${serverName}</span>
-                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                </button>`;
-                        }
-                    }
-                }
-
-                if (match.stream_url_bravo && typeof match.stream_url_bravo === 'object') {
-                    for (const [serverName, url] of Object.entries(match.stream_url_bravo)) {
-                        if (url && url.trim() !== '') {
-                            streamButtonsHtml += `
-                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md shadow-teal-500/15 active:scale-[0.98]">
-                                    <span class="truncate">Bravo: ${serverName}</span>
-                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                </button>`;
-                        }
-                    }
-                }
-                
-                let drmButtonHtml = '';
-                if (match.drm_key && match.drm_key.trim() !== '') {
-                    drmButtonHtml = `
-                        <button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md active:scale-[0.98]">
-                            <span class="truncate">Copy DRM Key</span>
-                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                        </button>`;
-                }
-
-                let unavailableHtml = '';
-                if (!streamButtonsHtml && !drmButtonHtml) {
-                    unavailableHtml = `
-                        <div class="w-full bg-slate-800/80 text-slate-500 font-medium py-2.5 px-4 rounded-xl text-center text-xs border border-slate-700/80 border-dashed cursor-not-allowed select-none">
-                            Links Unavailable
-                        </div>`;
-                }
-
                 card.innerHTML = `
                     <div class="relative h-48 w-full bg-slate-900 overflow-hidden">
                         <img src="${imageUrl}" alt="Event Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out" onerror="this.src='https://placehold.co/600x400/1e293b/94a3b8?text=Image+Unavailable'">
@@ -286,18 +266,16 @@
                     <div class="p-5 flex flex-col flex-grow relative z-10">
                         <h2 class="text-[1.05rem] font-bold text-slate-100 line-clamp-2 leading-snug mb-3 group-hover:text-emerald-400 transition-colors" title="${match.title}">${match.title}</h2>
                         
-                        <div class="text-sm font-medium text-slate-300 mb-5 flex-grow flex flex-col gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                        <div class="text-sm font-medium text-slate-300 mb-4 flex-grow flex flex-col gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
                             <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <span>${nptTime}</span>
                             </div>
                         </div>
-                        
-                        <!-- Actions Container -->
-                        <div class="mt-auto space-y-2">
-                            ${streamButtonsHtml}
-                            ${drmButtonHtml}
-                            ${unavailableHtml}
+
+                        <div class="w-full bg-emerald-600/20 group-hover:bg-emerald-600 text-emerald-400 group-hover:text-white border border-emerald-500/30 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-xs flex justify-center items-center gap-2 shadow-md">
+                            <span>Get Stream Links</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </div>
                     </div>
                 `;
@@ -305,10 +283,92 @@
             });
         }
 
+        function openModal(index) {
+            const match = globalMatches[index];
+            if (!match) return;
+
+            const modal = document.getElementById('stream-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalTime = document.getElementById('modal-time').querySelector('span');
+            const modalBadge = document.getElementById('modal-status-badge');
+            const modalBody = document.getElementById('modal-body');
+
+            modalTitle.textContent = match.title;
+            modalTime.textContent = convertTimeBDTtoNPT(match.time || 'Time TBD');
+
+            const statusUpper = (match.status || '').toUpperCase();
+            if (statusUpper === 'LIVE') {
+                modalBadge.innerHTML = `<span class="bg-rose-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest border border-rose-400">LIVE</span>`;
+            } else {
+                modalBadge.innerHTML = `<span class="bg-sky-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${statusUpper || 'UPCOMING'}</span>`;
+            }
+
+            let bodyContent = '';
+
+            // Render Server Streams
+            const renderServerGroup = (serverObj, groupName, bgClass) => {
+                if (!serverObj || typeof serverObj !== 'object') return '';
+                let groupHtml = `<div class="space-y-2"><h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">${groupName}</h4>`;
+                let count = 0;
+
+                for (const [serverName, url] of Object.entries(serverObj)) {
+                    if (url && url.trim() !== '') {
+                        count++;
+                        groupHtml += `
+                            <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700/70 gap-2">
+                                <span class="text-xs font-semibold text-slate-300 truncate">${serverName}</span>
+                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="${bgClass} hover:opacity-90 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Copy URL
+                                </button>
+                            </div>`;
+                    }
+                }
+                groupHtml += `</div>`;
+                return count > 0 ? groupHtml : '';
+            };
+
+            const alphaHtml = renderServerGroup(match.stream_url_alpha, 'Alpha Servers', 'bg-emerald-600');
+            const bravoHtml = renderServerGroup(match.stream_url_bravo, 'Bravo Servers', 'bg-teal-600');
+
+            bodyContent += alphaHtml + bravoHtml;
+
+            // Render DRM Key
+            if (match.drm_key && match.drm_key.trim() !== '') {
+                bodyContent += `
+                    <div class="space-y-2 pt-2 border-t border-slate-700/50">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">DRM License Key</h4>
+                        <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700/70 gap-2">
+                            <span class="text-xs font-mono text-slate-300 truncate">${match.drm_key}</span>
+                            <button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                                Copy Key
+                            </button>
+                        </div>
+                    </div>`;
+            }
+
+            if (!bodyContent) {
+                bodyContent = `
+                    <div class="text-center py-8 text-slate-400 bg-slate-900/50 rounded-xl border border-slate-700/50 border-dashed">
+                        <p class="text-sm font-medium">No stream links or DRM keys available for this event yet.</p>
+                    </div>`;
+            }
+
+            modalBody.innerHTML = bodyContent;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('stream-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
         function copyToClipboard(buttonElement, textToCopy) {
             const textArea = document.createElement("textarea");
             textArea.value = textToCopy;
-            
             textArea.style.position = "absolute";
             textArea.style.opacity = "0";
             textArea.style.left = "-999999px";
@@ -328,22 +388,30 @@
 
             if (isCopied) {
                 const originalHtml = buttonElement.innerHTML;
-                const originalClasses = buttonElement.className;
-                
                 buttonElement.innerHTML = `
-                    <span class="truncate">Copied to clipboard!</span>
-                    <svg class="w-4 h-4 shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Copied!
                 `;
-                buttonElement.className = 'w-full bg-teal-500 text-white font-bold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-lg';
+                buttonElement.classList.add('bg-teal-500');
 
                 setTimeout(() => {
                     buttonElement.innerHTML = originalHtml;
-                    buttonElement.className = originalClasses;
-                }, 2000);
+                    buttonElement.classList.remove('bg-teal-500');
+                }, 1800);
             } else {
-                alert("Copy failed. Your browser might restrict this action.");
+                alert("Copy failed. Please copy manually.");
             }
         }
+
+        // Close modal on backdrop click
+        document.getElementById('stream-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
