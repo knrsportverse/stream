@@ -53,8 +53,9 @@
                     </svg>
                     <span class="font-bold text-xl tracking-tight text-white" id="nav-title">Sports Hub</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="https://knrsportverse.blogspot.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold transition duration-200 bg-slate-700/50 hover:bg-slate-600/50 px-4 py-2 rounded-lg text-sm border border-emerald-500/20 shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <div id="telegram-nav-container"></div>
+                    <a href="https://knrsportverse.blogspot.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold transition duration-200 bg-slate-700/50 hover:bg-slate-600/50 px-3.5 py-2 rounded-lg text-sm border border-emerald-500/20 shadow-sm">
                         KNR Sportverse
                     </a>
                 </div>
@@ -109,7 +110,7 @@
 
     <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; <span id="current-year"></span> Event Dashboard. All Rights Reserved.</p>
+            <p>&copy; <span id="current-year"></span> <span id="footer-owner">Event Dashboard</span>. All Rights Reserved.</p>
             <a href="https://knrsportverse.blogspot.com" target="_blank" class="text-slate-400 hover:text-emerald-400 transition-colors">
                 Visit KNR Sportverse
             </a>
@@ -123,7 +124,6 @@
         function convertTimeBDTtoNPT(timeStr) {
             if (!timeStr) return '';
             
-            // Regex to find patterns like "7:30 PM BDT" or "9 PM BDT"
             const regex = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\s*BDT/i;
             
             let convertedStr = timeStr.replace(regex, (match, hrStr, minStr, ampm) => {
@@ -131,21 +131,15 @@
                 let min = minStr ? parseInt(minStr, 10) : 0;
                 const isPM = ampm.toUpperCase() === 'PM';
                 
-                // Convert 12h to 24h
                 if (isPM && hr !== 12) hr += 12;
                 if (!isPM && hr === 12) hr = 0;
                 
-                // Subtract 15 minutes for NPT (UTC+5:45 is 15 mins behind UTC+6 BDT)
                 let totalMins = hr * 60 + min - 15;
-                
-                // Handle negative minutes (previous day wrapping)
                 if (totalMins < 0) totalMins += 24 * 60;
                 
-                // Convert back to hours and minutes
                 let newHr = Math.floor(totalMins / 60) % 24;
                 let newMin = totalMins % 60;
                 
-                // Convert 24h back to 12h formatting
                 let newAmpm = newHr >= 12 ? 'PM' : 'AM';
                 let formattedHr = newHr % 12;
                 if (formattedHr === 0) formattedHr = 12; 
@@ -155,7 +149,6 @@
                 return `${formattedHr}:${formattedMin} ${newAmpm} NPT`;
             });
 
-            // Global fallback replacement just in case there's an unmatched "BDT"
             return convertedStr.replace(/\bBDT\b/g, 'NPT');
         }
 
@@ -182,12 +175,23 @@
         function renderHeader(headerInfo, stats) {
             if (headerInfo) {
                 if (headerInfo.PlaylistName) {
-                    // Update titles without owner names or watermarks
-                    document.getElementById('page-title').textContent = "Sports Coverage";
-                    document.getElementById('nav-title').textContent = "Live Sports";
+                    document.getElementById('page-title').textContent = headerInfo.PlaylistName;
+                    document.getElementById('nav-title').textContent = headerInfo.PlaylistName;
                 }
                 if (headerInfo.LastUpdate) {
                     document.getElementById('last-update').innerHTML = `Last Update: <span class="text-slate-300">${headerInfo.LastUpdate}</span>`;
+                }
+                if (headerInfo.Telegram) {
+                    const tgContainer = document.getElementById('telegram-nav-container');
+                    tgContainer.innerHTML = `
+                        <a href="${headerInfo.Telegram}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:text-sky-300 font-semibold transition duration-200 bg-sky-500/10 hover:bg-sky-500/20 px-3.5 py-2 rounded-lg text-sm border border-sky-500/20 shadow-sm flex items-center gap-1.5">
+                            <svg class="w-4 h-4 fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.25.38-.51 1.05-.78 4.11-1.79 6.85-2.97 8.22-3.55 3.91-1.67 4.72-1.96 5.25-1.97.12 0 .39.03.56.17.14.12.18.28.2.4-.01.07.01.21 0 .28z"/></svg>
+                            Telegram
+                        </a>
+                    `;
+                }
+                if (headerInfo.Owner) {
+                    document.getElementById('footer-owner').textContent = headerInfo.Owner;
                 }
             }
             if (stats) {
@@ -208,7 +212,6 @@
                 card.className = 'bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-700 flex flex-col fade-in-up group hover:border-slate-600 transition-colors duration-300';
                 card.style.animationDelay = `${index * 0.05}s`;
 
-                // Badge styling depending on status
                 const statusUpper = (match.status || '').toUpperCase();
                 let statusBadge = '';
                 
@@ -224,9 +227,52 @@
                         </span>`;
                 }
 
-                // Process time through the BDT to NPT converter
                 const nptTime = convertTimeBDTtoNPT(match.time || 'Time TBD');
                 const imageUrl = match.cover_image || 'https://placehold.co/600x400/1e293b/94a3b8?text=Event+Poster';
+
+                // Build buttons for multiple stream servers (Alpha and Bravo)
+                let streamButtonsHtml = '';
+                
+                if (match.stream_url_alpha && typeof match.stream_url_alpha === 'object') {
+                    for (const [serverName, url] of Object.entries(match.stream_url_alpha)) {
+                        if (url && url.trim() !== '') {
+                            streamButtonsHtml += `
+                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/30 active:scale-[0.98]">
+                                    <span class="truncate">Alpha: ${serverName}</span>
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                </button>`;
+                        }
+                    }
+                }
+
+                if (match.stream_url_bravo && typeof match.stream_url_bravo === 'object') {
+                    for (const [serverName, url] of Object.entries(match.stream_url_bravo)) {
+                        if (url && url.trim() !== '') {
+                            streamButtonsHtml += `
+                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="w-full bg-teal-700 hover:bg-teal-600 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md shadow-teal-500/15 active:scale-[0.98]">
+                                    <span class="truncate">Bravo: ${serverName}</span>
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                </button>`;
+                        }
+                    }
+                }
+                
+                let drmButtonHtml = '';
+                if (match.drm_key && match.drm_key.trim() !== '') {
+                    drmButtonHtml = `
+                        <button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-md active:scale-[0.98]">
+                            <span class="truncate">Copy DRM Key</span>
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                        </button>`;
+                }
+
+                let unavailableHtml = '';
+                if (!streamButtonsHtml && !drmButtonHtml) {
+                    unavailableHtml = `
+                        <div class="w-full bg-slate-800/80 text-slate-500 font-medium py-2.5 px-4 rounded-xl text-center text-xs border border-slate-700/80 border-dashed cursor-not-allowed select-none">
+                            Links Unavailable
+                        </div>`;
+                }
 
                 card.innerHTML = `
                     <div class="relative h-48 w-full bg-slate-900 overflow-hidden">
@@ -247,27 +293,11 @@
                             </div>
                         </div>
                         
-                        <!-- Actions Container (Only visible if links exist) -->
-                        <div class="mt-auto space-y-2.5">
-                            ${(match.stream_url_alpha && match.stream_url_alpha.trim() !== "") 
-                                ? `<button onclick="copyToClipboard(this, '${match.stream_url_alpha.replace(/'/g, "\\'")}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 active:scale-[0.98]">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                    Copy Stream URL
-                                   </button>` 
-                                : ''}
-                            
-                            ${(match.drm_key && match.drm_key.trim() !== "") 
-                                ? `<button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-md active:scale-[0.98]">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                                    Copy DRM Key
-                                   </button>` 
-                                : ''}
-                                
-                            ${(!match.stream_url_alpha && !match.drm_key) 
-                                ? `<div class="w-full bg-slate-800/80 text-slate-500 font-medium py-2.5 px-4 rounded-xl text-center text-sm border border-slate-700/80 border-dashed cursor-not-allowed select-none">
-                                    Links Unavailable
-                                   </div>`
-                                : ''}
+                        <!-- Actions Container -->
+                        <div class="mt-auto space-y-2">
+                            ${streamButtonsHtml}
+                            ${drmButtonHtml}
+                            ${unavailableHtml}
                         </div>
                     </div>
                 `;
@@ -276,11 +306,9 @@
         }
 
         function copyToClipboard(buttonElement, textToCopy) {
-            // Using textarea element fallback because navigator.clipboard can be blocked in some iFrame scenarios
             const textArea = document.createElement("textarea");
             textArea.value = textToCopy;
             
-            // Hide the textarea off-screen
             textArea.style.position = "absolute";
             textArea.style.opacity = "0";
             textArea.style.left = "-999999px";
@@ -299,18 +327,15 @@
             document.body.removeChild(textArea);
 
             if (isCopied) {
-                // Save original state
                 const originalHtml = buttonElement.innerHTML;
                 const originalClasses = buttonElement.className;
                 
-                // Show success state
                 buttonElement.innerHTML = `
-                    <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    Copied!
+                    <span class="truncate">Copied to clipboard!</span>
+                    <svg class="w-4 h-4 shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 `;
-                buttonElement.className = 'w-full bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm flex justify-center items-center gap-2 shadow-lg';
+                buttonElement.className = 'w-full bg-teal-500 text-white font-bold py-2 px-3 rounded-xl transition-all duration-200 text-xs flex justify-between items-center gap-2 shadow-lg';
 
-                // Revert to original state after 2 seconds
                 setTimeout(() => {
                     buttonElement.innerHTML = originalHtml;
                     buttonElement.className = originalClasses;
