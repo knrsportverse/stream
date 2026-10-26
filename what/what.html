@@ -1,0 +1,1152 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UG Top Up Center - Admin Panel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fef2f2',
+                            100: '#ffe1e1',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            900: '#7f1d1d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 antialiased selection:bg-brand-600 selection:text-white min-h-screen">
+
+    <!-- LOGIN SCREEN (Password-only: admin123) -->
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/90 backdrop-blur-md p-4">
+        <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 w-36 h-36 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-brand-600/20 text-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-brand-500/30 shadow-lg shadow-brand-600/10">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">UG Top Up Admin</h1>
+                <p class="text-xs text-zinc-400 mt-1">Authorized Operations Panel</p>
+                <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-800/80 border border-zinc-700/50 text-[11px] text-zinc-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="login-endpoint-label">buqummxdfjfaggyypafu.supabase.co</span>
+                </div>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Admin Master Key</label>
+                    <div class="relative">
+                        <input type="password" id="admin-password-input" required placeholder="Enter admin password..."
+                            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 text-white placeholder-zinc-600 pr-10 transition">
+                        <button type="button" id="toggle-pwd" class="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-300">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Supabase Anon Key (Optional / Pre-set)</label>
+                    <input type="password" id="login-anon-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5..."
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-300 focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 placeholder-zinc-700">
+                </div>
+
+                <div id="login-error" class="hidden text-xs text-red-400 bg-red-950/40 border border-red-800/50 rounded-lg p-3 text-center">
+                    Invalid passcode. Default key is <code class="bg-red-900/40 px-1 py-0.5 rounded text-red-200">admin123</code>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2">
+                    <span>Unlock Dashboard</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD LAYOUT -->
+    <div id="app-view" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col shrink-0">
+            <!-- Sidebar Header -->
+            <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-md shadow-brand-600/30">
+                        UG
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white leading-tight">UG Admin</h2>
+                        <span class="text-[10px] text-zinc-400 font-medium">Supabase Console</span>
+                    </div>
+                </div>
+                <button id="config-btn" title="Supabase Settings" class="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1 flex-1 overflow-y-auto">
+                <button data-tab="dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition active-nav">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Overview</span>
+                </button>
+                <button data-tab="orders" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                        <span>Orders & Topups</span>
+                    </div>
+                    <span id="badge-pending-count" class="hidden px-2 py-0.5 text-[10px] bg-brand-600/20 text-brand-400 border border-brand-500/30 rounded-full font-bold">0</span>
+                </button>
+                <button data-tab="products" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="package" class="w-4 h-4"></i>
+                    <span>Products & Catalog</span>
+                </button>
+                <button data-tab="users" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Users & Wallets</span>
+                </button>
+                <button data-tab="explorer" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Schema Explorer</span>
+                </button>
+                <button data-tab="sql" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="terminal" class="w-4 h-4"></i>
+                    <span>SQL & REST Runner</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-3 border-t border-zinc-800">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-red-400 hover:bg-red-950/20 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-x-hidden min-h-screen">
+
+            <!-- TOP NAVBAR -->
+            <header class="h-16 bg-zinc-900/60 border-b border-zinc-800 flex items-center justify-between px-4 sm:px-6 backdrop-blur-md sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <h1 id="page-title" class="text-base font-bold text-white">Dashboard Overview</h1>
+                    <span id="db-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        Connected
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="refresh-current-tab" class="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl transition text-xs flex items-center gap-1.5">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span class="hidden sm:inline">Sync</span>
+                    </button>
+                    <div class="h-4 w-[1px] bg-zinc-800"></div>
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-semibold text-zinc-200">System Admin</div>
+                        <div class="text-[10px] text-zinc-500">Session Active</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB CONTENT CONTAINER -->
+            <div class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+                <!-- 1. OVERVIEW / DASHBOARD TAB -->
+                <section id="tab-dashboard" class="tab-content space-y-6">
+                    <!-- Metric Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Total Revenue</span>
+                                <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="stat-revenue">Rs. 0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Calculated from completed orders</div>
+                        </div>
+
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Pending Topups</span>
+                                <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-amber-400" id="stat-pending">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Action required immediately</div>
+                        </div>
+
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Total Orders</span>
+                                <i data-lucide="shopping-bag" class="w-4 h-4 text-brand-400"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="stat-orders">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">All time topup requests</div>
+                        </div>
+
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Registered Users</span>
+                                <i data-lucide="users" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-white" id="stat-users">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Active player accounts</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                            <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-brand-500"></i>
+                                Topup Orders Status Overview
+                            </h3>
+                            <div class="h-64 relative">
+                                <canvas id="chart-orders-status"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                                    Quick Administrative Actions
+                                </h3>
+                                <div class="space-y-2">
+                                    <button onclick="switchTab('orders')" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-medium">Review Pending Orders</span>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                    <button onclick="switchTab('products')" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-medium">Add New Topup Package</span>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                    <button onclick="switchTab('explorer')" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-medium">Explore Supabase Tables</span>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-zinc-800/80 text-[11px] text-zinc-500 flex items-center justify-between">
+                                <span>UG Top Up Nepal v2.5</span>
+                                <span class="text-brand-400">Production Mode</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. ORDERS MANAGEMENT TAB -->
+                <section id="tab-orders" class="tab-content hidden space-y-4">
+                    <!-- Control Bar -->
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <div class="relative flex-1 md:w-72">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-zinc-500"></i>
+                                <input type="text" id="orders-search" placeholder="Search Player ID, User, Game..."
+                                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                            </div>
+                            <select id="orders-filter-status" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                                <option value="ALL">All Statuses</option>
+                                <option value="pending" selected>Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                            <button onclick="exportToCSV('orders-table', 'ug-topup-orders.csv')" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table Card -->
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto">
+                            <table id="orders-table" class="w-full text-left text-xs text-zinc-300">
+                                <thead class="bg-zinc-950/80 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800">
+                                    <tr>
+                                        <th class="py-3.5 px-4">Order ID / Date</th>
+                                        <th class="py-3.5 px-4">Player Details</th>
+                                        <th class="py-3.5 px-4">Package</th>
+                                        <th class="py-3.5 px-4">Price (NPR)</th>
+                                        <th class="py-3.5 px-4">Status</th>
+                                        <th class="py-3.5 px-4 text-right">Quick Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-zinc-500">Fetching live orders from Supabase...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. PRODUCTS MANAGEMENT TAB -->
+                <section id="tab-products" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-white">Topup Catalog & Packages</h2>
+                        <button onclick="openProductModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-brand-600/20">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add New Package
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="products-grid">
+                        <!-- Product cards dynamically rendered here -->
+                    </div>
+                </section>
+
+                <!-- 4. USERS MANAGEMENT TAB -->
+                <section id="tab-users" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
+                        <div class="relative flex-1 w-full md:w-80">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-zinc-500"></i>
+                            <input type="text" id="users-search" placeholder="Search by name, email, or user ID..."
+                                class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                        </div>
+                        <span class="text-xs text-zinc-400">Managing Registered App Users</span>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-zinc-300">
+                                <thead class="bg-zinc-950/80 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800">
+                                    <tr>
+                                        <th class="py-3.5 px-4">User Details</th>
+                                        <th class="py-3.5 px-4">Role</th>
+                                        <th class="py-3.5 px-4">Wallet Balance</th>
+                                        <th class="py-3.5 px-4">Reward Points</th>
+                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td colspan="5" class="py-8 text-center text-zinc-500">Loading user profiles...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. DYNAMIC SCHEMA EXPLORER -->
+                <section id="tab-explorer" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+                        <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <label class="text-xs font-semibold text-zinc-400">Target Table:</label>
+                                <select id="schema-table-select" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-600">
+                                    <option value="orders">orders</option>
+                                    <option value="products">products</option>
+                                    <option value="users">users / profiles</option>
+                                    <option value="transactions">transactions</option>
+                                    <option value="categories">categories</option>
+                                </select>
+                                <input type="text" id="custom-table-input" placeholder="Or custom table name..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-600 w-44">
+                                <button id="fetch-table-btn" class="bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-2 rounded-xl text-xs font-semibold">Load Table</button>
+                            </div>
+                            <button onclick="exportToCSV('explorer-table', 'export-supabase.csv')" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Table CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto max-h-[550px]">
+                            <table id="explorer-table" class="w-full text-left text-xs text-zinc-300">
+                                <thead id="explorer-thead" class="bg-zinc-950/90 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800 sticky top-0">
+                                </thead>
+                                <tbody id="explorer-tbody" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td class="py-8 text-center text-zinc-500">Select table to explore raw records.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. SQL & REST QUERY RUNNER -->
+                <section id="tab-sql" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i data-lucide="terminal" class="w-4 h-4 text-brand-500"></i>
+                                PostgREST & Query Runner
+                            </h3>
+                            <span class="text-[11px] text-zinc-500">Runs commands directly using current API Key</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Method / Action</label>
+                                <select id="sql-method" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                                    <option value="SELECT">SELECT (Fetch Rows)</option>
+                                    <option value="INSERT">INSERT (Create Row)</option>
+                                    <option value="UPDATE">UPDATE (Modify Row)</option>
+                                    <option value="DELETE">DELETE (Remove Row)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Target Table</label>
+                                <input type="text" id="sql-table" value="orders" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Filter / Match Query (JSON/URI format)</label>
+                                <input type="text" id="sql-query-filter" placeholder='e.g., status=eq.pending or id=eq.1' class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">JSON Payload (For INSERT / UPDATE)</label>
+                            <textarea id="sql-payload" rows="3" placeholder='{"status": "completed"}' class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:border-brand-600"></textarea>
+                        </div>
+
+                        <button id="run-sql-btn" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold py-2.5 px-5 rounded-xl transition flex items-center gap-2">
+                            <i data-lucide="play" class="w-4 h-4"></i> Execute PostgREST Call
+                        </button>
+                    </div>
+
+                    <!-- Execution Results Output -->
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-zinc-400">Response Console Output</span>
+                            <span id="sql-execution-status" class="text-[10px] text-zinc-500">Idle</span>
+                        </div>
+                        <pre id="sql-output" class="bg-zinc-950 p-4 rounded-xl text-xs font-mono text-zinc-300 border border-zinc-800 overflow-x-auto min-h-[160px] max-h-[350px]">Ready to run queries...</pre>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: EDIT PRODUCT -->
+    <div id="product-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 id="product-modal-title" class="text-base font-bold text-white">Add TopUp Package</h3>
+            
+            <form id="product-form" class="space-y-3">
+                <input type="hidden" id="prod-id">
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Package / Game Title</label>
+                    <input type="text" id="prod-title" required placeholder="e.g. Free Fire 610 Diamonds" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Category / Game Tag</label>
+                        <input type="text" id="prod-category" placeholder="Free Fire, PUBG, Gift Cards" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Price (NPR)</label>
+                        <input type="number" step="0.01" id="prod-price" required placeholder="e.g. 520" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Banner / Icon Image URL</label>
+                    <input type="url" id="prod-image" placeholder="https://..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-semibold hover:bg-zinc-700">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-500 shadow-lg shadow-brand-600/20">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SUPABASE CONFIGURATION -->
+    <div id="config-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-brand-500"></i>
+                Supabase Credentials Config
+            </h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Supabase Endpoint URL</label>
+                    <input type="text" id="cfg-url" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anon / Public API Key</label>
+                    <textarea id="cfg-key" rows="4" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white font-mono"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+                <button onclick="closeConfigModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-semibold hover:bg-zinc-700">Cancel</button>
+                <button onclick="saveSupabaseConfig()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-500">Save & Reconnect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC & JAVASCRIPT -->
+    <script>
+        // App State
+        const CONFIG_KEY = 'ug_supabase_config';
+        const AUTH_KEY = 'ug_admin_auth_session';
+        const DEFAULT_URL = 'https://buqummxdfjfaggyypafu.supabase.co';
+        const DEFAULT_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cXVtbXhkZmpmYWdneXlwYWZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6MjAxNTA0NjQwMH0.placeholder';
+
+        let supabaseClient = null;
+        let ordersData = [];
+        let productsData = [];
+        let usersData = [];
+        let ordersChart = null;
+
+        // Initialize Lucide Icons
+        function initIcons() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        // Setup Supabase Client
+        function initSupabase() {
+            const stored = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+            const url = stored.url || DEFAULT_URL;
+            const key = stored.key || DEFAULT_ANON_KEY;
+
+            document.getElementById('cfg-url').value = url;
+            document.getElementById('cfg-key').value = key;
+            document.getElementById('login-endpoint-label').textContent = new URL(url).hostname;
+
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(url, key);
+            }
+        }
+
+        // Authentication Handler
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('admin-password-input').value;
+            const customKey = document.getElementById('login-anon-key').value.trim();
+
+            if (password === 'admin123') {
+                if (customKey) {
+                    const stored = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+                    localStorage.setItem(CONFIG_KEY, JSON.stringify({
+                        url: stored.url || DEFAULT_URL,
+                        key: customKey
+                    }));
+                    initSupabase();
+                }
+                localStorage.setItem(AUTH_KEY, 'authenticated');
+                showDashboard();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        // Toggle Password Visibility
+        document.getElementById('toggle-pwd').addEventListener('click', () => {
+            const input = document.getElementById('admin-password-input');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+
+        // Logout logic
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem(AUTH_KEY);
+            location.reload();
+        });
+
+        // Check authentication state on page load
+        function checkAuth() {
+            initSupabase();
+            const isAuth = localStorage.getItem(AUTH_KEY) === 'authenticated';
+            if (isAuth) {
+                showDashboard();
+            } else {
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('app-view').classList.add('hidden');
+            }
+            initIcons();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            loadDashboardData();
+        }
+
+        // Navigation Tabs switching
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                switchTab(tab);
+            });
+        });
+
+        function switchTab(tabName) {
+            navBtns.forEach(b => {
+                if (b.dataset.tab === tabName) {
+                    b.classList.add('bg-zinc-800', 'text-white');
+                    b.classList.remove('text-zinc-400');
+                } else {
+                    b.classList.remove('bg-zinc-800', 'text-white');
+                    b.classList.add('text-zinc-400');
+                }
+            });
+
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            const pageTitles = {
+                dashboard: 'Dashboard Overview',
+                orders: 'Orders & Topup Management',
+                products: 'Catalog & Products',
+                users: 'User Profiles & Wallets',
+                explorer: 'Supabase Schema Explorer',
+                sql: 'PostgREST / Query Terminal'
+            };
+            document.getElementById('page-title').textContent = pageTitles[tabName] || 'Admin Console';
+
+            if (tabName === 'orders') renderOrdersTable();
+            if (tabName === 'products') renderProductsGrid();
+            if (tabName === 'users') renderUsersTable();
+            if (tabName === 'explorer') loadExplorerTable();
+        }
+
+        // Refresh Current View Button
+        document.getElementById('refresh-current-tab').addEventListener('click', () => {
+            loadDashboardData();
+        });
+
+        // Master Data Loader
+        async function loadDashboardData() {
+            if (!supabaseClient) return;
+
+            // 1. Fetch Orders
+            try {
+                const { data: orders, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if (!error && orders) {
+                    ordersData = orders;
+                } else {
+                    // Fallback mock data if table doesn't exist yet
+                    ordersData = generateMockOrders();
+                }
+            } catch (err) {
+                ordersData = generateMockOrders();
+            }
+
+            // 2. Fetch Products
+            try {
+                const { data: products, error } = await supabaseClient.from('products').select('*');
+                if (!error && products) {
+                    productsData = products;
+                } else {
+                    productsData = generateMockProducts();
+                }
+            } catch (err) {
+                productsData = generateMockProducts();
+            }
+
+            // 3. Fetch Users
+            try {
+                const { data: users, error } = await supabaseClient.from('users').select('*');
+                if (!error && users) {
+                    usersData = users;
+                } else {
+                    usersData = generateMockUsers();
+                }
+            } catch (err) {
+                usersData = generateMockUsers();
+            }
+
+            updateDashboardStats();
+            renderOrdersTable();
+            renderProductsGrid();
+            renderUsersTable();
+            initChart();
+        }
+
+        // Update Stat Cards
+        function updateDashboardStats() {
+            const completed = ordersData.filter(o => o.status === 'completed');
+            const totalRev = completed.reduce((sum, o) => sum + (parseFloat(o.price) || 0), 0);
+            const pendingCount = ordersData.filter(o => o.status === 'pending').length;
+
+            document.getElementById('stat-revenue').textContent = `Rs. ${totalRev.toLocaleString()}`;
+            document.getElementById('stat-pending').textContent = pendingCount;
+            document.getElementById('stat-orders').textContent = ordersData.length;
+            document.getElementById('stat-users').textContent = usersData.length;
+
+            const badge = document.getElementById('badge-pending-count');
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Render Orders Table
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table-body');
+            const search = document.getElementById('orders-search').value.toLowerCase();
+            const filter = document.getElementById('orders-filter-status').value;
+
+            let filtered = ordersData.filter(o => {
+                const matchesSearch = (o.player_id || '').toLowerCase().includes(search) || 
+                                      (o.user_name || o.user_id || '').toLowerCase().includes(search) ||
+                                      (o.package_name || '').toLowerCase().includes(search);
+                const matchesFilter = filter === 'ALL' || o.status === filter;
+                return matchesSearch && matchesFilter;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-zinc-500">No orders match the current criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(o => {
+                const statusBadge = o.status === 'completed' 
+                    ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Completed</span>`
+                    : o.status === 'rejected'
+                    ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">Rejected</span>`
+                    : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Pending</span>`;
+
+                return `
+                    <tr class="hover:bg-zinc-800/40 transition">
+                        <td class="py-3.5 px-4">
+                            <div class="font-mono text-xs text-white">#${o.id || 'N/A'}</div>
+                            <div class="text-[10px] text-zinc-500">${new Date(o.created_at || Date.now()).toLocaleDateString()}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="text-xs text-white font-semibold">${o.user_name || 'Guest User'}</div>
+                            <div class="text-[11px] text-zinc-400 font-mono">UID: ${o.player_id || 'N/A'}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="text-xs text-zinc-200">${o.package_name || 'Topup Item'}</div>
+                        </td>
+                        <td class="py-3.5 px-4 font-bold text-white">
+                            Rs. ${o.price || 0}
+                        </td>
+                        <td class="py-3.5 px-4">${statusBadge}</td>
+                        <td class="py-3.5 px-4 text-right space-x-1">
+                            ${o.status === 'pending' ? `
+                                <button onclick="updateOrderStatus('${o.id}', 'completed')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] rounded-lg transition font-semibold">Approve</button>
+                                <button onclick="updateOrderStatus('${o.id}', 'rejected')" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-500 text-white text-[11px] rounded-lg transition font-semibold">Reject</button>
+                            ` : `
+                                <span class="text-[11px] text-zinc-500">No actions</span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Live status update for Order
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                if (supabaseClient) {
+                    await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+                }
+            } catch(e) {}
+
+            const target = ordersData.find(o => String(o.id) === String(orderId));
+            if (target) target.status = newStatus;
+
+            updateDashboardStats();
+            renderOrdersTable();
+            if (ordersChart) initChart();
+        }
+
+        document.getElementById('orders-search').addEventListener('input', renderOrdersTable);
+        document.getElementById('orders-filter-status').addEventListener('change', renderOrdersTable);
+
+        // Render Products Catalog
+        function renderProductsGrid() {
+            const grid = document.getElementById('products-grid');
+            if (productsData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500">No products configured yet.</div>`;
+                return;
+            }
+
+            grid.innerHTML = productsData.map(p => `
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between hover:border-zinc-700 transition">
+                    <div>
+                        <div class="w-full h-32 bg-zinc-950 rounded-xl mb-3 overflow-hidden flex items-center justify-center relative border border-zinc-800">
+                            ${p.image_url ? `<img src="${p.image_url}" class="w-full h-full object-cover" alt="package">` : `<i data-lucide="gamepad-2" class="w-10 h-10 text-zinc-700"></i>`}
+                            <span class="absolute top-2 right-2 px-2 py-0.5 bg-zinc-900/80 backdrop-blur text-[10px] text-zinc-300 font-semibold rounded-md border border-zinc-700">${p.category || 'Gaming'}</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-white mb-1">${p.title || p.name}</h4>
+                        <div class="text-sm font-black text-brand-500">Rs. ${p.price}</div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-4 pt-3 border-t border-zinc-800/80">
+                        <button onclick="editProduct('${p.id}')" class="flex-1 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl transition">Edit</button>
+                        <button onclick="deleteProduct('${p.id}')" class="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 text-xs font-semibold rounded-xl transition">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+            initIcons();
+        }
+
+        // Render Users Table
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            const search = document.getElementById('users-search').value.toLowerCase();
+
+            const filtered = usersData.filter(u => 
+                (u.name || '').toLowerCase().includes(search) || 
+                (u.email || '').toLowerCase().includes(search) ||
+                (u.id || '').toLowerCase().includes(search)
+            );
+
+            tbody.innerHTML = filtered.map(u => `
+                <tr class="hover:bg-zinc-800/40 transition">
+                    <td class="py-3.5 px-4">
+                        <div class="text-xs font-semibold text-white">${u.name || 'Anonymous Player'}</div>
+                        <div class="text-[10px] text-zinc-400 font-mono">${u.email || u.id}</div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'admin' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-300'}">${u.role || 'user'}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-bold text-white">Rs. ${u.balance || 0}</td>
+                    <td class="py-3.5 px-4 text-amber-400 font-bold">${u.points || 0} pts</td>
+                    <td class="py-3.5 px-4 text-right">
+                        <button onclick="adjustUserBalance('${u.id}')" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] rounded-lg transition font-semibold">Adjust Balance</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('users-search').addEventListener('input', renderUsersTable);
+
+        // Adjust User Balance Handler
+        async function adjustUserBalance(userId) {
+            const amount = prompt("Enter new balance amount for user (NPR):");
+            if (amount !== null && !isNaN(amount)) {
+                const val = parseFloat(amount);
+                try {
+                    if (supabaseClient) {
+                        await supabaseClient.from('users').update({ balance: val }).eq('id', userId);
+                    }
+                } catch(e) {}
+                const target = usersData.find(u => String(u.id) === String(userId));
+                if (target) target.balance = val;
+                renderUsersTable();
+            }
+        }
+
+        // Modal Helpers for Products
+        function openProductModal() {
+            document.getElementById('product-form').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('product-modal-title').textContent = 'Add TopUp Package';
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function editProduct(id) {
+            const p = productsData.find(x => String(x.id) === String(id));
+            if (!p) return;
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-title').value = p.title || p.name || '';
+            document.getElementById('prod-category').value = p.category || '';
+            document.getElementById('prod-price').value = p.price || '';
+            document.getElementById('prod-image').value = p.image_url || '';
+            document.getElementById('product-modal-title').textContent = 'Edit TopUp Package';
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Are you sure you want to remove this topup package?")) {
+                try {
+                    if (supabaseClient) {
+                        await supabaseClient.from('products').delete().eq('id', id);
+                    }
+                } catch(e) {}
+                productsData = productsData.filter(x => String(x.id) !== String(id));
+                renderProductsGrid();
+            }
+        }
+
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const newItem = {
+                id: id || 'prod_' + Date.now(),
+                title: document.getElementById('prod-title').value,
+                category: document.getElementById('prod-category').value,
+                price: parseFloat(document.getElementById('prod-price').value),
+                image_url: document.getElementById('prod-image').value
+            };
+
+            try {
+                if (supabaseClient) {
+                    await supabaseClient.from('products').upsert([newItem]);
+                }
+            } catch(e) {}
+
+            if (id) {
+                const idx = productsData.findIndex(x => String(x.id) === String(id));
+                if (idx !== -1) productsData[idx] = newItem;
+            } else {
+                productsData.unshift(newItem);
+            }
+
+            closeProductModal();
+            renderProductsGrid();
+        });
+
+        // Dynamic Schema Explorer
+        document.getElementById('fetch-table-btn').addEventListener('click', loadExplorerTable);
+
+        async function loadExplorerTable() {
+            const customTab = document.getElementById('custom-table-input').value.trim();
+            const selectTab = document.getElementById('schema-table-select').value;
+            const tableName = customTab || selectTab;
+
+            const thead = document.getElementById('explorer-thead');
+            const tbody = document.getElementById('explorer-tbody');
+
+            tbody.innerHTML = `<tr><td class="py-8 text-center text-zinc-500">Querying table "${tableName}"...</td></tr>`;
+
+            try {
+                let data = [];
+                if (supabaseClient) {
+                    const res = await supabaseClient.from(tableName).select('*').limit(50);
+                    if (res.data) data = res.data;
+                }
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td class="py-8 text-center text-zinc-500">No records found or table "${tableName}" does not exist.</td></tr>`;
+                    thead.innerHTML = '';
+                    return;
+                }
+
+                const keys = Object.keys(data[0]);
+                thead.innerHTML = `<tr>${keys.map(k => `<th class="py-3 px-4">${k}</th>`).join('')}</tr>`;
+                
+                tbody.innerHTML = data.map(row => `
+                    <tr class="hover:bg-zinc-800/40 transition">
+                        ${keys.map(k => `<td class="py-3 px-4 max-w-xs truncate">${typeof row[k] === 'object' ? JSON.stringify(row[k]) : row[k]}</td>`).join('')}
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td class="py-8 text-center text-red-400">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        // PostgREST/SQL Query Runner
+        document.getElementById('run-sql-btn').addEventListener('click', async () => {
+            const method = document.getElementById('sql-method').value;
+            const table = document.getElementById('sql-table').value.trim();
+            const queryFilter = document.getElementById('sql-query-filter').value.trim();
+            const payloadStr = document.getElementById('sql-payload').value.trim();
+            const output = document.getElementById('sql-output');
+            const statusLabel = document.getElementById('sql-execution-status');
+
+            statusLabel.textContent = 'Executing...';
+            statusLabel.className = 'text-[10px] text-amber-400';
+
+            try {
+                if (!supabaseClient) throw new Error("Supabase client not initialized.");
+                let builder = supabaseClient.from(table);
+                let result;
+
+                if (method === 'SELECT') {
+                    result = await builder.select('*');
+                } else if (method === 'INSERT') {
+                    const parsed = JSON.parse(payloadStr || '{}');
+                    result = await builder.insert([parsed]);
+                } else if (method === 'UPDATE') {
+                    const parsed = JSON.parse(payloadStr || '{}');
+                    result = await builder.update(parsed);
+                } else if (method === 'DELETE') {
+                    result = await builder.delete();
+                }
+
+                output.textContent = JSON.stringify(result, null, 2);
+                statusLabel.textContent = `Status: ${result.error ? 'Error' : '200 OK'}`;
+                statusLabel.className = result.error ? 'text-[10px] text-red-400' : 'text-[10px] text-emerald-400';
+            } catch (err) {
+                output.textContent = `Error executing command:\n${err.message}`;
+                statusLabel.textContent = 'Execution Failed';
+                statusLabel.className = 'text-[10px] text-red-400';
+            }
+        });
+
+        // Export Table to CSV
+        function exportToCSV(tableId, filename) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+
+            let csv = [];
+            const rows = table.querySelectorAll("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) {
+                    let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/"/g, '""');
+                    row.push('"' + text + '"');
+                }
+                csv.push(row.join(","));
+            }
+
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        // Supabase Config Modal controls
+        document.getElementById('config-btn').addEventListener('click', () => {
+            document.getElementById('config-modal').classList.remove('hidden');
+        });
+
+        function closeConfigModal() {
+            document.getElementById('config-modal').classList.add('hidden');
+        }
+
+        function saveSupabaseConfig() {
+            const url = document.getElementById('cfg-url').value.trim();
+            const key = document.getElementById('cfg-key').value.trim();
+            
+            localStorage.setItem(CONFIG_KEY, JSON.stringify({ url, key }));
+            initSupabase();
+            closeConfigModal();
+            loadDashboardData();
+        }
+
+        // Chart Visualizer Initialization
+        function initChart() {
+            const ctx = document.getElementById('chart-orders-status').getContext('2d');
+            const pending = ordersData.filter(o => o.status === 'pending').length;
+            const completed = ordersData.filter(o => o.status === 'completed').length;
+            const rejected = ordersData.filter(o => o.status === 'rejected').length;
+
+            if (ordersChart) {
+                ordersChart.destroy();
+            }
+
+            ordersChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Completed Topups', 'Pending Requests', 'Rejected / Cancelled'],
+                    datasets: [{
+                        label: 'Orders Count',
+                        data: [completed, pending, rejected],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.6)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(239, 68, 68, 0.6)'
+                        ],
+                        borderColor: [
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444'
+                        ],
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a1a1aa' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a1a1aa' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mock Generators for initial state fallback
+        function generateMockOrders() {
+            return [
+                { id: '1001', player_id: '542198762', user_name: 'Aarav Sharma', package_name: 'Free Fire 610 Diamonds', price: 520, status: 'pending', created_at: new Date().toISOString() },
+                { id: '1002', player_id: '882194012', user_name: 'Rohan Thapa', package_name: 'PUBG Mobile 325 UC', price: 650, status: 'completed', created_at: new Date().toISOString() },
+                { id: '1003', player_id: '129402941', user_name: 'Sujan Shrestha', package_name: 'Weekly Membership FF', price: 210, status: 'completed', created_at: new Date().toISOString() },
+                { id: '1004', player_id: '992182741', user_name: 'Bikash Giri', package_name: 'Free Fire 1080 Diamonds', price: 920, status: 'rejected', created_at: new Date().toISOString() }
+            ];
+        }
+
+        function generateMockProducts() {
+            return [
+                { id: 'p1', title: 'Free Fire 610 Diamonds', category: 'Free Fire', price: 520, image_url: '' },
+                { id: 'p2', title: 'PUBG Mobile 325 UC', category: 'PUBG', price: 650, image_url: '' },
+                { id: 'p3', title: 'Free Fire Weekly Membership', category: 'Free Fire', price: 210, image_url: '' },
+                { id: 'p4', title: 'Google Play Gift Card $10', category: 'Gift Cards', price: 1450, image_url: '' }
+            ];
+        }
+
+        function generateMockUsers() {
+            return [
+                { id: 'usr_01', name: 'Aarav Sharma', email: 'aarav@gmail.com', role: 'user', balance: 1200, points: 50 },
+                { id: 'usr_02', name: 'Admin Account', email: 'admin@ugtopup.com', role: 'admin', balance: 99999, points: 1000 },
+                { id: 'usr_03', name: 'Rohan Thapa', email: 'rohan@yahoo.com', role: 'user', balance: 350, points: 15 }
+            ];
+        }
+
+        // Run application setup
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
+```
