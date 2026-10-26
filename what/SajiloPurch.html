@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UG Top Up Center - Master Console</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fef2f2',
+                            100: '#ffe1e1',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        code, pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+        .glass-card {
+            background: rgba(24, 24, 27, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(63, 63, 70, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 antialiased selection:bg-brand-600 selection:text-white min-h-screen flex flex-col">
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- 1. LOGIN SCREEN (Master Access: admin123) -->
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950 p-4">
+        <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-44 h-44 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-16 -bottom-16 w-44 h-44 bg-brand-800/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="text-center mb-8 relative">
+                <div class="w-16 h-16 bg-gradient-to-tr from-brand-700 to-brand-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-brand-600/30 border border-brand-400/30">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-tight text-white">UG TOP UP NEPAL</h1>
+                <p class="text-xs text-zinc-400 mt-1 font-medium">Nested Database Administration Portal</p>
+                
+                <div class="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300">
+                    <span id="login-status-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="login-endpoint-label" class="font-mono text-zinc-400 truncate max-w-[200px]">Configure Supabase URL</span>
+                </div>
+            </div>
+
+            <form id="login-form" class="space-y-4 relative">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Master Key</label>
+                    <div class="relative">
+                        <input type="password" id="admin-password-input" required placeholder="Enter master key..."
+                            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600 text-white placeholder-zinc-600 pr-10 transition">
+                        <button type="button" id="toggle-pwd" class="absolute right-3 top-3.5 text-zinc-500 hover:text-zinc-300">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="login-error" class="hidden text-xs text-red-400 bg-red-950/50 border border-red-800/60 rounded-xl p-3 text-center">
+                    Invalid Key. Default master password is <code class="bg-red-900/50 px-1.5 py-0.5 rounded text-red-200 font-mono">admin123</code>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 px-4 rounded-xl text-sm transition shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2">
+                    <span>Unlock Master Console</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-zinc-800/80 text-center">
+                <button type="button" onclick="openConfigModal()" class="text-xs text-zinc-500 hover:text-brand-400 transition flex items-center justify-center gap-1.5 mx-auto">
+                    <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                    <span>Configure Supabase API Keys</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP DASHBOARD -->
+    <div id="app-view" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- SIDEBAR OVERLAY FOR MOBILE -->
+        <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/60 z-40 md:hidden hidden transition-opacity"></div>
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar-panel" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800/80 flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+            <!-- Brand Logo Header -->
+            <div class="p-4 sm:p-5 border-b border-zinc-800/80 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-brand-700 to-brand-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-600/20">
+                        UG
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-extrabold text-white leading-tight">UG TOPUPS</h2>
+                        <span class="text-[10px] text-brand-400 font-semibold tracking-wider uppercase">Nested DB Engine</span>
+                    </div>
+                </div>
+                <button onclick="openConfigModal()" title="Supabase API Settings" class="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1 flex-1 overflow-y-auto">
+                <button data-tab="dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-zinc-800 transition">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Overview</span>
+                </button>
+                <button data-tab="orders" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                        <span>Orders</span>
+                    </div>
+                    <span id="badge-pending-count" class="hidden px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-full font-bold">0</span>
+                </button>
+                <button data-tab="packages" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="package" class="w-4 h-4"></i>
+                    <span>Packages & Items</span>
+                </button>
+                <button data-tab="users" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>User Directory</span>
+                </button>
+                <button data-tab="explorer" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Schema Inspector</span>
+                </button>
+                <button data-tab="sql" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition">
+                    <i data-lucide="terminal" class="w-4 h-4"></i>
+                    <span>SQL / PostgREST Runner</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-3 border-t border-zinc-800/80">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-red-400 hover:bg-red-950/20 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Log Out Session</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-x-hidden min-h-screen">
+
+            <!-- TOP HEADER NAVBAR -->
+            <header class="h-16 bg-zinc-900/80 border-b border-zinc-800/80 flex items-center justify-between px-4 sm:px-6 backdrop-blur-md sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMobileSidebar()" class="p-2 text-zinc-400 hover:text-white rounded-xl md:hidden hover:bg-zinc-800">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <h1 id="page-title" class="text-sm sm:text-base font-bold text-white">Dashboard Overview</h1>
+                    <span id="db-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-800 text-zinc-400 border border-zinc-700 flex items-center gap-1.5">
+                        <span id="db-status-dot" class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+                        <span id="db-status-text">Disconnected</span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button id="refresh-current-tab" class="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl transition text-xs flex items-center gap-1.5">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span class="hidden sm:inline">Sync Data</span>
+                    </button>
+                    <div class="h-4 w-[1px] bg-zinc-800"></div>
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-semibold text-zinc-200">Master Admin</div>
+                        <div class="text-[10px] text-zinc-500">Full Access</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTAINER FOR TABS -->
+            <div class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+                <!-- TAB 1: OVERVIEW / DASHBOARD -->
+                <section id="tab-dashboard" class="tab-content space-y-6">
+                    <!-- Metric Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Total Revenue</span>
+                                <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                            <div class="text-2xl font-extrabold text-white" id="stat-revenue">Rs. 0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Sum of completed order prices</div>
+                        </div>
+
+                        <div class="bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Pending Requests</span>
+                                <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                            </div>
+                            <div class="text-2xl font-extrabold text-amber-400" id="stat-pending">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Awaiting topup fulfillment</div>
+                        </div>
+
+                        <div class="bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Total Packages</span>
+                                <i data-lucide="package" class="w-4 h-4 text-brand-400"></i>
+                            </div>
+                            <div class="text-2xl font-extrabold text-white" id="stat-packages">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">Active game categories</div>
+                        </div>
+
+                        <div class="bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                            <div class="flex items-center justify-between text-zinc-400 mb-2">
+                                <span class="text-xs font-semibold">Registered Users</span>
+                                <i data-lucide="users" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <div class="text-2xl font-extrabold text-white" id="stat-users">0</div>
+                            <div class="text-[11px] text-zinc-500 mt-2">User accounts in DB</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart & Quick Actions -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-5 shadow-xl">
+                            <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-brand-500"></i>
+                                Topup Orders Status Breakdown
+                            </h3>
+                            <div class="h-64 relative">
+                                <canvas id="chart-orders-status"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+                            <div>
+                                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                                    Quick Operations
+                                </h3>
+                                <div class="space-y-2.5">
+                                    <button onclick="switchTab('orders')" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-semibold">Manage Topup Orders</span>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                    <button onclick="openPackageModal()" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-semibold">Add Package & Nested Items</span>
+                                        <i data-lucide="plus" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                    <button onclick="switchTab('users')" class="w-full text-left px-3.5 py-3 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-brand-600/50 transition flex items-center justify-between group">
+                                        <span class="text-xs text-zinc-300 font-semibold">View User Credentials</span>
+                                        <i data-lucide="key" class="w-4 h-4 text-zinc-500 group-hover:text-brand-400 transition"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-zinc-800/80 text-[11px] text-zinc-500 flex items-center justify-between">
+                                <span>UG Top Up Console v4.0</span>
+                                <span id="sync-indicator" class="text-zinc-500 font-semibold">Sync: Off</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: ORDERS MANAGEMENT -->
+                <section id="tab-orders" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+                            <div class="relative w-full sm:w-72">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-zinc-500"></i>
+                                <input type="text" id="orders-search" placeholder="Search user, category, item..."
+                                    class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                            </div>
+                            <select id="orders-filter-status" class="w-full sm:w-auto bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                                <option value="ALL">All Statuses</option>
+                                <option value="pending" selected>Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                            <button onclick="exportToCSV('orders-table', 'ug-orders.csv')" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto">
+                            <table id="orders-table" class="w-full text-left text-xs text-zinc-300">
+                                <thead class="bg-zinc-950/90 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800">
+                                    <tr>
+                                        <th class="py-3.5 px-4">Order ID & Date</th>
+                                        <th class="py-3.5 px-4">User Email</th>
+                                        <th class="py-3.5 px-4">Category & Item</th>
+                                        <th class="py-3.5 px-4">Dynamic Form Data</th>
+                                        <th class="py-3.5 px-4">Price</th>
+                                        <th class="py-3.5 px-4">Status</th>
+                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td colspan="7" class="py-8 text-center text-zinc-500">No orders loaded. Check Supabase connection.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: PACKAGES & NESTED ITEMS -->
+                <section id="tab-packages" class="tab-content hidden space-y-4">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Packages Directory</h2>
+                            <p class="text-xs text-zinc-400">Categories containing nested custom dynamic form fields and items list.</p>
+                        </div>
+                        <button onclick="openPackageModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-brand-600/20">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add New Package
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="packages-grid">
+                        <!-- Packages dynamically injected -->
+                    </div>
+                </section>
+
+                <!-- TAB 4: USER DIRECTORY & CREDENTIALS -->
+                <section id="tab-users" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between shadow-lg">
+                        <div class="relative flex-1 w-full md:w-80">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-zinc-500"></i>
+                            <input type="text" id="users-search" placeholder="Search user email or credentials..."
+                                class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-600">
+                        </div>
+                        <button onclick="openUserModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-brand-600/20">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Add User
+                        </button>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-zinc-300">
+                                <thead class="bg-zinc-950/90 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800">
+                                    <tr>
+                                        <th class="py-3.5 px-4">User ID</th>
+                                        <th class="py-3.5 px-4">User Email</th>
+                                        <th class="py-3.5 px-4">Password</th>
+                                        <th class="py-3.5 px-4">Role</th>
+                                        <th class="py-3.5 px-4">Created At</th>
+                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-zinc-500">No users fetched.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: SCHEMA INSPECTOR -->
+                <section id="tab-explorer" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3 shadow-lg">
+                        <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <label class="text-xs font-semibold text-zinc-400">Target Table:</label>
+                                <select id="schema-table-select" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-600">
+                                    <option value="packages">packages</option>
+                                    <option value="orders">orders</option>
+                                    <option value="users">users</option>
+                                </select>
+                                <input type="text" id="custom-table-input" placeholder="Or type custom table..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-600 w-40">
+                                <button id="fetch-table-btn" class="bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-2 rounded-xl text-xs font-semibold">Inspect Data</button>
+                            </div>
+                            <button onclick="exportToCSV('explorer-table', 'export-table.csv')" class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto max-h-[550px]">
+                            <table id="explorer-table" class="w-full text-left text-xs text-zinc-300">
+                                <thead id="explorer-thead" class="bg-zinc-950/90 uppercase font-bold text-zinc-400 text-[10px] tracking-wider border-b border-zinc-800 sticky top-0">
+                                </thead>
+                                <tbody id="explorer-tbody" class="divide-y divide-zinc-800/60 font-medium">
+                                    <tr>
+                                        <td class="py-8 text-center text-zinc-500">Select a table to inspect raw rows.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: SQL / POSTGREST TERMINAL -->
+                <section id="tab-sql" class="tab-content hidden space-y-4">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i data-lucide="terminal" class="w-4 h-4 text-brand-500"></i>
+                                Direct Code / PostgREST Database Console
+                            </h3>
+                            <span class="text-[11px] text-zinc-500">Executes live calls via configured key</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">HTTP Method</label>
+                                <select id="sql-method" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                                    <option value="SELECT">SELECT (Fetch Records)</option>
+                                    <option value="INSERT">INSERT (Add Row)</option>
+                                    <option value="UPDATE">UPDATE (Modify Row)</option>
+                                    <option value="DELETE">DELETE (Remove Row)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Target Table Name</label>
+                                <input type="text" id="sql-table" value="packages" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Filter ID (Optional for UPDATE/DELETE)</label>
+                                <input type="text" id="sql-query-id" placeholder="UUID or Row ID" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white font-mono">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">JSON Code Payload (For INSERT / UPDATE)</label>
+                            <textarea id="sql-payload" rows="4" placeholder='{ "category_name": "Free Fire", "category_icon": "https://...", "form": {}, "items": [] }' class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:border-brand-600"></textarea>
+                        </div>
+
+                        <button id="run-sql-btn" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-brand-600/20">
+                            <i data-lucide="play" class="w-4 h-4"></i> Execute DB API Call
+                        </button>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-zinc-400">Response Code Output</span>
+                            <span id="sql-execution-status" class="text-[10px] text-zinc-500">Idle</span>
+                        </div>
+                        <pre id="sql-output" class="bg-zinc-950 p-4 rounded-xl text-xs font-mono text-zinc-300 border border-zinc-800 overflow-x-auto min-h-[160px] max-h-[350px]">Ready to run queries...</pre>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD / EDIT PACKAGE (Category, Dynamic Form, Nested Items) -->
+    <div id="package-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl my-8">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h3 id="package-modal-title" class="text-base font-bold text-white">Add Package & Nested Items</h3>
+                <button onclick="closePackageModal()" class="text-zinc-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <form id="package-form" class="space-y-4">
+                <input type="hidden" id="pkg-id">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Category Name</label>
+                        <input type="text" id="pkg-category-name" required placeholder="e.g. Free Fire, PUBG MOBILE" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Category Icon URL (Square Ratio)</label>
+                        <input type="url" id="pkg-category-icon" placeholder="https://example.com/icon.png" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                    </div>
+                </div>
+
+                <!-- FORM FIELDS EDITOR -->
+                <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3.5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand-500"></i>
+                            Dynamic Form Fields Configuration
+                        </label>
+                        <button type="button" onclick="addFormFieldRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-brand-400 px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Add Field
+                        </button>
+                    </div>
+                    <div id="form-fields-container" class="space-y-2">
+                        <!-- Dynamic form field inputs injected here -->
+                    </div>
+                </div>
+
+                <!-- NESTED ITEMS EDITOR -->
+                <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3.5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                            <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
+                            Nested Items Catalog
+                        </label>
+                        <button type="button" onclick="addItemRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-brand-400 px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Add Item
+                        </button>
+                    </div>
+                    <div id="items-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                        <!-- Dynamic item inputs injected here -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+                    <button type="button" onclick="closePackageModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-semibold hover:bg-zinc-700">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-500 shadow-lg shadow-brand-600/20">Save Package</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT USER CREDENTIALS -->
+    <div id="user-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h3 id="user-modal-title" class="text-base font-bold text-white">User Credentials</h3>
+                <button onclick="closeUserModal()" class="text-zinc-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form id="user-form" class="space-y-3">
+                <input type="hidden" id="edit-user-id">
+                
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">User Email</label>
+                    <input type="email" id="edit-user-email" required placeholder="player@example.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Password (Plaintext / Stored)</label>
+                    <input type="text" id="edit-user-pass" required placeholder="User password" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Role</label>
+                    <select id="edit-user-role" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <option value="user">User / Player</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-semibold hover:bg-zinc-700">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-500 shadow-lg shadow-brand-600/20">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SUPABASE CONFIGURATION -->
+    <div id="config-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-brand-500"></i>
+                Supabase Credentials Setup
+            </h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Supabase Endpoint URL</label>
+                    <input type="text" id="cfg-url" placeholder="https://your-id.supabase.co" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anon / Public API Key</label>
+                    <textarea id="cfg-key" rows="4" placeholder="eyJhbGciOi..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white font-mono"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+                <button onclick="closeConfigModal()" class="px-4 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-semibold hover:bg-zinc-700">Cancel</button>
+                <button onclick="saveSupabaseConfig()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold hover:bg-brand-500">Save & Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC & CONTROLLERS -->
+    <script>
+        // CONFIG & STATE MANAGEMENT
+        const CONFIG_KEY = 'ug_supabase_config_v2';
+        const AUTH_KEY = 'ug_admin_auth_session';
+
+        let supabaseClient = null;
+        let packagesData = [];
+        let ordersData = [];
+        let usersData = [];
+        let ordersChart = null;
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl text-xs font-semibold text-white shadow-xl flex items-center gap-2 transition transform translate-y-2 pointer-events-auto ${type === 'success' ? 'bg-emerald-600 border border-emerald-500' : 'bg-brand-600 border border-brand-500'}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-4 h-4"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            if (window.lucide) lucide.createIcons();
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initIcons() {
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar-panel');
+            const backdrop = document.getElementById('mobile-sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function initSupabase() {
+            const stored = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+            const url = stored.url || '';
+            const key = stored.key || '';
+
+            document.getElementById('cfg-url').value = url;
+            document.getElementById('cfg-key').value = key;
+
+            const statusDot = document.getElementById('db-status-dot');
+            const statusText = document.getElementById('db-status-text');
+            const loginDot = document.getElementById('login-status-dot');
+            const loginLabel = document.getElementById('login-endpoint-label');
+
+            if (url && key && window.supabase) {
+                try {
+                    supabaseClient = window.supabase.createClient(url, key);
+                    statusDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping';
+                    statusText.textContent = 'Supabase Connected';
+                    statusText.className = 'text-emerald-400 font-semibold';
+                    
+                    loginDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+                    loginLabel.textContent = new URL(url).hostname;
+                    document.getElementById('sync-indicator').textContent = 'Sync: Active';
+                    document.getElementById('sync-indicator').className = 'text-emerald-400 font-semibold';
+                    return true;
+                } catch(e) {
+                    console.error("Supabase init error:", e);
+                }
+            }
+
+            statusDot.className = 'w-1.5 h-1.5 rounded-full bg-zinc-500';
+            statusText.textContent = 'Disconnected (No Keys)';
+            statusText.className = 'text-zinc-400';
+            loginDot.className = 'w-2 h-2 rounded-full bg-amber-500';
+            loginLabel.textContent = 'Configure Supabase Keys';
+            document.getElementById('sync-indicator').textContent = 'Sync: Off';
+            document.getElementById('sync-indicator').className = 'text-zinc-500 font-semibold';
+            supabaseClient = null;
+            return false;
+        }
+
+        // AUTHENTICATION
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('admin-password-input').value;
+            if (password === 'admin123') {
+                localStorage.setItem(AUTH_KEY, 'authenticated');
+                showDashboard();
+                showToast("Logged in as Master Admin");
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('toggle-pwd').addEventListener('click', () => {
+            const input = document.getElementById('admin-password-input');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem(AUTH_KEY);
+            location.reload();
+        });
+
+        function checkAuth() {
+            initSupabase();
+            if (localStorage.getItem(AUTH_KEY) === 'authenticated') {
+                showDashboard();
+            } else {
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('app-view').classList.add('hidden');
+            }
+            initIcons();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            loadDashboardData();
+        }
+
+        // TAB SWITCHING
+        const navBtns = document.querySelectorAll('.nav-btn');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        function switchTab(tabName) {
+            navBtns.forEach(b => {
+                if (b.dataset.tab === tabName) {
+                    b.classList.add('bg-zinc-800', 'text-white');
+                    b.classList.remove('text-zinc-400');
+                } else {
+                    b.classList.remove('bg-zinc-800', 'text-white');
+                    b.classList.add('text-zinc-400');
+                }
+            });
+
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            const pageTitles = {
+                dashboard: 'Dashboard Overview',
+                orders: 'Orders Management',
+                packages: 'Packages Catalog & Form Builder',
+                users: 'User Credentials Directory',
+                explorer: 'Schema Inspector',
+                sql: 'SQL / PostgREST Console Runner'
+            };
+            document.getElementById('page-title').textContent = pageTitles[tabName] || 'Admin Suite';
+
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar-panel').classList.add('-translate-x-full');
+                document.getElementById('mobile-sidebar-backdrop').classList.add('hidden');
+            }
+
+            if (tabName === 'orders') renderOrdersTable();
+            if (tabName === 'packages') renderPackagesGrid();
+            if (tabName === 'users') renderUsersTable();
+            if (tabName === 'explorer') loadExplorerTable();
+        }
+
+        document.getElementById('refresh-current-tab').addEventListener('click', () => loadDashboardData());
+
+        // FETCH DATA FROM SUPABASE
+        async function loadDashboardData() {
+            if (!supabaseClient) {
+                packagesData = [];
+                ordersData = [];
+                usersData = [];
+                updateDashboardStats();
+                renderOrdersTable();
+                renderPackagesGrid();
+                renderUsersTable();
+                initChart();
+                return;
+            }
+
+            try {
+                // 1. Fetch Packages
+                const { data: pkgData, error: pkgErr } = await supabaseClient.from('packages').select('*');
+                if (!pkgErr && pkgData) packagesData = pkgData;
+
+                // 2. Fetch Orders
+                const { data: ordData, error: ordErr } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if (!ordErr && ordData) ordersData = ordData;
+
+                // 3. Fetch Users
+                const { data: usrData, error: usrErr } = await supabaseClient.from('users').select('*');
+                if (!usrErr && usrData) usersData = usrData;
+
+            } catch(err) {
+                console.error("Fetch error:", err);
+                showToast("Error loading Supabase tables", "error");
+            }
+
+            updateDashboardStats();
+            renderOrdersTable();
+            renderPackagesGrid();
+            renderUsersTable();
+            initChart();
+        }
+
+        function updateDashboardStats() {
+            const completed = ordersData.filter(o => o.status === 'completed');
+            const totalRev = completed.reduce((sum, o) => {
+                const itemPrice = o.selected_item?.item_price || o.item_price || 0;
+                return sum + parseFloat(itemPrice);
+            }, 0);
+            
+            const pendingCount = ordersData.filter(o => o.status === 'pending').length;
+
+            document.getElementById('stat-revenue').textContent = `Rs. ${totalRev.toLocaleString()}`;
+            document.getElementById('stat-pending').textContent = pendingCount;
+            document.getElementById('stat-packages').textContent = packagesData.length;
+            document.getElementById('stat-users').textContent = usersData.length;
+
+            const badge = document.getElementById('badge-pending-count');
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // 1. ORDERS CONTROLLER
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table-body');
+            const search = document.getElementById('orders-search').value.toLowerCase();
+            const filter = document.getElementById('orders-filter-status').value;
+
+            let filtered = ordersData.filter(o => {
+                const userMatch = (o.user_email || '').toLowerCase().includes(search);
+                const catMatch = (o.category_name || '').toLowerCase().includes(search);
+                const itemMatch = (o.selected_item?.item_name || '').toLowerCase().includes(search);
+                const matchesFilter = filter === 'ALL' || o.status === filter;
+                return (userMatch || catMatch || itemMatch) && matchesFilter;
+            });
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-zinc-500">No orders found matching standard parameters.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(o => {
+                const statusBadge = o.status === 'completed' 
+                    ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Completed</span>`
+                    : o.status === 'rejected'
+                    ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">Rejected</span>`
+                    : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Pending</span>`;
+
+                const itemName = o.selected_item?.item_name || 'Unspecified Item';
+                const itemPrice = o.selected_item?.item_price || o.item_price || 0;
+                const formDataFormatted = o.form_data ? Object.entries(o.form_data).map(([k, v]) => `<span class="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 text-zinc-300"><strong>${k}:</strong> ${v}</span>`).join(' ') : 'None';
+
+                return `
+                    <tr class="hover:bg-zinc-800/40 transition">
+                        <td class="py-3.5 px-4">
+                            <div class="font-mono text-xs text-white">#${String(o.id).substring(0, 8)}</div>
+                            <div class="text-[10px] text-zinc-500">${o.created_at ? new Date(o.created_at).toLocaleString() : 'N/A'}</div>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-white">${o.user_email || 'Guest User'}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="text-xs text-zinc-200 font-bold">${itemName}</div>
+                            <span class="text-[10px] text-brand-400">${o.category_name || 'Category'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 max-w-xs truncate">${formDataFormatted}</td>
+                        <td class="py-3.5 px-4 font-bold text-white">Rs. ${itemPrice}</td>
+                        <td class="py-3.5 px-4">${statusBadge}</td>
+                        <td class="py-3.5 px-4 text-right space-x-1">
+                            ${o.status === 'pending' ? `
+                                <button onclick="updateOrderStatus('${o.id}', 'completed')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] rounded-lg transition font-semibold">Complete</button>
+                                <button onclick="updateOrderStatus('${o.id}', 'rejected')" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-500 text-white text-[11px] rounded-lg transition font-semibold">Reject</button>
+                            ` : `
+                                <button onclick="deleteOrder('${o.id}')" class="px-2 py-1 bg-zinc-800 hover:bg-red-900/40 text-zinc-400 hover:text-red-400 text-[11px] rounded-lg transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            initIcons();
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                if (supabaseClient) {
+                    await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+                }
+            } catch(e){}
+
+            const target = ordersData.find(o => String(o.id) === String(orderId));
+            if (target) target.status = newStatus;
+
+            updateDashboardStats();
+            renderOrdersTable();
+            initChart();
+            showToast(`Order marked as ${newStatus}`);
+        }
+
+        async function deleteOrder(orderId) {
+            if (confirm("Delete this order record?")) {
+                try { if (supabaseClient) await supabaseClient.from('orders').delete().eq('id', orderId); } catch(e){}
+                ordersData = ordersData.filter(o => String(o.id) !== String(orderId));
+                updateDashboardStats();
+                renderOrdersTable();
+                showToast("Order removed");
+            }
+        }
+
+        document.getElementById('orders-search').addEventListener('input', renderOrdersTable);
+        document.getElementById('orders-filter-status').addEventListener('change', renderOrdersTable);
+
+        // 2. PACKAGES CONTROLLER (Categories, Dynamic Form Fields, Nested Items)
+        function renderPackagesGrid() {
+            const grid = document.getElementById('packages-grid');
+
+            if (!packagesData.length) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-zinc-500 bg-zinc-900/50 border border-zinc-800 rounded-2xl">No packages found in 'packages' table. Click "Add New Package" to get started.</div>`;
+                return;
+            }
+
+            grid.innerHTML = packagesData.map(p => {
+                const itemsCount = Array.isArray(p.items) ? p.items.length : 0;
+                const formCount = Array.isArray(p.form) ? p.form.length : 0;
+
+                const itemsPreview = Array.isArray(p.items) ? p.items.slice(0, 3).map(i => `
+                    <div class="flex items-center justify-between text-[11px] bg-zinc-950/80 px-2.5 py-1.5 rounded-lg border border-zinc-800">
+                        <span class="text-zinc-200 truncate">${i.item_name}</span>
+                        <span class="font-bold text-emerald-400">Rs. ${i.item_price}</span>
+                    </div>
+                `).join('') : '';
+
+                return `
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between hover:border-zinc-700 transition space-y-3">
+                        <div>
+                            <div class="flex items-center gap-3 border-b border-zinc-800/80 pb-3">
+                                <div class="w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+                                    ${p.category_icon ? `<img src="${p.category_icon}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x100/18181b/ffffff?text=Icon';">` : `<i data-lucide="package" class="w-6 h-6 text-brand-500"></i>`}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h4 class="text-sm font-bold text-white truncate">${p.category_name}</h4>
+                                    <div class="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
+                                        <span>${itemsCount} Items</span>
+                                        <span>•</span>
+                                        <span>${formCount} Dynamic Inputs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 space-y-1">
+                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Nested Items Preview</span>
+                                ${itemsPreview || `<p class="text-[11px] text-zinc-500 italic">No items attached.</p>`}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-3 border-t border-zinc-800/80">
+                            <button onclick="editPackage('${p.id}')" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl transition">Edit Package</button>
+                            <button onclick="deletePackage('${p.id}')" class="px-3 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 text-xs font-semibold rounded-xl transition">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            initIcons();
+        }
+
+        function openPackageModal() {
+            document.getElementById('package-form').reset();
+            document.getElementById('pkg-id').value = '';
+            document.getElementById('form-fields-container').innerHTML = '';
+            document.getElementById('items-container').innerHTML = '';
+            document.getElementById('package-modal-title').textContent = 'Add New Package';
+            
+            // Add initial row helpers
+            addFormFieldRow('Game UID', 'int', true);
+            addItemRow('100 Diamond', 100, '');
+
+            document.getElementById('package-modal').classList.remove('hidden');
+        }
+
+        function closePackageModal() {
+            document.getElementById('package-modal').classList.add('hidden');
+        }
+
+        function addFormFieldRow(name = '', type = 'int', req = false) {
+            const container = document.getElementById('form-fields-container');
+            const rowId = 'field_row_' + Date.now() + Math.random().toString(36).substring(2, 5);
+            
+            const div = document.createElement('div');
+            div.id = rowId;
+            div.className = "flex items-center gap-2 bg-zinc-900 p-2 rounded-xl border border-zinc-800";
+            div.innerHTML = `
+                <input type="text" value="${name}" placeholder="Field Label (e.g. Game UID)" class="field-label flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <select class="field-type bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1.5 text-xs text-white">
+                    <option value="int" ${type === 'int' ? 'selected' : ''}>int (Number)</option>
+                    <option value="char" ${type === 'char' ? 'selected' : ''}>char (Text)</option>
+                    <option value="mixed" ${type === 'mixed' ? 'selected' : ''}>mixed</option>
+                    <option value="file" ${type === 'file' ? 'selected' : ''}>file/image</option>
+                </select>
+                <label class="flex items-center gap-1 text-[11px] text-zinc-400 font-medium px-1 cursor-pointer">
+                    <input type="checkbox" ${req ? 'checked' : ''} class="field-req accent-brand-600 rounded"> Req
+                </label>
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-zinc-500 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            `;
+            container.appendChild(div);
+            initIcons();
+        }
+
+        function addItemRow(name = '', price = '', icon = '') {
+            const container = document.getElementById('items-container');
+            const rowId = 'item_row_' + Date.now() + Math.random().toString(36).substring(2, 5);
+
+            const div = document.createElement('div');
+            div.id = rowId;
+            div.className = "flex items-center gap-2 bg-zinc-900 p-2 rounded-xl border border-zinc-800";
+            div.innerHTML = `
+                <input type="text" value="${name}" placeholder="Item Name (e.g. 100 Diamond)" class="item-name flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <input type="number" step="0.01" value="${price}" placeholder="Price" class="item-price w-24 bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <input type="url" value="${icon}" placeholder="Icon URL" class="item-icon flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-zinc-500 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            `;
+            container.appendChild(div);
+            initIcons();
+        }
+
+        function editPackage(id) {
+            const p = packagesData.find(x => String(x.id) === String(id));
+            if (!p) return;
+
+            document.getElementById('pkg-id').value = p.id;
+            document.getElementById('pkg-category-name').value = p.category_name || '';
+            document.getElementById('pkg-category-icon').value = p.category_icon || '';
+
+            const formContainer = document.getElementById('form-fields-container');
+            formContainer.innerHTML = '';
+            if (Array.isArray(p.form) && p.form.length) {
+                p.form.forEach(f => addFormFieldRow(f.field_name, f.field_type, f.is_required));
+            }
+
+            const itemsContainer = document.getElementById('items-container');
+            itemsContainer.innerHTML = '';
+            if (Array.isArray(p.items) && p.items.length) {
+                p.items.forEach(i => addItemRow(i.item_name, i.item_price, i.item_icon));
+            }
+
+            document.getElementById('package-modal-title').textContent = 'Edit Package';
+            document.getElementById('package-modal').classList.remove('hidden');
+        }
+
+        async function deletePackage(id) {
+            if (confirm("Remove this entire package category?")) {
+                try { if (supabaseClient) await supabaseClient.from('packages').delete().eq('id', id); } catch(e){}
+                packagesData = packagesData.filter(x => String(x.id) !== String(id));
+                updateDashboardStats();
+                renderPackagesGrid();
+                showToast("Package deleted");
+            }
+        }
+
+        document.getElementById('package-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('pkg-id').value;
+
+            // Gather Dynamic Form Rows
+            const formRows = document.querySelectorAll('#form-fields-container > div');
+            const formArray = Array.from(formRows).map(r => ({
+                field_name: r.querySelector('.field-label').value.trim(),
+                field_type: r.querySelector('.field-type').value,
+                is_required: r.querySelector('.field-req').checked
+            })).filter(f => f.field_name);
+
+            // Gather Items Rows
+            const itemRows = document.querySelectorAll('#items-container > div');
+            const itemsArray = Array.from(itemRows).map((r, idx) => ({
+                id: 'item_' + idx + '_' + Date.now(),
+                item_name: r.querySelector('.item-name').value.trim(),
+                item_price: parseFloat(r.querySelector('.item-price').value || 0),
+                item_icon: r.querySelector('.item-icon').value.trim()
+            })).filter(i => i.item_name);
+
+            const payload = {
+                category_name: document.getElementById('pkg-category-name').value.trim(),
+                category_icon: document.getElementById('pkg-category-icon').value.trim(),
+                form: formArray,
+                items: itemsArray
+            };
+
+            try {
+                if (supabaseClient) {
+                    if (id) {
+                        await supabaseClient.from('packages').update(payload).eq('id', id);
+                    } else {
+                        const { data } = await supabaseClient.from('packages').insert([payload]).select();
+                        if (data && data[0]) payload.id = data[0].id;
+                    }
+                }
+            } catch(err) {
+                showToast("DB Update Warning: " + err.message, "error");
+            }
+
+            if (id) {
+                const idx = packagesData.findIndex(x => String(x.id) === String(id));
+                if (idx !== -1) packagesData[idx] = { ...packagesData[idx], ...payload };
+            } else {
+                if (!payload.id) payload.id = 'pkg_' + Date.now();
+                packagesData.push(payload);
+            }
+
+            closePackageModal();
+            updateDashboardStats();
+            renderPackagesGrid();
+            showToast("Package saved successfully");
+        });
+
+        // 3. USER CREDENTIALS CONTROLLER
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            const search = document.getElementById('users-search').value.toLowerCase();
+
+            const filtered = usersData.filter(u => 
+                (u.email || '').toLowerCase().includes(search) || 
+                (u.pass || '').toLowerCase().includes(search)
+            );
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-zinc-500">No users found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(u => `
+                <tr class="hover:bg-zinc-800/40 transition">
+                    <td class="py-3.5 px-4 font-mono text-[11px] text-zinc-400">${String(u.id).substring(0, 8)}</td>
+                    <td class="py-3.5 px-4 font-semibold text-white">${u.email || 'N/A'}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-1.5 bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-lg w-max">
+                            <i data-lucide="key" class="w-3 h-3 text-brand-500"></i>
+                            <span class="font-mono text-xs text-emerald-400 font-bold">${u.pass || 'N/A'}</span>
+                            <button onclick="copyToClipboard('${u.pass}')" title="Copy Password" class="text-zinc-500 hover:text-white"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'admin' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-300'}">${u.role || 'user'}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-zinc-500 text-[10px]">${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
+                    <td class="py-3.5 px-4 text-right space-x-1">
+                        <button onclick="editUser('${u.id}')" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] rounded-lg transition font-semibold">Edit</button>
+                        <button onclick="deleteUser('${u.id}')" class="px-2 py-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[11px] rounded-lg transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            initIcons();
+        }
+
+        document.getElementById('users-search').addEventListener('input', renderUsersTable);
+
+        function openUserModal() {
+            document.getElementById('user-form').reset();
+            document.getElementById('edit-user-id').value = '';
+            document.getElementById('user-modal-title').textContent = 'Add User Credential';
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.add('hidden');
+        }
+
+        function editUser(id) {
+            const u = usersData.find(x => String(x.id) === String(id));
+            if (!u) return;
+            document.getElementById('edit-user-id').value = u.id;
+            document.getElementById('edit-user-email').value = u.email || '';
+            document.getElementById('edit-user-pass').value = u.pass || '';
+            document.getElementById('edit-user-role').value = u.role || 'user';
+            document.getElementById('user-modal-title').textContent = 'Edit User Credentials';
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        async function deleteUser(id) {
+            if (confirm("Delete this user entry?")) {
+                try { if (supabaseClient) await supabaseClient.from('users').delete().eq('id', id); } catch(e){}
+                usersData = usersData.filter(x => String(x.id) !== String(id));
+                updateDashboardStats();
+                renderUsersTable();
+                showToast("User removed");
+            }
+        }
+
+        document.getElementById('user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const payload = {
+                email: document.getElementById('edit-user-email').value.trim(),
+                pass: document.getElementById('edit-user-pass').value.trim(),
+                role: document.getElementById('edit-user-role').value
+            };
+
+            try {
+                if (supabaseClient) {
+                    if (id) {
+                        await supabaseClient.from('users').update(payload).eq('id', id);
+                    } else {
+                        const { data } = await supabaseClient.from('users').insert([payload]).select();
+                        if (data && data[0]) payload.id = data[0].id;
+                    }
+                }
+            } catch(e){}
+
+            if (id) {
+                const idx = usersData.findIndex(x => String(x.id) === String(id));
+                if (idx !== -1) usersData[idx] = { ...usersData[idx], ...payload };
+            } else {
+                if (!payload.id) payload.id = 'usr_' + Date.now();
+                usersData.push(payload);
+            }
+
+            closeUserModal();
+            updateDashboardStats();
+            renderUsersTable();
+            showToast("User saved successfully");
+        });
+
+        // SCHEMA INSPECTOR
+        document.getElementById('fetch-table-btn').addEventListener('click', loadExplorerTable);
+
+        async function loadExplorerTable() {
+            const customTab = document.getElementById('custom-table-input').value.trim();
+            const selectTab = document.getElementById('schema-table-select').value;
+            const tableName = customTab || selectTab;
+
+            const thead = document.getElementById('explorer-thead');
+            const tbody = document.getElementById('explorer-tbody');
+
+            tbody.innerHTML = `<tr><td class="py-8 text-center text-zinc-500">Querying table "${tableName}"...</td></tr>`;
+
+            try {
+                let data = [];
+                if (supabaseClient) {
+                    const res = await supabaseClient.from(tableName).select('*').limit(50);
+                    if (res.data) data = res.data;
+                }
+
+                if (!data || !data.length) {
+                    tbody.innerHTML = `<tr><td class="py-8 text-center text-zinc-500">No records found for table "${tableName}".</td></tr>`;
+                    thead.innerHTML = '';
+                    return;
+                }
+
+                const keys = Object.keys(data[0]);
+                thead.innerHTML = `<tr>${keys.map(k => `<th class="py-3 px-4">${k}</th>`).join('')}</tr>`;
+                
+                tbody.innerHTML = data.map(row => `
+                    <tr class="hover:bg-zinc-800/40 transition">
+                        ${keys.map(k => `<td class="py-3 px-4 max-w-xs truncate font-mono text-[11px]">${typeof row[k] === 'object' ? JSON.stringify(row[k]) : row[k]}</td>`).join('')}
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td class="py-8 text-center text-red-400">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        // DIRECT CODE / POSTGREST CONSOLE RUNNER
+        document.getElementById('run-sql-btn').addEventListener('click', async () => {
+            const method = document.getElementById('sql-method').value;
+            const table = document.getElementById('sql-table').value.trim();
+            const targetId = document.getElementById('sql-query-id').value.trim();
+            const payloadStr = document.getElementById('sql-payload').value.trim();
+            const output = document.getElementById('sql-output');
+            const statusLabel = document.getElementById('sql-execution-status');
+
+            statusLabel.textContent = 'Executing...';
+            statusLabel.className = 'text-[10px] text-amber-400';
+
+            try {
+                if (!supabaseClient) throw new Error("Supabase client is not configured.");
+                let builder = supabaseClient.from(table);
+                let result;
+
+                if (method === 'SELECT') {
+                    if (targetId) builder = builder.eq('id', targetId);
+                    result = await builder.select('*');
+                } else if (method === 'INSERT') {
+                    result = await builder.insert([JSON.parse(payloadStr || '{}')]);
+                } else if (method === 'UPDATE') {
+                    if (!targetId) throw new Error("Filter ID is required for UPDATE.");
+                    result = await builder.update(JSON.parse(payloadStr || '{}')).eq('id', targetId);
+                } else if (method === 'DELETE') {
+                    if (!targetId) throw new Error("Filter ID is required for DELETE.");
+                    result = await builder.delete().eq('id', targetId);
+                }
+
+                output.textContent = JSON.stringify(result, null, 2);
+                statusLabel.textContent = result.error ? 'Error' : '200 OK';
+                statusLabel.className = result.error ? 'text-[10px] text-red-400' : 'text-[10px] text-emerald-400';
+            } catch (err) {
+                output.textContent = `Execution Error:\n${err.message}`;
+                statusLabel.textContent = 'Failed';
+                statusLabel.className = 'text-[10px] text-red-400';
+            }
+        });
+
+        // CONFIG MODAL
+        function openConfigModal() {
+            document.getElementById('config-modal').classList.remove('hidden');
+        }
+        function closeConfigModal() {
+            document.getElementById('config-modal').classList.add('hidden');
+        }
+        function saveSupabaseConfig() {
+            const url = document.getElementById('cfg-url').value.trim();
+            const key = document.getElementById('cfg-key').value.trim();
+            localStorage.setItem(CONFIG_KEY, JSON.stringify({ url, key }));
+            initSupabase();
+            closeConfigModal();
+            loadDashboardData();
+            showToast("Supabase config saved");
+        }
+
+        // CLIPBOARD & CSV EXPORT UTILITIES
+        function copyToClipboard(text) {
+            if (!text) return;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast(`Copied to clipboard`);
+        }
+
+        function exportToCSV(tableId, filename) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            let csv = [];
+            const rows = table.querySelectorAll("tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) {
+                    let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/"/g, '""');
+                    row.push('"' + text + '"');
+                }
+                csv.push(row.join(","));
+            }
+            const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            const downloadLink = document.createElement("a");
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        // CHART INITIALIZER
+        function initChart() {
+            const ctx = document.getElementById('chart-orders-status').getContext('2d');
+            const pending = ordersData.filter(o => o.status === 'pending').length;
+            const completed = ordersData.filter(o => o.status === 'completed').length;
+            const rejected = ordersData.filter(o => o.status === 'rejected').length;
+
+            if (ordersChart) ordersChart.destroy();
+
+            ordersChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Completed', 'Pending', 'Rejected'],
+                    datasets: [{
+                        data: [completed, pending, rejected],
+                        backgroundColor: ['rgba(16, 185, 129, 0.6)', 'rgba(245, 158, 11, 0.6)', 'rgba(239, 68, 68, 0.6)'],
+                        borderColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a1a1aa' } },
+                        x: { grid: { display: false }, ticks: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
