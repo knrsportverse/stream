@@ -42,7 +42,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body class="min-h-screen flex flex-col relative selection:bg-emerald-500 selection:text-white">
 
     <!-- Navigation -->
     <nav class="bg-slate-800/80 backdrop-blur-md shadow-lg border-b border-slate-700 sticky top-0 z-40">
@@ -71,7 +71,7 @@
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
             
             <div class="relative z-10">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="page-title">Event Schedule</h1>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Event Schedule</h1>
                 <p class="text-slate-400 text-sm mt-2 flex items-center gap-2 font-medium">
                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     <span id="last-update">Syncing latest data...</span>
@@ -90,6 +90,29 @@
             </div>
         </div>
 
+        <!-- Search and Filter Bar -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div class="relative w-full sm:w-80">
+                <input type="text" id="search-input" placeholder="Search events or teams..." 
+                       class="w-full bg-slate-800 text-white placeholder-slate-400 text-sm rounded-xl pl-10 pr-4 py-2.5 border border-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                <button onclick="filterMatches('ALL')" id="filter-all" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-md border border-emerald-400/30 whitespace-nowrap">
+                    All Matches
+                </button>
+                <button onclick="filterMatches('LIVE')" id="filter-live" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 whitespace-nowrap">
+                    Live
+                </button>
+                <button onclick="filterMatches('UPCOMING')" id="filter-upcoming" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 whitespace-nowrap">
+                    Upcoming
+                </button>
+            </div>
+        </div>
+
         <!-- Loading Indicator -->
         <div id="loading" class="flex flex-col justify-center items-center h-64 text-slate-400">
             <svg class="animate-spin h-12 w-12 mb-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -104,6 +127,11 @@
             <svg class="w-12 h-12 mx-auto mb-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <p class="text-lg font-semibold">Unable to fetch event data.</p>
             <p class="text-sm mt-1 text-rose-300/70">Please check your connection and try again later.</p>
+        </div>
+
+        <!-- No Results Search State -->
+        <div id="no-results" class="hidden text-center text-slate-400 py-12 bg-slate-800/50 rounded-2xl border border-slate-700">
+            <p class="text-base font-semibold text-slate-300">No events matched your search.</p>
         </div>
 
         <!-- Cards Grid -->
@@ -157,10 +185,175 @@
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
         const API_URL = "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json";
+        
         let globalMatches = [];
+        let activeFilter = 'ALL';
+        let searchQuery = '';
+
+        // Fallback Dataset in case fetch fails
+        const FALLBACK_DATA = {
+            "HeaderInfo": {
+                "LastUpdate": "02:32 PM 30-10-2026"
+            },
+            "Stats": {
+                "LiveCount": 9,
+                "UpcomingCount": 0
+            },
+            "Matches": [
+                {
+                    "match_id": "B0HNFJ766Z",
+                    "title": "Petronas Grand Prix of Malaysia, Practice",
+                    "synopsis": "Petronas Grand Prix of Malaysia, Practice",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.809afbc0-32b3-4251-b9ba-5db6c8782f4a/7/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HNFJ766Z",
+                    "is_free": false,
+                    "stream_url": {
+                        "Original Server": "https://ABBJI2SAAAAAAAAMDOMMNT6YDPCBL.ta-enf.emt-cf.live.pv-cdn.net/$T$2D3RhEOhAQWhBFgkYzQ1OWU1YmItZDgxMS00NGM2LTgwYzQtNTNkZDc3NTIwODk5WIymAWpwcmltZXZpZGVvBBpq97o1Bhpq4_O1A2pjbG91ZGZyb250AngoZmlkOjAxYTE4YTZmLWZjNGUtNzQwNi1iNmJiLTI1NmQzNzkyNDg3MBkBOKEFoQJ4My96bWtkZW5rcXlmL291dC92MS84MTk3YzhlMDU1Yzk0YTg2ODYyMzY1M2FjNTVjMTBiZlggnZXWIB2VTamAdPMBHGW7g9JNOnnLOkhSsuBMzdEj1Fo/CMH/c1018b7fd2574de2b5dbed71665bc922/v1/dash/590183725645/imdb_amagi_amzn1_dv_live_csid_5357cf2a-51c8-4fa5-b996-cd307e0b7edc_us-east-1_cmh_dash_h264/startover/clients/dash/manipulated-manifest-iad-prod/enc/zmkdenkqyf/out/v1/8197c8e055c94a868623653ac55c10bf/a1618395-3a15-4a14-9d5c-7b935577ccb8-cenc.mpd?aws.sessionId=96ab94b1-06f7-420c-8117-76ea8376ddd1"
+                    },
+                    "drm_key": "e03f302ec4dabcccca82cc9f76731ec9:53ea1027d2bf2893a552cf15bc0366de"
+                },
+                {
+                    "match_id": "B0HKDPRJRS",
+                    "title": "Australia tour of South Africa 2026 - 3rd Test - South Africa vs Australia",
+                    "synopsis": "Australia tour of South Africa 2026 - 3rd Test - South Africa vs Australia",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.20a790a3-51e9-4ec1-9a8b-cb632845af2d/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HKDPRJRS",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/4edw8hyqcz/out/v1/07d9e6556658457787dae8a34a36c5e7/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/4edw8hyqcz/out/v1/07d9e6556658457787dae8a34a36c5e7/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/4edw8hyqcz/out/v1/07d9e6556658457787dae8a34a36c5e7/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/4edw8hyqcz/out/v1/07d9e6556658457787dae8a34a36c5e7/cenc.mpd"
+                    },
+                    "drm_key": "a0ea22119ca851e441c56df67e33f6fd:179bbc5d1bec825eaa1b712872f12eda"
+                },
+                {
+                    "match_id": "B0HLW6FTC5",
+                    "title": "New Zealand vs. India",
+                    "synopsis": "New Zealand vs. India",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.20a0bd24-a93b-43a0-9791-04a8a302f509/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HLW6FTC5",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/pjnwj2lbr8/out/v1/7fa779f874dd410195eda641faadc623/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/pjnwj2lbr8/out/v1/7fa779f874dd410195eda641faadc623/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/pjnwj2lbr8/out/v1/7fa779f874dd410195eda641faadc623/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/pjnwj2lbr8/out/v1/7fa779f874dd410195eda641faadc623/cenc.mpd"
+                    },
+                    "drm_key": "7a3f90a5769802036c18de821735b594:1412cd88540af73b27e45c9982bc9c78"
+                },
+                {
+                    "match_id": "B0HKZTVYJ1",
+                    "title": "Cricket-WBBL 2026: Heat vs Sixers - 3rd Match",
+                    "synopsis": "Cricket-WBBL 2026: Heat vs Sixers - 3rd Match",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.d4464bf0-1092-444d-af5e-daa7dc0e2732/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HKZTVYJ1",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/0bftapixow/out/v1/a435ed7a00f947deb4369b46d8f2fb70/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/0bftapixow/out/v1/a435ed7a00f947deb4369b46d8f2fb70/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/0bftapixow/out/v1/a435ed7a00f947deb4369b46d8f2fb70/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/0bftapixow/out/v1/a435ed7a00f947deb4369b46d8f2fb70/cenc.mpd"
+                    },
+                    "drm_key": "290e09c837da78d5cd961978d390515c:b748836c71e6a4ca68ef5b5652db6247"
+                },
+                {
+                    "match_id": "B0HHJPJ5NZ",
+                    "title": "Quarterfinals",
+                    "synopsis": "Quarterfinals",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.d492a770-4d09-40de-ae05-8f6b9b4a775e/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HHJPJ5NZ",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/bfigtl960n/out/v1/5ba5484550e84681bff2e8ca994266c1/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/bfigtl960n/out/v1/5ba5484550e84681bff2e8ca994266c1/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/bfigtl960n/out/v1/5ba5484550e84681bff2e8ca994266c1/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/bfigtl960n/out/v1/5ba5484550e84681bff2e8ca994266c1/cenc.mpd"
+                    },
+                    "drm_key": "59f50679c9e60963bd0cb6640992aaaa:8685817c4d31f322e08940feeae2855a"
+                },
+                {
+                    "match_id": "B0HJ42ZGPP",
+                    "title": "Womens Big Bash League 2026 - 3rd Match - Brisbane Heat Women vs Sydney Sixers Women",
+                    "synopsis": "Womens Big Bash League 2026 - 3rd Match - Brisbane Heat Women vs Sydney Sixers Women",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.7eb020f4-8f99-438f-882e-76cfc4181413/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HJ42ZGPP",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/5legsqgdxo/out/v1/68fc09a6171941268ebf5f9088d6010f/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/5legsqgdxo/out/v1/68fc09a6171941268ebf5f9088d6010f/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/5legsqgdxo/out/v1/68fc09a6171941268ebf5f9088d6010f/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/5legsqgdxo/out/v1/68fc09a6171941268ebf5f9088d6010f/cenc.mpd"
+                    },
+                    "drm_key": "079a2605723e910f53d9e2bfb8cb7b2e:d5383a5eedbcd90803e17aff07df4e48"
+                },
+                {
+                    "match_id": "B0HJ6K95MJ",
+                    "title": "Hong Kong Sixes 2026 - 9th Match - England vs Australia",
+                    "synopsis": "Hong Kong Sixes 2026 - 9th Match - England vs Australia",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.ba8017cc-3dc3-4a92-8d69-0b4dd8029a73/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HJ6K95MJ",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/ryvveqheby/out/v1/5bf9ff9c026048d897328bedb8c9b4b3/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/ryvveqheby/out/v1/5bf9ff9c026048d897328bedb8c9b4b3/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/ryvveqheby/out/v1/5bf9ff9c026048d897328bedb8c9b4b3/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/ryvveqheby/out/v1/5bf9ff9c026048d897328bedb8c9b4b3/cenc.mpd"
+                    },
+                    "drm_key": "c7a9e1a3b38d230bcd8a785b18e5575a:0f9cc8a4d3ae133b56b33e088762d3d2"
+                },
+                {
+                    "match_id": "B0HM9LPTX3",
+                    "title": "Oct 30 - UTR PTT Bengaluru Men",
+                    "synopsis": "Oct 30 - UTR PTT Bengaluru Men",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.ec79cc87-4677-4466-b928-b68657f8615e/4/BOXART-16X9/en-US._UR1920,1080_SX624_FMpng_.png",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HM9LPTX3",
+                    "is_free": false,
+                    "stream_url": {
+                        "Original Server": "https://a123live-pv-ta-enf-amazon.akamaized.net/$T$2D3RhEOhAQWhBFgkYWY3NDZlZjAtYzM0OC00MGM1LWFjN2UtYTVhZWIzNjhiNjA0WIimAWpwcmltZXZpZGVvBBpq99ZRBhpq5A_RA2Zha2FtYWkCeChmaWQ6MDFhMThhZGQtYzk0OC03MWY0LTkyMzQtMGZlMzcxNTU3YTRiGQE4oQWhAngzL3pnMG5sdG16NGwvb3V0L3YxLzA4NzFlOGU2ZGExYTRlMWM4YjVlMjlhNGI3ZDgwZGRiWCDwYUfptgTSRevOSDe06l2VwRHfmPF_e2CANU7p_pms6g/pdx-nitro/startover/clients/dash/manipulated-manifest-pdx-prod/enc/zg0nltmz4l/out/v1/0871e8e6da1a4e1c8b5e29a4b7d80ddb/bbf6549a-e70d-4e93-b6e2-d8481159f740-cenc.mpd"
+                    },
+                    "drm_key": "93040a8d233cce26a7a9153d98699331:f78918308ea198782f5f6f76cb72e4f9"
+                },
+                {
+                    "match_id": "B0HN635GQK",
+                    "title": "Hong Kong Sixes 2026 - 8th Match - South Africa vs Afghanistan",
+                    "synopsis": "Hong Kong Sixes 2026 - 8th Match - South Africa vs Afghanistan",
+                    "status": "LIVE",
+                    "time": "LIVE NOW",
+                    "cover_image": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.d8b25453-ed77-4ee0-8cb7-a46278b8085b/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+                    "match_url": "https://www.amazon.com/gp/video/detail/B0HN635GQK",
+                    "is_free": false,
+                    "stream_url": {
+                        "Fastly Server": "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/if1mwsco3r/out/v1/9c233eea30534a7e87a9a2e687d49444/cenc.mpd",
+                        "Amazon Server": "https://otte.cache.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/if1mwsco3r/out/v1/9c233eea30534a7e87a9a2e687d49444/cenc.mpd",
+                        "Cloudfront Server 1": "https://dash-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/if1mwsco3r/out/v1/9c233eea30534a7e87a9a2e687d49444/cenc.mpd",
+                        "Cloudfront Server 2": "https://hls-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/if1mwsco3r/out/v1/9c233eea30534a7e87a9a2e687d49444/cenc.mpd"
+                    },
+                    "drm_key": "c884ad869859b1e8125c41a0e32e5276:f9c4f313219f7ee59f900efa739a4acc"
+                }
+            ]
+        };
 
         function convertTimeBDTtoNPT(timeStr) {
             if (!timeStr) return '';
+            if (timeStr.toUpperCase() === 'LIVE NOW') return 'LIVE NOW';
+
             const regex = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)\s*BDT/i;
             
             let convertedStr = timeStr.replace(regex, (match, hrStr, minStr, ampm) => {
@@ -190,32 +383,33 @@
         }
 
         async function init() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('error').classList.add('hidden');
+
             try {
                 const response = await fetch(API_URL);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
                 const data = await response.json();
-                globalMatches = data.Matches || [];
-                
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('matches-grid').classList.remove('hidden');
-
-                renderHeader(data.HeaderInfo, data.Stats);
-                renderMatches(globalMatches);
-
+                processData(data);
             } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('error').classList.remove('hidden');
+                console.warn("Using fallback local dataset due to fetch error:", error);
+                processData(FALLBACK_DATA);
             }
         }
 
+        function processData(data) {
+            globalMatches = data.Matches || [];
+            
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('matches-grid').classList.remove('hidden');
+
+            renderHeader(data.HeaderInfo, data.Stats);
+            applyFilters();
+        }
+
         function renderHeader(headerInfo, stats) {
-            if (headerInfo) {
-                document.getElementById('page-title').textContent = "Sports Coverage";
-                if (headerInfo.LastUpdate) {
-                    document.getElementById('last-update').innerHTML = `Last Update: <span class="text-slate-300">${headerInfo.LastUpdate}</span>`;
-                }
+            if (headerInfo && headerInfo.LastUpdate) {
+                document.getElementById('last-update').innerHTML = `Last Update: <span class="text-slate-300">${headerInfo.LastUpdate}</span>`;
             }
             if (stats) {
                 document.getElementById('live-count').textContent = stats.LiveCount !== undefined ? stats.LiveCount : 0;
@@ -223,18 +417,67 @@
             }
         }
 
+        function applyFilters() {
+            const filtered = globalMatches.filter(match => {
+                const statusUpper = (match.status || '').toUpperCase();
+                
+                let matchesCategory = true;
+                if (activeFilter === 'LIVE') matchesCategory = statusUpper === 'LIVE';
+                if (activeFilter === 'UPCOMING') matchesCategory = statusUpper !== 'LIVE';
+
+                let matchesQuery = true;
+                if (searchQuery.trim() !== '') {
+                    const q = searchQuery.toLowerCase();
+                    const title = (match.title || '').toLowerCase();
+                    const synopsis = (match.synopsis || '').toLowerCase();
+                    matchesQuery = title.includes(q) || synopsis.includes(q);
+                }
+
+                return matchesCategory && matchesQuery;
+            });
+
+            renderMatches(filtered);
+        }
+
+        function filterMatches(category) {
+            activeFilter = category;
+            
+            ['all', 'live', 'upcoming'].forEach(cat => {
+                const btn = document.getElementById(`filter-${cat}`);
+                if (cat.toUpperCase() === category) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-md border border-emerald-400/30 whitespace-nowrap";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 whitespace-nowrap";
+                }
+            });
+
+            applyFilters();
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            applyFilters();
+        });
+
         function renderMatches(matches) {
             const grid = document.getElementById('matches-grid');
+            const noResults = document.getElementById('no-results');
+            grid.innerHTML = '';
+
             if (!matches || matches.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-12 bg-slate-800 rounded-xl border border-slate-700">No events currently scheduled.</div>';
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
                 return;
             }
+
+            noResults.classList.add('hidden');
+            grid.classList.remove('hidden');
 
             matches.forEach((match, index) => {
                 const card = document.createElement('div');
                 card.className = 'bg-slate-800 rounded-2xl overflow-hidden shadow-lg border border-slate-700 flex flex-col fade-in-up group hover:border-slate-500 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1';
                 card.style.animationDelay = `${index * 0.04}s`;
-                card.onclick = () => openModal(index);
+                card.onclick = () => openModal(index, matches);
 
                 const statusUpper = (match.status || '').toUpperCase();
                 let statusBadge = '';
@@ -256,9 +499,9 @@
 
                 card.innerHTML = `
                     <div class="relative h-48 w-full bg-slate-900 overflow-hidden">
-                        <img src="${imageUrl}" alt="Event Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out" onerror="this.src='https://placehold.co/600x400/1e293b/94a3b8?text=Image+Unavailable'">
+                        <img src="${imageUrl}" alt="Event Cover" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e293b/94a3b8?text=Image+Unavailable'">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80"></div>
-                        <div class="absolute top-3 left-3 z-10">
+                        <div class="absolute top-3 left-3 z-10 flex items-center gap-2">
                             ${statusBadge}
                         </div>
                     </div>
@@ -283,8 +526,8 @@
             });
         }
 
-        function openModal(index) {
-            const match = globalMatches[index];
+        function openModal(index, matchesList) {
+            const match = matchesList[index];
             if (!match) return;
 
             const modal = document.getElementById('stream-modal');
@@ -305,39 +548,30 @@
 
             let bodyContent = '';
 
-            // Render Server Streams
-            const renderServerGroup = (serverObj, groupName, bgClass) => {
-                if (!serverObj || typeof serverObj !== 'object') return '';
-                let groupHtml = `<div class="space-y-2"><h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">${groupName}</h4>`;
-                let count = 0;
+            // Render Stream URLs object
+            if (match.stream_url && typeof match.stream_url === 'object' && Object.keys(match.stream_url).length > 0) {
+                bodyContent += `<div class="space-y-2"><h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Available Servers</h4>`;
 
-                for (const [serverName, url] of Object.entries(serverObj)) {
+                for (const [serverName, url] of Object.entries(match.stream_url)) {
                     if (url && url.trim() !== '') {
-                        count++;
-                        groupHtml += `
+                        bodyContent += `
                             <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700/70 gap-2">
                                 <span class="text-xs font-semibold text-slate-300 truncate">${serverName}</span>
-                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="${bgClass} hover:opacity-90 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1">
+                                <button onclick="copyToClipboard(this, '${url.replace(/'/g, "\\'")}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                     Copy URL
                                 </button>
                             </div>`;
                     }
                 }
-                groupHtml += `</div>`;
-                return count > 0 ? groupHtml : '';
-            };
-
-            const alphaHtml = renderServerGroup(match.stream_url_alpha, 'Alpha Servers', 'bg-emerald-600');
-            const bravoHtml = renderServerGroup(match.stream_url_bravo, 'Bravo Servers', 'bg-teal-600');
-
-            bodyContent += alphaHtml + bravoHtml;
+                bodyContent += `</div>`;
+            }
 
             // Render DRM Key
             if (match.drm_key && match.drm_key.trim() !== '') {
                 bodyContent += `
                     <div class="space-y-2 pt-2 border-t border-slate-700/50">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">DRM License Key</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">DRM Key</h4>
                         <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700/70 gap-2">
                             <span class="text-xs font-mono text-slate-300 truncate">${match.drm_key}</span>
                             <button onclick="copyToClipboard(this, '${match.drm_key.replace(/'/g, "\\'")}')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1">
@@ -403,12 +637,10 @@
             }
         }
 
-        // Close modal on backdrop click
         document.getElementById('stream-modal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
         
-        // Close modal on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeModal();
         });
