@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>KNR Sportverse | Live Sports</title>
+<link rel="icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" sizes="32x32" type="image/png">
+<link rel="shortcut icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" type="image/png">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-blue: #1e88e5;
+    --primary-dark-blue: #1565c0;
+    --secondary-blue: #42a5f5;
+    --light-blue: #e3f2fd;
+    --text-dark: #1a1a1a;
+    --text-light: #666666;
+    --bg-light: #f5f7fa;
+    --bg-card: #ffffff;
+    --header-bg: #0d1b2a;
+    --footer-bg: #1a1a1a;
+    --border-color: #e0e0e0;
+    --dark-text: #f0f0f0;
+    --dark-bg: #0a0e27;
+    --dark-bg-card: #1a1f3a;
+    --dark-header-bg: #0a0d16;
+    --dark-footer-bg: #0d0f1a;
+    --dark-border-color: #2a3a4a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    transition: background 0.3s ease, color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--header-bg) 0%, #1a2332 100%);
+    color: #fff;
+    padding: 1.2rem 2rem;
+    box-shadow: 0 4px 20px rgba(30, 136, 229, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background 0.3s ease;
+  }
+
+  body.dark-mode .header {
+    background: linear-gradient(135deg, var(--dark-header-bg) 0%, #111827 100%);
+    box-shadow: 0 4px 20px rgba(30, 136, 229, 0.1);
+  }
+
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+    height: 48px;
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+    height: 48px;
+  }
+
+  .logo-link {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .logo-link:hover {
+    transform: scale(1.05);
+  }
+
+  .logo-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 0;
+    border-radius: 6px;
+  }
+
+  .logo-link i {
+    font-size: 1.8rem;
+    color: #fff;
+  }
+
+  .brand-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: none;
+    -webkit-text-fill-color: white;
+    color: white;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    height: 48px;
+  }
+
+  .header-spacer {
+    flex: 1;
+  }
+
+  .theme-toggle-header {
+    background-color: var(--primary-blue);
+    color: #fff;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle-header:hover {
+    background-color: var(--primary-dark-blue);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+  }
+
+  .theme-toggle-header:active {
+    transform: scale(0.95);
+  }
+
+  body.dark-mode .theme-toggle-header {
+    background-color: var(--primary-blue);
+    box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto 0;
+    background: #000;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: visible;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  #player {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+  }
+
+  .video-logo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .video-logo img {
+    height: 35px;
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+
+  .stream-dropdown-btn {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    height: 40px;
+    padding: 0 16px;
+    background: linear-gradient(to right, #2563eb, #3b82f6);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0 0 12px 12px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.35),
+                0 4px 6px -4px rgba(37, 99, 235, 0.25);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stream-dropdown-btn:hover,
+  .stream-dropdown-btn:focus,
+  .stream-dropdown-btn:active {
+    background: linear-gradient(to right, #1d4ed8, #2563eb);
+    box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.35),
+                0 8px 10px -6px rgba(37, 99, 235, 0.25);
+    outline: none;
+  }
+
+  .stream-dropdown-menu {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 50, 80, 0.95);
+    border: 1.5px solid rgba(30, 136, 229, 0.4);
+    border-radius: 12px;
+    padding: 8px 0;
+    z-index: 21;
+    min-width: 220px;
+    max-height: 280px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    display: none;
+  }
+
+  .stream-dropdown-menu.active {
+    display: block;
+  }
+
+  .stream-dropdown-item {
+    padding: 10px 14px;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+  }
+
+  .stream-dropdown-item:hover {
+    background: rgba(30, 136, 229, 0.25);
+    border-left-color: var(--primary-blue);
+  }
+
+  .stream-dropdown-item.active {
+    background: rgba(30, 136, 229, 0.35);
+    border-left-color: var(--primary-blue);
+  }
+
+  .stream-dropdown-menu::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .stream-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .stream-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(30, 136, 229, 0.5);
+    border-radius: 3px;
+  }
+
+  .stream-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 136, 229, 0.7);
+  }
+
+  .loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-top: -30px;
+    margin-left: -30px;
+    border: none;
+    z-index: 99;
+  }
+
+  .loader-circle {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(30, 136, 229, 0.2);
+    border-top: 3px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .stream-container {
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto 0;
+    background: var(--bg-card);
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+  }
+
+  body.dark-mode .stream-container {
+    background: var(--dark-bg-card);
+    border-color: var(--dark-border-color);
+  }
+
+  .stream-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  body.dark-mode .stream-header {
+    color: var(--dark-text);
+  }
+
+  .stream-header i {
+    color: var(--primary-blue);
+    font-size: 18px;
+  }
+
+  .stream-loading-container,
+  .stream-section {
+    display: grid;
+    grid-template-columns: 2fr;
+    gap: 12px;
+    width: 100%;
+    padding: 0;
+  }
+
+  .stream-btn-skeleton {
+    width: 100%;
+    height: 38px;
+    background: linear-gradient(90deg, var(--bg-light) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-light) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 8px;
+  }
+
+  body.dark-mode .stream-btn-skeleton {
+    background: linear-gradient(90deg, var(--dark-bg) 25%, rgba(255, 255, 255, 0.1) 50%, var(--dark-bg) 75%);
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .stream-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--primary-blue);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-blue);
+    transition: all 0.2s ease;
+    font-size: 14px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .stream-btn:hover {
+    background: rgba(42, 129, 243, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .stream-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(42, 129, 243, 0.25);
+  }
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto 40px;
+  }
+
+  .chat-toggle-btn {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 12px rgba(42, 129, 243, 0.3);
+  }
+
+  .chat-toggle-btn:hover {
+    background: #1a6cd1;
+    transform: translateY(-2px);
+  }
+
+  #chatWindow {
+    display: none;
+    width: 100%;
+    height: 500px;
+    margin-top: 15px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-card);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  body.dark-mode #chatWindow {
+    background: var(--dark-bg-card);
+    border-color: var(--dark-border-color);
+  }
+
+  .card {
+    max-width: 900px;
+    width: 95%;
+    background: var(--bg-card);
+    margin: 15px auto 0;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+  }
+
+  body.dark-mode .card {
+    background: var(--dark-bg-card);
+    border-color: var(--dark-border-color);
+  }
+
+  .card h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 15px 0;
+    color: var(--text-dark);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  body.dark-mode .card h3 {
+    color: var(--dark-text);
+  }
+
+  .card p.event-desc-p {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+
+  body.dark-mode .card p.event-desc-p {
+    color: var(--dark-text);
+  }
+
+  .card p.event-desc-p i {
+    color: var(--primary-blue);
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .chat-info-text {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #2e7d32;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  body.dark-mode .chat-info-text {
+    color: #81c784;
+  }
+
+  .chat-info-text i {
+    color: inherit;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .live-tag {
+    background: #ea4335;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    animation: blink 1.5s infinite;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .skeleton-title {
+    height: 24px;
+    background: linear-gradient(90deg, var(--bg-light) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-light) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 4px;
+    width: 60%;
+    margin-bottom: 0;
+  }
+
+  body.dark-mode .skeleton-title {
+    background: linear-gradient(90deg, var(--dark-bg) 25%, rgba(255, 255, 255, 0.1) 50%, var(--dark-bg) 75%);
+  }
+
+  .skeleton-text {
+    height: 16px;
+    background: linear-gradient(90deg, var(--bg-light) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-light) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 4px;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  body.dark-mode .skeleton-text {
+    background: linear-gradient(90deg, var(--dark-bg) 25%, rgba(255, 255, 255, 0.1) 50%, var(--dark-bg) 75%);
+  }
+
+  .info-text {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ea4335;
+    opacity: 0.9;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  body.dark-mode .info-text {
+    color: #ff6b6b;
+  }
+
+  .info-text i {
+    color: var(--primary-blue);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    background-color: var(--footer-bg);
+    color: #fff;
+    padding: 2rem;
+    margin-top: 4rem;
+    transition: background-color 0.3s ease;
+  }
+
+  body.dark-mode .footer {
+    background-color: var(--dark-footer-bg);
+  }
+
+  .footer-bottom {
+    text-align: center;
+    padding: 1rem 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: 1.5px solid var(--primary-blue);
+    color: var(--primary-blue);
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    text-decoration: none;
+  }
+
+  body.dark-mode .back-btn {
+    border-color: var(--primary-blue);
+    color: var(--secondary-blue);
+  }
+
+  .back-btn:hover {
+    background-color: var(--light-blue);
+    transform: translateY(-2px);
+  }
+
+  body.dark-mode .back-btn:hover {
+    background-color: rgba(66, 165, 245, 0.1);
+  }
+
+  .back-btn-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto 0;
+  }
+
+  @media (max-width: 1024px) {
+    .header-center {
+      gap: 1rem;
+      height: 45px;
+    }
+
+    .brand-title {
+      font-size: 1.5rem;
+      height: 45px;
+    }
+
+    .logo-link {
+      width: 45px;
+      height: 45px;
+    }
+
+    .logo-link i {
+      font-size: 1.6rem;
+    }
+
+    .logo-section {
+      height: 45px;
+    }
+
+    .stream-dropdown-btn {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
+
+    .stream-dropdown-menu {
+      min-width: 180px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      padding: 1rem 1.2rem;
+    }
+
+    .header-center {
+      gap: 1rem;
+      height: 42px;
+    }
+
+    .logo-section {
+      flex-shrink: 0;
+      height: 42px;
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      height: 42px;
+    }
+
+    .theme-toggle-header {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stream-dropdown-btn {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
+
+    .stream-dropdown-menu {
+      min-width: 180px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header {
+      padding: 0.8rem 1rem;
+    }
+
+    .header-center {
+      gap: 0.75rem;
+      height: 40px;
+    }
+
+    .logo-link {
+      width: 40px;
+      height: 40px;
+    }
+
+    .logo-link i {
+      font-size: 1.4rem;
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      letter-spacing: 0.8px;
+      height: 40px;
+    }
+
+    .theme-toggle-header {
+      width: 38px;
+      height: 38px;
+      font-size: 0.95rem;
+    }
+
+    .logo-section {
+      height: 40px;
+    }
+
+    .stream-dropdown-btn {
+      font-size: 11px;
+      padding: 7px 10px;
+      gap: 6px;
+    }
+
+    .stream-dropdown-menu {
+      min-width: 160px;
+    }
+
+    .stream-dropdown-item {
+      padding: 8px 10px;
+      font-size: 10px;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-light);
+  }
+
+  body.dark-mode ::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-blue);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark-blue);
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-center">
+    <div class="logo-section">
+      <a href="/" class="logo-link" title="Back to Home">
+        <img src="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" alt="KNR Sportverse Logo">
+      </a>
+      <h1 class="brand-title">KNR SPORTVERSE</h1>
+    </div>
+    <div class="header-spacer"></div>
+    <button class="theme-toggle-header" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+      <i id="theme-icon" class="fas fa-sun"></i>
+    </button>
+  </div>
+</header>
+
+<div class="main-content">
+  <div class="back-btn-wrapper">
+    <a href="/" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <div class="card" id="infoCard">
+    <h3 id="eventTitleWrapper">
+      <i class="fa-solid fa-trophy" style="color: var(--primary-blue);"></i>
+      <div class="skeleton-title" style="flex: 1;"></div>
+    </h3>
+    <p class="event-desc-p">
+      <i class="fa-solid fa-align-left"></i>
+      <span class="skeleton-text"></span>
+    </p>
+    <p class="chat-info-text" id="initialChatInfo" style="display: none;">
+      <i class="fa-solid fa-comments"></i>
+      <span>Scroll down and click 'Join Live Chat' to chat with people or get help if needed.</span>
+    </p>
+    <p class="info-text" style="display: none;" id="infoText">
+      <i class="fa-solid fa-info-circle"></i>
+      <span>If the stream buffers or fails to load, <strong>Refresh</strong> the page or switch to a different server.</span>
+    </p>
+  </div>
+
+  <div class="video-wrapper" id="videoContainer">
+    <button class="stream-dropdown-btn" id="streamDropdownBtn" onclick="toggleStreamDropdown()">
+      <i class="fa-solid fa-tv"></i> <span id="dropdownBtnText">SELECT STREAM SERVER</span>
+    </button>
+    <div class="stream-dropdown-menu" id="streamDropdownMenu"></div>
+    <div class="video-logo">
+      <img src="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" alt="Watermark">
+    </div>
+    <div id="player-loader" class="loader" style="display: none;">
+      <div class="loader-circle"></div>
+    </div>
+    <iframe id="player" src="" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen referrerpolicy="no-referrer"></iframe>
+  </div>
+
+  <div class="stream-container">
+    <div class="stream-header">
+      <i class="fa-solid fa-tv"></i> Select Stream Server
+    </div>
+
+    <div class="stream-loading-container" id="streamLoadingContainer" style="display: grid;">
+      <div class="stream-btn-skeleton"></div>
+      <div class="stream-btn-skeleton"></div>
+      <div class="stream-btn-skeleton"></div>
+    </div>
+
+    <div class="stream-section" id="streamSection" style="display: none;"></div>
+  </div>
+
+  <div class="chat-container">
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+      <i class="fa-solid fa-comments"></i> JOIN LIVE CHAT
+    </button>
+    <div id="chatWindow">
+      <iframe src="https://knrsportverse.blogspot.com/p/knr-live-chat.html" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-bottom">
+    <p>KNR SPORTVERSE does not host or claim ownership of any original content. All materials are collected from third-party sources for informational purposes only.</p>
+  </div>
+</footer>
+
+<script>
+  const API_CONFIG = {
+    base: "https://damitv.st",
+    streams: "https://ondemand.st/papi/api/streams",
+    player: "https://knrsportverse.blogspot.com/p/knr-live-stream.html"
+  };
+
+  let currentMatch = null;
+  let allMatches = [];
+  let allStreams = [];
+  let currentStreamIndex = 0;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    loadMatchFromURL();
+  });
+  function toggleTheme() {
+    const body = document.body;
+    const themeBtn = document.querySelector('.theme-toggle-header i');
+
+    body.classList.toggle('dark-mode');
+
+    if (body.classList.contains('dark-mode')) {
+      localStorage.setItem('theme', 'dark');
+      themeBtn.classList.remove('fa-sun');
+      themeBtn.classList.add('fa-moon');
+    } else {
+      localStorage.setItem('theme', 'light');
+      themeBtn.classList.remove('fa-moon');
+      themeBtn.classList.add('fa-sun');
+    }
+  }
+
+  function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const body = document.body;
+    const themeBtn = document.querySelector('.theme-toggle-header i');
+
+    if (savedTheme === 'light') {
+      body.classList.remove('dark-mode');
+      themeBtn.classList.remove('fa-moon');
+      themeBtn.classList.add('fa-sun');
+    } else {
+      body.classList.add('dark-mode');
+      themeBtn.classList.remove('fa-sun');
+      themeBtn.classList.add('fa-moon');
+    }
+  }
+
+  function getMatchNameFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return decodeURIComponent(params.get('q') || '');
+  }
+
+  // Same encoding as knr-player: btoa(encodeURIComponent(url))
+  function encodeUrl(str) {
+    return btoa(encodeURIComponent(str));
+  }
+
+  function playerLink(embedUrl) {
+    return `${API_CONFIG.player}?q=${encodeUrl(embedUrl)}`;
+  }
+
+  async function safeFetch(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      console.warn(`Fetch failed for ${url}:`, e.message);
+      return null;
+    }
+  }
+
+  async function loadMatchFromURL() {
+    const matchId = getMatchNameFromURL();
+
+    if (!matchId) {
+      showError('No match specified');
+      return;
+    }
+
+    try {
+      const data = await safeFetch(API_CONFIG.streams);
+
+      allMatches = [];
+      if (data && Array.isArray(data.streams)) {
+        data.streams.forEach(cat => (cat.streams || []).forEach(st => allMatches.push({ ...st, title: st.name || '' })));
+      }
+
+      currentMatch = allMatches.find(m => String(m.id) === matchId)
+        || allMatches.find(m => m.title && m.title.toLowerCase().includes(matchId.toLowerCase()));
+
+      if (!currentMatch) {
+        showError(`Match "${matchId}" not found`);
+        return;
+      }
+
+      renderMatchInfo();
+      await loadStreams();
+    } catch (e) {
+      console.error('Error loading match:', e);
+      showError('Error loading match data');
+    }
+  }
+
+  function renderMatchInfo() {
+    if (!currentMatch) return;
+
+    const infoCard = document.getElementById('infoCard');
+    infoCard.innerHTML = `
+      <h3>
+        <i class="fa-solid fa-trophy" style="color: var(--primary-blue);"></i>
+        <span>${currentMatch.title}</span>
+        <span class="live-tag">
+          <i class="fa-solid fa-circle" style="font-size: 8px;"></i>
+          LIVE
+        </span>
+      </h3>
+      <p class="event-desc-p">
+        <i class="fa-solid fa-align-left"></i>
+        <span>KNR SPORTVERSE • LIVE SPORTS</span>
+      </p>
+      <p class="chat-info-text">
+        <i class="fa-solid fa-comments"></i>
+        <span>Scroll down and click 'Join Live Chat' to chat with people or get help if needed.</span>
+      </p>
+      <p class="info-text">
+        <i class="fa-solid fa-info-circle"></i>
+        <span>If the stream buffers or fails to load, <strong>Refresh</strong> the page or switch to a different server.</span>
+      </p>
+    `;
+  }
+
+  async function loadStreams() {
+    const streams = currentMatch ? await fetchStreamDetails(currentMatch) : [];
+
+    if (streams.length === 0) {
+      document.getElementById('streamSection').innerHTML = '<div style="color: #ef4444; text-align: center; padding: 1rem; font-size: 0.85rem;">No playable servers available</div>';
+      return;
+    }
+
+    allStreams = streams;
+    populateServerButtons(streams);
+    renderStreamDropdown();
+  }
+
+  async function fetchStreamDetails(matchObj) {
+    const list = [];
+    (matchObj.sources || []).forEach((src, idx) => {
+      const url = (src.embed || src.iframe || src.url || '').trim();
+      if (url) list.push({ name: src.name || `Server ${idx + 1}`, url, type: 'embed' });
+    });
+    const main = (matchObj.iframe || matchObj.embed || '').trim();
+    if (main) list.push({ name: `Server ${list.length + 1}`, url: main, type: 'embed' });
+
+    const seenUrls = new Set();
+    return list.filter(s => !seenUrls.has(s.url) && seenUrls.add(s.url))
+               .map(s => ({ ...s, url: playerLink(s.url) }));
+  }
+
+  function populateServerButtons(streams) {
+    const streamSection = document.getElementById('streamSection');
+    const loadingContainer = document.getElementById('streamLoadingContainer');
+
+    streamSection.innerHTML = '';
+    loadingContainer.style.display = 'none';
+    streamSection.style.display = 'grid';
+
+    streams.forEach((stream, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'stream-btn';
+      if (index === 0) btn.classList.add('active');
+
+      btn.innerHTML = `<i class="fa-solid fa-server"></i> ${stream.name || `Server ${index + 1}`}`;
+
+      btn.onclick = (e) => {
+        e.preventDefault();
+        currentStreamIndex = index;
+        updateAllStreamSelections();
+        loadAndPlayStream(stream.url);
+      };
+
+      streamSection.appendChild(btn);
+    });
+
+    if (streams[0]) loadAndPlayStream(streams[0].url);
+  }
+
+  function renderStreamDropdown() {
+    const dropdownMenu = document.getElementById('streamDropdownMenu');
+    dropdownMenu.innerHTML = '';
+
+    if (allStreams.length === 0) return;
+
+    allStreams.forEach((stream, index) => {
+      const item = document.createElement('div');
+      item.className = 'stream-dropdown-item' + (index === currentStreamIndex ? ' active' : '');
+      item.innerHTML = `<i class="fa-solid fa-server"></i> ${stream.name}`;
+      item.onclick = () => {
+        currentStreamIndex = index;
+        loadAndPlayStream(stream.url);
+        updateAllStreamSelections();
+        closeStreamDropdown();
+      };
+      dropdownMenu.appendChild(item);
+    });
+  }
+
+  function updateAllStreamSelections() {
+    const btns = document.querySelectorAll('.stream-btn');
+    btns.forEach((btn, index) => {
+      if (index === currentStreamIndex) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const items = document.querySelectorAll('.stream-dropdown-item');
+    items.forEach((item, index) => {
+      if (index === currentStreamIndex) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+
+  function loadAndPlayStream(url) {
+    const player = document.getElementById('player');
+    const loader = document.getElementById('player-loader');
+
+    loader.style.display = 'flex';
+
+    player.src = url;
+
+    player.onload = () => {
+      loader.style.display = 'none';
+    };
+
+    const loadTimeout = setTimeout(() => {
+      loader.style.display = 'none';
+    }, 5000);
+
+    player.addEventListener('load', () => {
+      clearTimeout(loadTimeout);
+      loader.style.display = 'none';
+    }, { once: true });
+  }
+
+  function showError(message) {
+    console.error(message);
+    document.getElementById('infoCard').innerHTML = `
+      <h3>
+        <i class="fa-solid fa-circle-exclamation" style="color: #ef4444;"></i>
+        <span>Error</span>
+      </h3>
+      <p class="event-desc-p">
+        <i class="fa-solid fa-align-left"></i>
+        <span>${message}</span>
+      </p>
+    `;
+  }
+
+  function toggleChat() {
+    const chatWin = document.getElementById('chatWindow');
+    const chatBtn = document.getElementById('chatToggleBtn');
+
+    if (chatWin.style.display === 'none' || chatWin.style.display === '') {
+      chatWin.style.display = 'block';
+      chatBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> CLOSE LIVE CHAT';
+    } else {
+      chatWin.style.display = 'none';
+      chatBtn.innerHTML = '<i class="fa-solid fa-comments"></i> JOIN LIVE CHAT';
+    }
+  }
+
+  function toggleStreamDropdown() {
+    const menu = document.getElementById('streamDropdownMenu');
+    const btn = document.getElementById('streamDropdownBtn');
+    const btnText = document.getElementById('dropdownBtnText');
+    const isActive = menu.classList.contains('active');
+
+    menu.classList.toggle('active');
+
+    if (isActive) {
+      btn.querySelector('i').className = 'fa-solid fa-tv';
+      btnText.textContent = 'SELECT STREAM SERVER';
+    } else {
+      btn.querySelector('i').className = 'fa-solid fa-xmark';
+      btnText.textContent = 'CLOSE';
+    }
+  }
+
+  function closeStreamDropdown() {
+    const menu = document.getElementById('streamDropdownMenu');
+    const btn = document.getElementById('streamDropdownBtn');
+    const btnText = document.getElementById('dropdownBtnText');
+
+    menu.classList.remove('active');
+    btn.querySelector('i').className = 'fa-solid fa-tv';
+    btnText.textContent = 'SELECT STREAM SERVER';
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = document.getElementById('streamDropdownBtn');
+    const menu = document.getElementById('streamDropdownMenu');
+
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      closeStreamDropdown();
+    }
+  });
+</script>
+</body>
+</html>
