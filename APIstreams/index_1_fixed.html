@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KNR SPORTVERSE - Live Football, Cricket, NBA, NFL, F1 & Sports Streaming</title>
+  
+<!--Favicon Icon-->
+  <link rel="icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" sizes="32x32" type="image/png">
+<link rel="shortcut icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" type="image/png">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp">
+  
+
+    <meta name="description" content="Watch free live stream of football, cricket, NBA, NFL, NHL, Formula 1, UFC, boxing, tennis, rugby, baseball, golf, and major sports events. Follow Premier League, UEFA Champions League, La Liga, Serie A, Bundesliga, IPL, NPL, PSL, ICC tournaments, FIFA World Cup, and more with KNR SPORTVERSE.">
+
+    <meta name="keywords" content="live sports, sports streaming, football live, soccer live, cricket live, NBA live, NFL live, NHL live, MLB live, Formula 1 live, F1 live, MotoGP live, UFC live, boxing live, tennis live, rugby live, golf live, Olympics live, FIFA World Cup live, UEFA Champions League live, UEFA Europa League live, UEFA Conference League live, Premier League live, La Liga live, Serie A live, Bundesliga live, Ligue 1 live, MLS live, FA Cup live, Carabao Cup live, Copa America live, AFC Champions League live, Asian Cup live, Cricket World Cup live, T20 World Cup live, ICC Champions Trophy live, IPL live, PSL live, BBL live, The Hundred live, CPL live, SA20 live, NBA Playoffs live, NBA Finals live, Super Bowl live, NFL Playoffs live, Stanley Cup live, Wimbledon live, Australian Open live, Roland Garros live, French Open live, US Open Tennis live, NASCAR live, IndyCar live, live football matches, live cricket matches, watch sports online, HD sports streaming, live sports TV, all sports live, KNR SPORTVERSE">
+
+    <meta name="author" content="KNR SPORTVERSE">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0d1117">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="KNR SPORTVERSE - All Sports Live">
+    <meta property="og:description" content="Watch live football, cricket, NBA, NFL, Formula 1, UFC, tennis, boxing and major sports leagues worldwide.">
+    <meta property="og:site_name" content="KNR SPORTVERSE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KNR SPORTVERSE - All Sports Live">
+    <meta name="twitter:description" content="Live football, cricket, NBA, NFL, Formula 1, UFC, tennis, boxing and more in one place.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e88e5;
+            --primary-dark-blue: #1565c0;
+            --secondary-blue: #42a5f5;
+            --light-blue: #e3f2fd;
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --bg-light: #f5f7fa;
+            --bg-card: #ffffff;
+            --header-bg: #0d1b2a;
+            --footer-bg: #1a1a1a;
+            --status-live: #e74c3c;
+            --status-upcoming: #9b9b9b;
+            --border-color: #e0e0e0;
+            --dark-text: #f0f0f0;
+            --dark-bg: #0a0e27;
+            --dark-bg-card: #1a1f3a;
+            --dark-header-bg: #0a0d16;
+            --dark-footer-bg: #0d0f1a;
+            --dark-border-color: #2a3a4a;
+            --skeleton-bg: #e8e8e8;
+            --skeleton-highlight: #f0f0f0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        body.dark-mode {
+            --skeleton-bg: #2a3a4a;
+            --skeleton-highlight: #3a4a5a;
+        }
+
+        /* ==================== HEADER STYLES ==================== */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--header-bg) 0%, #1a2332 100%);
+            color: #fff;
+            padding: 1.2rem 2rem;
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .header {
+            background: linear-gradient(135deg, var(--dark-header-bg) 0%, #111827 100%);
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.1);
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .logo-link {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            padding: 0;
+            border-radius: 6px;
+        }
+
+        .logo-link i {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: none;
+            -webkit-text-fill-color: white;
+            color: white;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
+        }
+
+        .search-bar-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .search-bar-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            gap: 0.8rem;
+            border: 1px solid rgba(30, 136, 229, 0.3);
+            transition: all 0.3s ease;
+            min-width: 0;
+            position: relative;
+        }
+
+        .search-bar-container:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(30, 136, 229, 0.5);
+        }
+
+        .search-bar-container:focus-within {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 15px rgba(30, 136, 229, 0.3);
+        }
+
+        .search-bar-container i {
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .search-bar-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            color: #fff;
+            min-width: 0;
+        }
+
+        .search-bar-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .theme-toggle-header {
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle-header:hover {
+            background-color: var(--primary-dark-blue);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+        }
+
+        .theme-toggle-header:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .theme-toggle-header {
+            background-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+        }
+
+        /* ==================== FEED CONTAINER ==================== */
+        .feed-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1.5rem 0 1.5rem;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .filter-options {
+            display: none;
+        }
+
+        .filter-btn {
+            display: none;
+        }
+
+        .category-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            width: 100%;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        body.dark-mode .category-wrapper {
+            border-top-color: var(--dark-border-color);
+        }
+
+        .scroll-arrow {
+            background: rgba(30, 136, 229, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(30, 136, 229, 0.3);
+            color: var(--primary-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .scroll-arrow:hover {
+            background: rgba(30, 136, 229, 0.25);
+            border-color: rgba(30, 136, 229, 0.5);
+            transform: scale(1.05);
+        }
+
+        .scroll-arrow:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .scroll-arrow {
+            background: rgba(30, 136, 229, 0.15);
+            border-color: rgba(30, 136, 229, 0.3);
+            color: var(--secondary-blue);
+        }
+
+        body.dark-mode .scroll-arrow:hover {
+            background: rgba(30, 136, 229, 0.25);
+            border-color: rgba(30, 136, 229, 0.5);
+        }
+
+        .category-scroll {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5rem 0;
+            scroll-behavior: smooth;
+            flex: 1;
+            scrollbar-width: none;
+        }
+
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.5rem 1.1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .cat-btn {
+            border-color: var(--dark-border-color);
+            color: #94a3b8;
+        }
+
+        .cat-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        .cat-btn.active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+        }
+
+        body.dark-mode .cat-btn.active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+        }
+
+        #feed-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2.5rem;
+            min-height: 200px;
+            margin-top: 2.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .empty-feed {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #999;
+        }
+
+        /* ==================== SKELETON LOADER STYLES ==================== */
+        .skeleton-loader {
+            background-color: var(--bg-card);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.1);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(30, 136, 229, 0.1);
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        body.dark-mode .skeleton-loader {
+            background-color: var(--dark-bg-card);
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.15);
+            border-color: rgba(30, 136, 229, 0.2);
+        }
+
+        .skeleton-loader.hidden {
+            display: none;
+        }
+
+        .skeleton-image-wrapper {
+            width: 100%;
+            height: 220px;
+            background: var(--skeleton-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton-image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--skeleton-highlight),
+                transparent
+            );
+            animation: skeletonShimmer 2s infinite;
+        }
+
+        .skeleton-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .skeleton-category {
+            width: 60px;
+            height: 14px;
+            background: var(--skeleton-bg);
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton-category::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--skeleton-highlight),
+                transparent
+            );
+            animation: skeletonShimmer 2s infinite;
+        }
+
+        .skeleton-title {
+            width: 100%;
+            height: 18px;
+            background: var(--skeleton-bg);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.3rem;
+        }
+
+        .skeleton-title::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--skeleton-highlight),
+                transparent
+            );
+            animation: skeletonShimmer 2s infinite;
+        }
+
+        .skeleton-title.short {
+            width: 75%;
+        }
+
+        .skeleton-time {
+            width: 120px;
+            height: 14px;
+            background: var(--skeleton-bg);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.4rem;
+        }
+
+        .skeleton-time::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--skeleton-highlight),
+                transparent
+            );
+            animation: skeletonShimmer 2s infinite;
+        }
+
+        @keyframes skeletonShimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* ==================== FEED CARD TEMPLATE ==================== */
+        .feed-card {
+            background-color: var(--bg-card);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(30, 136, 229, 0.1);
+            cursor: pointer;
+            animation: fadeIn 0.25s ease forwards;
+            will-change: transform;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .feed-card.hidden {
+            display: none;
+        }
+
+        body.dark-mode .feed-card {
+            background-color: var(--dark-bg-card);
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.15);
+            border-color: rgba(30, 136, 229, 0.2);
+        }
+
+        .feed-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 12px 35px rgba(30, 136, 229, 0.25);
+        }
+
+        body.dark-mode .feed-card:hover {
+            box-shadow: 0 12px 35px rgba(30, 136, 229, 0.3);
+        }
+
+        .feed-card-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--light-blue) 0%, #e0e7ff 100%);
+        }
+
+        body.dark-mode .feed-card-image-wrapper {
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(30, 136, 229, 0.05) 100%);
+        }
+
+        .feed-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .feed-card:hover .feed-card-image {
+            transform: scale(1.08);
+        }
+
+        /* TEAM VS CONTAINER - FIX FOR SIDE-BY-SIDE LAYOUT */
+        .feed-card-image-vs-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.15) 0%, rgba(30, 136, 229, 0.08) 100%);
+            flex-wrap: nowrap;
+            padding: 0.5rem;
+        }
+
+        .team-badge {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .vs-text {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .feed-card-status-badge {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .status-live {
+            background: linear-gradient(45deg, #ff3b3b, #ff0000);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+            animation: pulse-status 2s infinite;
+        }
+
+        .status-upcoming {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+
+        .status-tv {
+            background: linear-gradient(45deg, #ff3b3b, #ff0000);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+            animation: pulse-status 2s infinite;
+          }
+
+        .status-ended {
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .feed-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .feed-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        /* SMALLER CATEGORY TAG */
+        .feed-card-category {
+            font-size: 0.55rem;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: var(--primary-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            flex-shrink: 0;
+            width: fit-content;
+        }
+
+        .feed-card-category i {
+            font-size: 0.45rem;
+        }
+
+        .feed-card-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        body.dark-mode .feed-card-name {
+            color: var(--dark-text);
+        }
+
+        .feed-card-time-info {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-height: 1.2rem;
+            margin-top: 0.3rem;
+        }
+
+        body.dark-mode .feed-card-time-info {
+            color: #a0aec0;
+        }
+
+        .feed-card-time-info i {
+            color: var(--primary-blue);
+            font-size: 0.85rem;
+        }
+
+        @keyframes pulse-status {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+            }
+        }
+
+        /* ==================== BOTTOM NAVIGATION BAR ==================== */
+        body { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: calc(14px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 480px;
+            height: 66px;
+            padding: 6px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            align-items: center;
+            background: linear-gradient(135deg, var(--header-bg) 0%, #1a2332 100%);
+            border: 1px solid rgba(66, 165, 245, 0.25);
+            border-radius: 22px;
+            z-index: 200;
+            box-shadow: 0 10px 30px rgba(13, 27, 42, 0.35), 0 4px 20px rgba(30, 136, 229, 0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body.dark-mode .bottom-nav {
+            background: linear-gradient(135deg, var(--dark-header-bg) 0%, #111827 100%);
+            border-color: var(--dark-border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(30, 136, 229, 0.1);
+        }
+
+        .nav-item {
+            height: 100%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border-radius: 16px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+        }
+
+        .nav-item i {
+            font-size: 1.15rem;
+            transition: transform 0.25s ease;
+        }
+
+        .nav-item span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .nav-item:hover { color: #fff; background: rgba(66, 165, 245, 0.1); }
+        .nav-item:active { transform: scale(0.94); }
+
+        .nav-item.active {
+            color: #fff;
+            background: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+        }
+
+        .nav-item.active i { transform: translateY(-1px); }
+
+        body.dark-mode .nav-item { color: #94a3b8; }
+        body.dark-mode .nav-item.active { color: #fff; }
+
+        .feed-card-image.tv-logo {
+            object-fit: contain;
+            padding: 18% 22%;
+            background: radial-gradient(circle at 50% 40%, #1f3a5c 0%, var(--header-bg) 75%);
+        }
+
+        /* ==================== LIVE TV PLAYER ==================== */
+        .tv-player-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(5, 10, 20, 0.85);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .tv-player-overlay.active { display: flex; }
+
+        .tv-player-panel {
+            width: 100%;
+            max-width: 960px;
+            background: var(--header-bg);
+            border: 1px solid rgba(66, 165, 245, 0.25);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .tv-player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .tv-player-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            min-width: 0;
+        }
+
+        .tv-player-title span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .tv-live-dot {
+            width: 9px; height: 9px; flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--status-live);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.25);
+        }
+
+        .tv-player-frame-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+
+        .tv-player-frame-wrap iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .floating-chat-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark-blue) 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(30, 136, 229, 0.35);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .floating-chat-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(30, 136, 229, 0.5);
+        }
+
+        .floating-chat-btn:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .floating-chat-btn {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1565c0 100%);
+            box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+        }
+
+        /* ==================== CHAT MODAL ==================== */
+        .chat-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            animation: fadeInOverlay 0.3s ease-out;
+            opacity: 0;
+        }
+
+        .chat-modal-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .chat-modal-overlay.closing {
+            animation: fadeOutOverlay 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOutOverlay {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .chat-modal-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-card);
+            flex-direction: column;
+            z-index: 201;
+            animation: slideUpModal 0.4s ease-out;
+        }
+
+        body.dark-mode .chat-modal-panel {
+            background: var(--dark-bg-card);
+        }
+
+        .chat-modal-panel.active {
+            display: flex;
+        }
+
+        .chat-modal-panel.closing {
+            animation: slideDownModal 0.4s ease-out forwards;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDownModal {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+        }
+
+        .chat-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .chat-modal-header {
+            background: var(--dark-bg-card);
+            border-color: var(--dark-border-color);
+        }
+
+        .chat-modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        body.dark-mode .chat-modal-title {
+            color: var(--dark-text);
+        }
+
+        .chat-modal-close {
+            background: transparent;
+            border: 1.5px solid var(--primary-blue);
+            color: var(--primary-blue);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .chat-modal-close:hover {
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        .chat-modal-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex: 1;
+        }
+
+        /* ==================== SEARCH MODAL ==================== */
+        .search-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 300;
+            backdrop-filter: blur(5px);
+        }
+
+        .search-modal-overlay.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .search-modal-content {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(30, 136, 229, 0.2);
+            width: 90%;
+            max-width: 450px;
+            max-height: 80vh;
+            overflow: hidden;
+            z-index: 301;
+            display: none;
+            flex-direction: column;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .search-modal-content.active {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        body.dark-mode .search-modal-content {
+            background-color: var(--dark-bg-card);
+            box-shadow: 0 10px 40px rgba(30, 136, 229, 0.15);
+        }
+
+        .search-modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .search-modal-header {
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .search-modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .search-modal-title {
+            color: var(--dark-text);
+        }
+
+        .search-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .search-modal-close:hover {
+            color: var(--primary-blue);
+        }
+
+        .search-modal-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 0;
+            overflow-y: auto;
+            flex: 1;
+            max-height: calc(80vh - 60px);
+        }
+
+        .search-results-count {
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        body.dark-mode .search-results-count {
+            color: #a0aec0;
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .search-empty {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--text-light);
+        }
+
+        .search-empty i {
+            font-size: 2rem;
+            color: var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .search-result-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: transparent;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        body.dark-mode .search-result-item {
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .search-result-item:hover {
+            background-color: rgba(30, 136, 229, 0.08);
+        }
+
+        .search-result-image {
+            width: 60px;
+            height: 34px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(30, 136, 229, 0.05) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 16 / 9;
+        }
+
+        .search-result-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.dark-mode .search-result-title {
+            color: var(--dark-text);
+        }
+
+        .search-result-info {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        body.dark-mode .search-result-info {
+            color: #a0aec0;
+        }
+
+        .search-result-status {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .search-result-status.live {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .search-result-status.upcoming {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .search-result-status.tv {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 1024px) {
+            .header-center {
+                gap: 1rem;
+            }
+
+            .brand-title {
+                font-size: 1.5rem;
+            }
+
+            .logo-link {
+                width: 45px;
+                height: 45px;
+            }
+
+            .logo-link i {
+                font-size: 1.6rem;
+            }
+
+            #feed-content {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 1.2rem;
+            }
+
+            .header-center {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .logo-section {
+                width: 100%;
+                justify-content: center;
+                order: 1;
+            }
+
+            .brand-title {
+                font-size: 1.4rem;
+            }
+
+            .search-bar-wrapper {
+                width: 100%;
+                order: 2;
+            }
+
+            .theme-toggle-header {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .feed-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-options {
+                width: 100%;
+                gap: 0.75rem;
+            }
+
+            .filter-btn {
+                flex: 1;
+                font-size: 0.9rem;
+                padding: 0.55rem 1rem;
+            }
+
+            #feed-content {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.75rem;
+            }
+
+            .feed-card-name {
+                font-size: 0.9rem;
+            }
+
+            .feed-card-content {
+                padding: 1.2rem;
+            }
+
+            .search-modal-content {
+                width: 95%;
+                max-width: 450px;
+                top: 70px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header-center {
+                gap: 0.75rem;
+            }
+
+            .logo-link {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo-link i {
+                font-size: 1.4rem;
+            }
+
+            .brand-title {
+                font-size: 1.2rem;
+                letter-spacing: 0.8px;
+            }
+
+            .search-bar-container {
+                padding: 0.6rem 0.9rem;
+                gap: 0.6rem;
+            }
+
+            .search-bar-input {
+                font-size: 0.9rem;
+            }
+
+            .search-bar-container i {
+                font-size: 0.95rem;
+            }
+
+            .theme-toggle-header {
+                width: 38px;
+                height: 38px;
+                font-size: 0.95rem;
+            }
+
+            .feed-container {
+                padding: 0 1rem;
+                margin: 2rem auto;
+            }
+
+            #feed-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .feed-card-image-wrapper {
+                height: 120px;
+            }
+
+            .feed-card-content {
+                padding: 0.75rem;
+            }
+
+            .feed-card-name {
+                font-size: 0.8rem;
+            }
+
+            .feed-card-time-info {
+                font-size: 0.75rem;
+            }
+
+            .feed-card-status-badge {
+                top: 0.5rem;
+                right: 0.5rem;
+                font-size: 0.65rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .filter-btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .footer-section h3,
+            .footer-section h4 {
+                font-size: 1.1rem;
+            }
+
+            .search-modal-content {
+                width: 98%;
+                max-width: 450px;
+                top: 60px;
+            }
+
+            .search-modal-header {
+                padding: 1rem;
+            }
+
+            .search-result-item {
+                padding: 0.8rem 1rem;
+            }
+
+            .skeleton-image-wrapper {
+                height: 120px;
+            }
+
+            .nav-item {
+                font-size: 0.7rem;
+            }
+
+            .nav-item i {
+                font-size: 1.3rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark-blue);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-center">
+            <div class="logo-section">
+                <a href="#" onclick="location.reload()" class="logo-link" title="KNR Sportverse Logo">
+                    <img src="https://res.cloudinary.com/ee5wpi77/image/upload/v1785693696/knrsportverse_qod9vd.webp" alt="Logo">
+                </a>
+                <h1 class="brand-title">KNR SPORTVERSE</h1>
+            </div>
+            <div class="search-bar-wrapper">
+                <div class="search-bar-container">
+                    <i class="fas fa-search"></i>
+                    <input 
+                        type="text" 
+                        class="search-bar-input" 
+                        id="headerSearchInput" 
+                        placeholder="Search for matches..."
+                        autocomplete="off"
+                        onkeyup="handleSearchInput()"
+                    >
+                </div>
+                <button class="theme-toggle-header" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="search-modal-overlay" id="searchModalOverlay" onclick="closeSearchModal(event)"></div>
+
+    <div class="search-modal-content" id="searchModalContent">
+        <div class="search-modal-header">
+            <h2 class="search-modal-title" id="searchModalTitle">Search Results</h2>
+            <button class="search-modal-close" onclick="closeSearchModal()">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+        <div class="search-results-count" id="searchResultsCount"></div>
+        <div class="search-modal-grid" id="searchResultsGrid"></div>
+    </div>
+
+    <main class="feed-container">
+        <div class="category-wrapper">
+            <button class="scroll-arrow" onclick="scrollCategories(-1)" title="Scroll Left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="category-scroll" id="categoryScroll">
+                <button class="cat-btn active" onclick="setCategory('All', event)">All Sports</button>
+            </div>
+            <button class="scroll-arrow" onclick="scrollCategories(1)" title="Scroll Right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div id="feed-content">
+            <div class="skeleton-loader" id="skeleton-1">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+            <div class="skeleton-loader" id="skeleton-2">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+            <div class="skeleton-loader" id="skeleton-3">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+            <div class="skeleton-loader" id="skeleton-4">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+            <div class="skeleton-loader" id="skeleton-5">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+            <div class="skeleton-loader" id="skeleton-6">
+                <div class="skeleton-image-wrapper"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-category"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-title short"></div>
+                    <div class="skeleton-time"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <button class="floating-chat-btn" id="floatingChatBtn" onclick="openChatModal()" title="Live Chat">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <div class="chat-modal-overlay" id="chatModalOverlay" onclick="closeChatModal()"></div>
+
+    <div class="chat-modal-panel" id="chatModalPanel">
+        <div class="chat-modal-header">
+            <div class="chat-modal-title">
+                <i class="fas fa-comments"></i> Live Chat
+            </div>
+            <button class="chat-modal-close" onclick="closeChatModal()">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-modal-content">
+            <iframe src="https://knrsportverse.blogspot.com/p/knr-live-chat.html" allow="autoplay; encrypted-media; fullscreen"></iframe>
+        </div>
+    </div>
+    <div class="tv-player-overlay" id="tvPlayerOverlay" onclick="if(event.target===this)closeTVPlayer()">
+        <div class="tv-player-panel">
+            <div class="tv-player-header">
+                <div class="tv-player-title"><span class="tv-live-dot"></span><span id="tvPlayerTitle">Live TV</span></div>
+                <button class="chat-modal-close" onclick="closeTVPlayer()" aria-label="Close player"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="tv-player-frame-wrap">
+                <iframe id="tvPlayerFrame" src="about:blank" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="setNavMode('home', event)" title="Home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="setNavMode('schedule', event)" title="Fixtures">
+            <i class="fas fa-calendar-days"></i>
+            <span>Fixtures</span>
+        </div>
+        <div class="nav-item" onclick="setNavMode('24-7', event)" title="24/7 Channels">
+            <i class="fas fa-desktop"></i>
+            <span>Live TV</span>
+        </div>
+        <div class="nav-item" onclick="openDiscord()" title="Discord Server">
+            <i class="fab fa-discord"></i>
+            <span>Discord</span>
+        </div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5KnxxRzfPrjkLtn05tONgqvO7OOZbp0I",
+            authDomain: "knr-sportverse-e861e.firebaseapp.com",
+            projectId: "knr-sportverse-e861e",
+            storageBucket: "knr-sportverse-e861e.firebasestorage.app",
+            messagingSenderId: "224537810839",
+            appId: "1:224537810839:web:01287c5e2f6a8378b256d2",
+            measurementId: "G-GRJTXJRG2H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firestoreDB = db;
+        window.firestoreCollection = collection;
+        window.firestoreOnSnapshot = onSnapshot;
+    </script>
+
+    <script>
+        let appState = {
+            allMatches: [],
+            tvMatches: [],
+            customMatches: [],
+            customTvMatches: [],
+            popularLiveMatches: [],
+            currentMode: 'live',
+            currentNavMode: 'home',
+            currentCategory: 'All',
+            searchQuery: '',
+            allEventsForSearch: [],
+            isChatOpen: false,
+            isDataLoaded: false
+        };
+
+        const API_CONFIG = {
+            base: "https://damitv.st",
+            streams: "https://ondemand.st/papi/api/streams",
+            embed: (id) => `https://damitv.st/embed/?id=${id}`,
+            tvList: "https://damitv.st/data/tv.json",
+            tvPlayer: (id, name) => `https://damitv.st/player/jw/?url=${encodeURIComponent('/dl/' + id + '.m3u8')}&name=${encodeURIComponent(name || '')}`
+        };
+
+        // DamiTV's 24/7 channel list (data/tv.json) has no CORS headers, so try direct first, then public CORS proxies.
+        async function fetchJSONWithProxies(url) {
+            const tries = [
+                url,
+                `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+            ];
+            for (const u of tries) {
+                try {
+                    const ctrl = new AbortController();
+                    const timer = setTimeout(() => ctrl.abort(), 6000);
+                    const res = await fetch(u, { cache: 'no-store', signal: ctrl.signal });
+                    clearTimeout(timer);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    if (data && Array.isArray(data.channels)) return data;
+                } catch (e) { /* try next */ }
+            }
+            return null;
+        }
+
+        const BUILTIN_TV_CHANNELS = [[51,"ABC USA","us",0],[206,"AHC (American Heroes Channel)","us",0],[283,"Antenna TV USA","us",0],[302,"A&E USA","us",0],[303,"AMC USA","us",0],[304,"Animal Planet","us",0],[123,"Astro SuperSport 1","my",0],[124,"Astro SuperSport 2","my",0],[125,"Astro SuperSport 3","my",0],[126,"Astro SuperSport 4","my",0],[134,"Arena Sport 1 Premium","rs",0],[135,"Arena Sport 2 Premium","rs",0],[139,"Arena Sport 3 Premium","rs",0],[429,"Arena Sport 1 Serbia","rs",0],[430,"Arena Sport 2 Serbia","rs",0],[431,"Arena Sport 3 Serbia","rs",0],[581,"Arena Sport 4 Serbia","rs",0],[432,"Arena Sport 1 Croatia","hr",0],[433,"Arena Sport 2 Croatia","hr",0],[434,"Arena Sport 3 Croatia","hr",0],[580,"Arena Sport 4 Croatia","hr",0],[781,"Alkass One","qa",0],[782,"Alkass Two","qa",0],[783,"Alkass Three","qa",0],[784,"Alkass Four","qa",0],[579,"Arena Sport 1 BiH","ba",0],[600,"Abu Dhabi Sports 1 UAE","ae",0],[601,"Abu Dhabi Sports 2 UAE","ae",0],[609,"Abu Dhabi Sports 1 Premium","ae",0],[610,"Abu Dhabi Sports 2 Premium","ae",0],[370,"Astro Cricket","my",0],[531,"Antena 3 Spain","es",0],[612,"Arena Sports Tenis Serbia","rs",0],[664,"ACC Network USA","us",0],[295,"Adult Swim","intl",0],[269,"A Sport PK","pk",0],[717,"AXN Movies Portugal","pt",0],[725,"Arte DE","de",0],[742,"AXS TV USA","us",0],[766,"ABC NY USA","us",0],[844,"Azteca 7 MX","mx",0],[923,"Altitude Sports","us",0],[934,"Azteca Uno MX","mx",0],[940,"Arena Sport 5 Serbia","rs",0],[941,"Arena Sport 6 Serbia","rs",0],[942,"Arena Sport 7 Serbia","rs",0],[943,"Arena Sport 8 Serbia","rs",0],[944,"Arena Sport 9 Serbia","rs",0],[945,"Arena Sport 10 Serbia","rs",0],[958,"Arte France","fr",0],[961,"Automoto La chaîne","fr",0],[1000,"ATV Turkey","tr",0],[1011,"A Spor Turkey","tr",0],[61,"beIN Sports MENA English 1","qa",0],[90,"beIN Sports MENA English 2","qa",0],[91,"beIN Sports 1 Arabic","arabic",0],[92,"beIN Sports 2 Arabic","arabic",0],[93,"beIN Sports 3 Arabic","arabic",0],[94,"beIN Sports 4 Arabic","arabic",0],[95,"beIN Sports 5 Arabic","arabic",0],[96,"beIN Sports 6 Arabic","arabic",0],[97,"beIN Sports 7 Arabic","arabic",0],[98,"beIN Sports 8 Arabic","arabic",0],[99,"beIN Sports 9 Arabic","arabic",0],[100,"beIN SPORTS XTRA 1","qa",0],[494,"beIN Sports MAX 4 France","fr",0],[495,"beIN Sports MAX 5 France","fr",0],[496,"beIN Sports MAX 6 France","fr",0],[497,"beIN Sports MAX 7 France","fr",0],[498,"beIN Sports MAX 8 France","fr",0],[499,"beIN Sports MAX 9 France","fr",0],[500,"beIN Sports MAX 10 France","fr",0],[116,"beIN SPORTS 1 France","fr",0],[117,"beIN SPORTS 2 France","fr",0],[118,"beIN SPORTS 3 France","fr",0],[62,"beIN SPORTS 1 Turkey","tr",0],[63,"beIN SPORTS 2 Turkey","tr",0],[64,"beIN SPORTS 3 Turkey","tr",0],[67,"beIN SPORTS 4 Turkey","tr",0],[578,"BeIN Sports HD Qatar","qa",0],[425,"BeIN SPORTS USA","us",0],[372,"beIN SPORTS en Espa単ol","qa",0],[491,"beIN SPORTS Australia 1","au",0],[492,"beIN SPORTS Australia 2","au",0],[493,"beIN SPORTS Australia 3","au",0],[522,"Barca TV Spain","es",0],[380,"Benfica TV PT","pt",0],[648,"Boomerang","us",0],[476,"BNT 1 Bulgaria","bg",0],[477,"BNT 2 Bulgaria","bg",0],[478,"BNT 3 Bulgaria","bg",0],[737,"BR Fernsehen DE","de",0],[479,"bTV Bulgaria","bg",0],[481,"bTV Action Bulgaria","bg",0],[484,"bTV Lady Bulgaria","bg",0],[305,"BBC America (BBCA)","us","/img/ch/305.svg"],[306,"BET USA","us",0],[307,"Bravo USA","us",0],[349,"BBC News Channel HD","uk",0],[356,"BBC One UK","uk",0],[357,"BBC Two UK","uk",0],[358,"BBC Three UK","uk",0],[359,"BBC Four UK","uk",0],[397,"BIG TEN Network (BTN USA)","us",0],[712,"beIN Sports 1 Malaysia","my",0],[713,"beIN Sports 2 Malaysia","my",0],[714,"beIN Sports 3 Malaysia","my",0],[957,"BFM TV France","fr",0],[1010,"bein Sports 5 Turkey","tr",0],[275,"Bandsports Brasil","br",0],[271,"Canal+ MotoGP France","fr",0],[273,"Canal+ Formula 1","fr",0],[280,"CW PIX 11 USA","us",0],[52,"CBS USA","us",0],[281,"Court TV USA","us",0],[300,"CW USA","us",0],[309,"CNBC USA","us",0],[310,"Comedy Central","us",0],[339,"Cartoon Network","us",0],[345,"CNN USA","us",0],[374,"Cinemax USA","us",0],[535,"Cuatro Spain","es",0],[354,"Channel 4 UK","uk",0],[355,"Channel 5 UK","uk",0],[308,"CBS Sports Network (CBSSN)","us",0],[121,"Canal+ France","fr",0],[122,"Canal+ Sport France","fr",0],[463,"Canal+ Foot France","fr",0],[464,"Canal+ Sport360","fr",0],[540,"Canal 11 Portugal","pt",0],[48,"Canal+ Sport Poland","pl",0],[73,"Canal+ Sport 2 Poland","pl",0],[259,"Canal+ Sport 3 Poland","pl",0],[75,"Canal+ Sport 5 Poland","pl",0],[566,"Canal+ Premium Poland","pl",0],[567,"Canal+ Family Poland","pl",0],[570,"Canal+ Seriale Poland","pl",0],[486,"Canal+ Sport 1 Afrique","fr",0],[487,"Canal+ Sport 2 Afrique","fr",0],[488,"Canal+ Sport 3 Afrique","fr",0],[489,"Canal+ Sport 4 Afrique","fr",0],[490,"Canal+ Sport 5 Afrique","fr",0],[805,"CANAL 9 Denmark","dk",0],[89,"Combate Brasil","br",0],[622,"Magenta Sport 1 HD","gr",0],[623,"Magenta Sport 2 HD","gr",0],[624,"Magenta Sport 3 HD","gr",0],[625,"Magenta Sport 4 HD","gr",0],[626,"Magenta Sport 5 HD","gr",0],[627,"Magenta Sport 6 HD","gr",0],[628,"Magenta Sport 7 HD","gr",0],[629,"Magenta Sport 8 HD","gr",0],[630,"Magenta Sport 9 HD","gr",0],[546,"Channel 9 Israel","il",0],[547,"Channel 10 Israe","il",0],[548,"Channel 11 Israel","il",0],[549,"Channel 12 Israel","il",0],[551,"Channel 13 Israel","il",0],[552,"Channel 14 Israel","il",0],[812,"TV 2 Sport Norway","no",0],[813,"C More Hits Sweden","se",0],[814,"TV 2 Sport 2 Norway","no",0],[748,"COZI TV USA","us",0],[647,"CMT USA","us",0],[602,"CTV Canada","ca",0],[838,"CTV 2 Canada","ca",0],[669,"Crime+ Investigation USA","us","/img/ch/669.svg"],[696,"Comet USA","us",0],[697,"Cooking Channel USA","us",0],[715,"Cleo TV","us",0],[750,"C SPAN 1","us",0],[767,"CBSNY USA","us",0],[776,"Chicago Sports Network","us",0],[831,"Citytv","ca","/img/ch/831.jpg"],[832,"CBC CA","ca",0],[933,"Claro Sports MX","mx",0],[936,"Canal5 MX","mx",0],[956,"C8 France","fr",0],[964,"CNews France","fr",0],[1020,"Canal+ Sport CZ","cz",0],[1033,"CT Sport CZ","cz",0],[1034,"Nova HD CZ","cz",0],[1035,"CT1 HD CZ","cz",0],[1036,"CT2 HD CZ","cz",0],[1037,"TN Live CZ","cz",""],[1038,"OnePlay Sport 4 CZ","cz",0],[1039,"OnePlay MD2 CZ","cz",0],[1040,"OnePlay MD3 CZ","cz",0],[1041,"OnePlay MD4 CZ","cz",0],[1042,"Sport 1 CZ","cz",0],[1043,"Canal+ Sport 2 CZ","cz",0],[1044,"Canal+ Sport 3 CZ","cz",0],[1045,"Canal+ Sport 4 CZ","cz",0],[1046,"Canal+ Sport 5 CZ","cz",0],[1047,"Canal+ Sport 6 CZ","cz",0],[1048,"Canal+ Sport 7 CZ","cz",0],[1049,"Canal+ Sport 8 CZ","cz",0],[1050,"JOJ SK","sk",0],[1051,"Dajto SK","sk",0],[1052,"JOJ Šport SK","sk",0],[1053,"Voyo Special 1 SK","sk",""],[1054,"Voyo Special 2 SK","sk",""],[1055,"Voyo Special 3 SK","sk",""],[1056,"Voyo Special 4 SK","sk",""],[1057,"Voyo Special 7 SK","sk",""],[1058,"Voyo Special 8 SK","sk",""],[1059,"Voyo Special 9 SK","sk",""],[1060,"Nova Sport 3 SK","sk",0],[1061,"Nova Sport 4 SK","sk",0],[1062,"Nova Sport 5 SK","sk",0],[1063,"Canal+ Sport SK","sk",0],[1064,"Canal+ Sport 2 SK","sk",0],[1065,"Canal+ Sport 3 SK","sk",0],[1066,"Canal+ Sport 4 SK","sk",0],[910,"CBS Sports Golazo","us",0],[790,"CMTV Portugal","pt",0],[911,"Cytavision Sports 1 Cyprus","cy",0],[912,"Cytavision Sports 2 Cyprus","cy",0],[913,"Cytavision Sports 3 Cyprus","cy",0],[914,"Cytavision Sports 4 Cyprus","cy",0],[915,"Cytavision Sports 5 Cyprus","cy",0],[916,"Cytavision Sports 6 Cyprus","cy",0],[917,"Cytavision Sports 7 Cyprus","cy",0],[230,"DAZN 1 UK","uk",0],[285,"Discovery Velocity CA","ca",0],[426,"DAZN 1 Bar DE","de",0],[427,"DAZN 2 Bar DE","de",0],[445,"DAZN 1 Spain","es",0],[446,"DAZN 2 Spain","es",0],[447,"DAZN 3 Spain","es",0],[448,"DAZN 4 Spain","es",0],[537,"DAZN F1 ES","es",0],[538,"DAZN LaLiga","uk",0],[918,"DAZN Portugal FIFA Mundial de Clubes","pt",0],[801,"DR1 Denmark","dk",0],[802,"DR2 Denmark","dk",0],[960,"DAZN Ligue 1 France","fr",0],[400,"Digi Sport 1 Romania","ro",0],[401,"Digi Sport 2 Romania","ro",0],[402,"Digi Sport 3 Romania","ro",0],[403,"Digi Sport 4 Romania","ro",0],[465,"Diema Sport Bulgaria","bg",0],[466,"Diema Sport 2 Bulgaria","bg",0],[467,"Diema Sport 3 Bulgaria","bg",0],[482,"Diema Bulgaria","bg",0],[485,"Diema Family Bulgaria","bg",0],[604,"Dubai Sports 1 UAE","ae",0],[605,"Dubai Sports 2 UAE","ae",0],[606,"Dubai Sports 3 UAE","ae",0],[608,"Dubai Racing 2 UAE","ae",0],[786,"DSTV Mzansi Magic","za",0],[827,"DSTV M-Net","za",0],[828,"DSTV kykNET & kie","za",0],[877,"DAZN ZONA Italy","it",0],[311,"Discovery Life Channel","us",0],[312,"Disney Channel","us","/img/ch/312.svg"],[313,"Discovery Channel","us",0],[657,"Discovery Family","us",0],[314,"Disney XD","us","/img/ch/314.svg"],[651,"Destination America","us",0],[652,"Disney JR","us","/img/ch/652.svg"],[348,"Dave","uk",0],[44,"ESPN USA","us",0],[45,"ESPN2 USA","us",0],[316,"ESPNU USA","us",0],[379,"ESPN 1 NL","nl",0],[386,"ESPN 2 NL","nl",0],[71,"Eleven Sports 1 Poland","pl",0],[72,"Eleven Sports 2 Poland","pl",0],[428,"Eleven Sports 3 Poland","pl",0],[455,"Eleven Sports 1 Portugal","pt",0],[456,"Eleven Sports 2 Portugal","pt",0],[457,"Eleven Sports 3 Portugal","pt",0],[458,"Eleven Sports 4 Portugal","pt",0],[459,"Eleven Sports 5 Portugal","pt",0],[41,"EuroSport 1 Greece","gr",0],[42,"EuroSport 2 Greece","gr",0],[57,"EuroSport 1 Poland","pl",0],[58,"EuroSport 2 Poland","pl",0],[231,"Eurosport 1 SW","fr",0],[232,"Eurosport 2 SW","fr",0],[233,"Eurosport 1 NL","nl",0],[234,"Eurosport 2 NL","nl",0],[524,"EuroSport 1 Spain","es",0],[525,"EuroSport 2 Spain","es",0],[878,"EuroSport 1 Italy","it",0],[879,"EuroSport 2 Italy","it",0],[387,"ESPN Premium Argentina","ar",0],[81,"ESPN Brasil","br",0],[82,"ESPN2 Brasil","br",0],[83,"ESPN3 Brasil","br",0],[85,"ESPN4 Brasil","br",0],[149,"ESPN Argentina","ar",0],[150,"ESPN2 Argentina","ar",0],[375,"ESPN Deportes","us",0],[288,"ESPNews","us",0],[315,"E! Entertainment Television","us",0],[363,"E4 Channel","uk",""],[888,"ESPN 3 NL","nl",0],[774,"ERT 1 Greece","gr",0],[772,"Eurosport 1 France","fr",0],[773,"Eurosport 2 France","fr",0],[798,"ESPN3 Argentina","ar",0],[925,"ESPN 1 MX","mx",0],[926,"ESPN 2 MX","mx",0],[927,"ESPN 3 MX","mx",0],[928,"ESPN 4 MX","mx",0],[279,"FUSE TV USA","us",0],[39,"Fox Sports 1 USA","us",0],[758,"Fox Sports 2 USA","us",0],[756,"FOX Soccer Plus","us",0],[369,"Fox Cricket","us",0],[643,"FOX Deportes USA","us",0],[820,"FOX Sports 502 AU","au",0],[821,"FOX Sports 503 AU","au",0],[822,"FOX Sports 504 AU","au",0],[823,"FOX Sports 505 AU","au",0],[824,"FOX Sports 506 AU","au",0],[825,"FOX Sports 507 AU","au",0],[929,"Fox Sports 1 MX","mx",0],[930,"Fox Sports 2 MX","mx",0],[931,"Fox Sports 3 MX","mx",0],[787,"Fox Sports Argentina","ar",0],[788,"Fox Sports 2 Argentina","ar",0],[789,"Fox Sports 3 Argentina","ar",0],[830,"Fox Sports Premium MX","mx",0],[568,"FilmBox Premium Poland","pl",0],[757,"Fight Network","ca",0],[297,"Fox Business","us",0],[483,"FOX HD Bulgaria","bg",0],[54,"FOX USA","us",0],[317,"FX USA","us",0],[298,"FXX USA","us",0],[301,"Freeform","us",0],[347,"Fox News","us",0],[381,"FX Movie Channel","us",0],[665,"FYI","us",0],[688,"Film4 UK","uk",0],[744,"Fashion TV","intl",0],[751,"FETV - Family Entertainment Television","us",0],[768,"FOXNY USA","us",0],[775,"Fox Weather Channel","us",0],[890,"FanDuel Sports Network Arizona","us",0],[896,"FanDuel Sports Network Midwest","us",0],[897,"FanDuel Sports Network New Orleans","us",0],[898,"FanDuel Sports Network North","us",0],[899,"FanDuel Sports Network Ohio","us",0],[900,"FanDuel Sports Network Oklahoma","us",0],[902,"FanDuel Sports Network SoCal","us",0],[903,"FanDuel Sports Network South","us",0],[904,"FanDuel Sports Network Southeast","us",0],[905,"FanDuel Sports Network Sun","us",0],[906,"FanDuel Sports Network West","us",0],[907,"FanDuel Sports Network Wisconsin","us",0],[950,"France 2","fr",0],[951,"France 3","fr","/img/ch/951.svg"],[952,"France 4","fr",0],[953,"France 5","fr",0],[530,"GOL PLAY Spain","es",0],[318,"GOLF Channel USA","us",0],[319,"Game Show Network","us",0],[597,"beIN SPORTS MAX AR","ar",0],[687,"Gold UK","uk",0],[699,"Great American Family Channel (GAC)","us",0],[743,"Galavisi贸n USA","us",0],[752,"Grit Channel","us",0],[760,"Globo SP","br",0],[761,"Globo RIO","br",0],[836,"Global CA","ca",0],[320,"The Hallmark Channel","us",0],[296,"Hallmark Movies & Mysterie","us",0],[282,"Heroes & Icons (H&I) USA","us",0],[321,"HBO USA","us",0],[689,"HBO2 USA","us",0],[690,"HBO Comedy USA","us",0],[691,"HBO Family USA","us",0],[692,"HBO Latino USA","us",0],[693,"HBO Signature USA","us",0],[694,"HBO Zone USA","us",0],[569,"HBO Poland","pl",0],[322,"History USA","us",0],[323,"Headline News","us",0],[382,"HGTV","us",0],[846,"Happy TV Serbia","rs",0],[553,"HOT3 Israel","il",0],[350,"ITV 1 UK","uk",0],[351,"ITV 2 UK","uk",0],[352,"ITV 3 UK","uk",0],[353,"ITV 4 UK","uk",0],[876,"ITV Quiz","uk",0],[854,"Italia 1 Italy","it",0],[324,"Investigation Discovery (ID USA)","us",0],[325,"ION USA","us",0],[656,"IFC TV USA","us",0],[803,"Kanal 4 Denmark","dk",0],[804,"Kanal 5 Denmark","dk",0],[731,"Kabel Eins (Kabel 1) DE","de",0],[1001,"Kanal D Turkey","tr",0],[276,"LaLigaTV UK","uk",0],[278,"Law & Crime Network","us",0],[539,"LaLiga SmartBank TV","es",0],[645,"L'Equipe France","fr",0],[534,"La Sexta Spain","es",0],[826,"Liverpool TV (LFC TV)","uk",0],[849,"Logo TV USA","us",0],[924,"Las Estrellas","mx",0],[962,"LCI France","fr",0],[326,"Lifetime Network","us",0],[389,"Lifetime Movies Network","us",0],[855,"La7 Italy","it",0],[856,"LA7d HD+ Italy","it",0],[136,"Match Football 1 Russia","ru",0],[137,"Match Football 2 Russia","ru",0],[138,"Match Football 3 Russia","ru",0],[573,"Match Premier Russia","ru",0],[127,"Match TV Russia","ru",0],[395,"МАТЧ! БОЕЦ Russia","ru",0],[84,"Movistar Laliga","es",0],[435,"Movistar Liga de Campeones","de",0],[436,"Movistar Deportes Spain","es",0],[438,"Movistar Deportes 2 Spain","es",0],[526,"Movistar Deportes 3 Spain","es",0],[527,"Movistar Deportes 4 Spain","es",0],[528,"Movistar Golf Spain","es",0],[563,"Motowizja Poland","pl",0],[765,"MSG USA","us",0],[327,"MSNBC","us","/img/ch/327.svg"],[299,"Magnolia Network","us",0],[265,"M4 Sports Hungary","hu",0],[437,"Movistar Supercopa de España","de",0],[367,"MTV UK","uk",0],[371,"MTV USA","us",0],[377,"MUTV UK","uk",0],[470,"M6 France","fr",0],[646,"Racer TV USA","us","/img/ch/646.jpg"],[779,"Max Sport 1 Croatia","hr",0],[780,"Max Sport 2 Croatia","hr",0],[770,"Marquee Sports Network","us",0],[472,"Max Sport 1 Bulgaria","bg",0],[473,"Max Sport 2 Bulgaria","bg",0],[474,"Max Sport 3 Bulgaria","bg",0],[475,"Max Sport 4 Bulgaria","bg",0],[399,"MLB Network USA","us",0],[829,"MASN USA","us",0],[654,"MY9TV USA","us",""],[661,"Discovery Turbo","us",0],[662,"METV USA","us",0],[733,"MDR DE","de",0],[749,"Mundotoro TV Spain","es",""],[778,"Monumental Sports Network","us",0],[806,"MTV Denmark","dk",0],[791,"MGM+ USA / Epix","us",0],[277,"NBC10 Philadelphia","us",0],[663,"NHL Network USA","us",0],[667,"NFL RedZone","us",0],[468,"Nova Sport Bulgaria","bg",0],[582,"Nova Sport Serbia","rs",0],[631,"Nova Sports 1 Greece","gr",0],[632,"Nova Sports 2 Greece","gr",0],[633,"Nova Sports 3 Greece","gr",0],[634,"Nova Sports 4 Greece","gr",0],[635,"Nova Sports 5 Greece","gr",0],[636,"Nova Sports 6 Greece","gr",0],[599,"Nova Sports Premier League Greece","gr",0],[637,"Nova Sports Start Greece","gr",0],[638,"Nova Sports Prime Greece","gr",0],[639,"Nova Sports News Greece","gr",0],[666,"Nick Music","us",0],[762,"NESN USA","us",0],[53,"NBC USA","us",0],[404,"NBA TV USA","us",0],[777,"NBC Sports Philadelphia","us",0],[405,"NFL Network","us",0],[753,"NBC Sports Bay Area","us",0],[754,"NBC Sports Boston","us",0],[755,"NBC Sports California","us",0],[769,"NBCNY USA","us",0],[480,"Nova TV Bulgaria","bg",0],[847,"Nova S Serbia","rs",0],[292,"NewsNation USA","us",0],[328,"National Geographic (NGC)","us",0],[329,"NICK JR","us",0],[330,"NICK","us",0],[649,"Nicktoons","us",0],[736,"NDR DE","de",0],[613,"Newsmax USA","us",0],[745,"Nat Geo Wild USA","us",0],[835,"Noovo CA","ca",0],[845,"NBC Universo","us",0],[1003,"NOW TV Turkey","tr",0],[1021,"Nova Sport 1 CZ","cz",0],[1022,"Nova Sport 2 CZ","cz",0],[1023,"Nova Sport 3 CZ","cz",0],[1024,"Nova Sport 4 CZ","cz",0],[1025,"Nova Sport 5 CZ","cz",0],[1026,"Nova Sport 6 CZ","cz",0],[611,"OnTime Sports","eg",0],[541,"ONE 1 HD Israel","il",0],[542,"ONE 2 HD Israel","il",0],[439,"Orange Sport 1 Romania","ro",0],[440,"Orange Sport 2 Romania","ro",0],[441,"Orange Sport 3 Romania","ro",0],[442,"Orange Sport 4 Romania","ro",0],[331,"Oprah Winfrey Network (OWN)","us",0],[332,"Oxygen True Crime","us",0],[848,"Outdoor Channel USA","us",0],[1027,"Oneplay Sport 1 CZ","cz",0],[1028,"Oneplay Sport 2 CZ","cz",0],[1029,"Oneplay Sport 3 CZ","cz",0],[562,"Polsat Poland","pl",0],[47,"Polsat Sport Poland","pl",0],[50,"Polsat Sport 2 Poland","pl",0],[129,"Polsat Sport 3 Poland","pl",0],[443,"Polsat News Poland","pl",0],[564,"Polsat Film Poland","pl",0],[718,"Porto Canal Portugal","pt",0],[730,"ProSieben (PRO7) DE","de",0],[771,"Premier Sports Ireland 1","ie",0],[450,"PTV Sports","pk",0],[43,"PDC TV","uk",""],[88,"Premier Brasil","br",0],[583,"Prima Sport 1","ro",0],[584,"Prima Sport 2","ro",0],[585,"Prima Sport 3","ro",0],[586,"Prima Sport 4","ro",0],[334,"Paramount Network","us",0],[653,"POP TV USA","us",0],[799,"Premier Sports Ireland 2","ie",0],[843,"Prima TV RO","ro",0],[1030,"Premier Sport 1 CZ","cz",0],[1031,"Premier Sport 2 CZ","cz",0],[1032,"Premier Sport 3 CZ","cz",0],[287,"Pac-12 Network USA","us",0],[210,"PBS USA","us",0],[293,"Reelz Channel","us",0],[364,"RTE 1","ie",0],[365,"RTE 2","ie",0],[119,"RMC Sport 1 France","fr",0],[120,"RMC Sport 2 France","fr",0],[954,"RMC Story France","fr",0],[719,"RTP 1 Portugal","pt",0],[720,"RTP 2 Portugal","pt",0],[721,"RTP 3 Portugal","pt",0],[850,"Rai 1 Italy","it",0],[851,"Rai 2 Italy","it",0],[852,"Rai 3 Italy","it",0],[853,"Rai 4 Italy","it",0],[882,"Rai Sport Italy","it",0],[858,"Rai Premium Italy","it",0],[523,"Real Madrid TV Spain","es",0],[740,"RTL DE","de",0],[839,"RDS CA","ca",0],[840,"RDS 2 CA","ca",0],[841,"RDS Info CA","ca",0],[471,"Ring Bulgaria","bg",0],[390,"RTL7 Netherland","nl",0],[555,"Racing Tv UK","uk",0],[607,"Rally Tv","at",0],[920,"Root Sports Northwest","us",0],[35,"Sky Sports Football UK","uk",0],[36,"Sky Sports+ Plus","uk",0],[37,"Sky Sports Action UK","uk",0],[38,"Sky Sports Main Event","uk",0],[46,"Sky Sports Tennis UK","uk",0],[130,"Sky sports Premier League","uk",0],[60,"Sky Sports F1 UK","uk",0],[65,"Sky Sports Cricket","uk",0],[70,"Sky Sports Golf UK","uk",0],[240,"Sky Sports 1 DE","de",0],[241,"Sky Sports 2 DE","de",0],[574,"Sky Sports Golf Italy","it",0],[575,"Sky Sport MotoGP Italy","it",0],[576,"Sky Sport Tennis Italy","it",0],[577,"Sky Sport F1 Italy","it",0],[366,"Sky Sports News UK","uk",0],[449,"Sky Sports MIX UK","uk",0],[556,"Sky Sport Top Event DE","de",0],[557,"Sky Sport Mix DE","de",0],[558,"Sky Sport Bundesliga 1 HD","de",0],[559,"Sky Sport Austria 1 HD","at",0],[759,"SportsNet New York (SNY)","ca",0],[460,"Sky Sport MAX Italy","it",0],[461,"Sky Sport UNO Italy","it",0],[462,"Sky Sport Arena Italy","it",0],[554,"Sky Sports Racing UK","uk",0],[881,"Sky UNO Italy","it",0],[885,"SONY TEN 1","in",0],[886,"SONY TEN 2","in",0],[887,"SONY TEN 3","in",0],[946,"Sky Sport Bundesliga 2","de",0],[947,"Sky Sport Bundesliga 3","de",0],[948,"Sky Sport Bundesliga 4","de",0],[949,"Sky Sport Bundesliga 5","de",0],[965,"Sport en France","fr",0],[970,"Starz Cinema","us",0],[971,"Starz Comedy","us",0],[972,"Starz Edge","us",0],[973,"Starz In Black","in",0],[974,"Starz Kids & Family","us",0],[975,"Starz Encore","us",0],[976,"Starz Encore Action","us",0],[977,"Starz Encore Black","us",0],[978,"Starz Encore Classic","us",0],[979,"Starz Encore Family","us",0],[980,"Starz Encore Suspense","us",0],[981,"Starz Encore Westerns","us",0],[982,"Spectrum SportsNet USA","us",0],[983,"Canal+ Extra 1 Poland","pl",0],[984,"Canal+ Extra 2 Poland","pl",0],[985,"Canal+ Extra 3 Poland","pl",0],[986,"Canal+ Extra 4 Poland","pl",0],[987,"Canal+ Extra 5 Poland","pl",0],[988,"Canal+ Extra 6 Poland","pl",0],[989,"Canal+ Extra 7 Poland","pl",0],[990,"MTV Poland","pl",0],[991,"Polsat Sport Premium 1 Super HD PL","pl",0],[992,"Polsat Sport Premium 2 Super HD PL","pl",0],[993,"Polsat Sport Extra 1 HD Poland","pl",0],[994,"Polsat Sport Extra 2 HD Poland","pl",0],[995,"Polsat Sport Extra 3 HD Poland","pl",0],[996,"Polsat Sport Extra 4 HD Poland","pl",0],[997,"Polsat Sport Fight HD Poland","pl",0],[998,"Polsat Sport NEWS HD Poland","pl",0],[999,"Eleven Sports 4 Poland","pl",0],[588,"Sky Sport 1 NZ","nz",0],[589,"Sky Sport 2 NZ","nz",0],[590,"Sky Sport 3 NZ","nz",0],[591,"Sky Sport 4 NZ","nz",0],[592,"Sky Sport 5 NZ","nz",0],[593,"Sky Sport 6 NZ","nz",0],[594,"Sky Sport 7 NZ","nz",0],[595,"Sky Sport 8 NZ","nz",0],[596,"Sky Sport 9 NZ","nz",0],[587,"Sky Sport Select NZ","nz",0],[49,"Sport TV1 Portugal","pt",0],[74,"Sport TV2 Portugal","pt",0],[289,"Sport TV4 Portugal","pt",0],[454,"Sport TV3 Portugal","pt",0],[290,"Sport TV5 Portugal","pt",0],[291,"Sport TV6 Portugal","pt",0],[722,"SIC Portugal","pt",0],[385,"SEC Network USA","us",0],[78,"SporTV Brasil","br",0],[79,"SporTV2 Brasil","br",0],[80,"SporTV3 Brasil","br",0],[101,"Sport Klub 1 Croatia","hr",0],[102,"Sport Klub 2 Croatia","hr",0],[103,"Sport Klub 3 Croatia","hr",0],[104,"Sport Klub 4 Croatia","hr",0],[453,"Sport Klub HD Croatia","hr",0],[406,"Sportsnet Ontario","ca",0],[411,"Sportsnet One","ca",0],[407,"Sportsnet West","ca",0],[408,"Sportsnet East","ca",0],[409,"Sportsnet 360","ca",0],[410,"Sportsnet World","ca",0],[412,"SuperSport Grandstand","za",0],[413,"SuperSport PSL","za",0],[414,"SuperSport Premier league","za",0],[415,"SuperSport LaLiga","za",0],[416,"SuperSport Variety 1","za",0],[417,"SuperSport Variety 2","za",0],[418,"SuperSport Variety 3","za",0],[419,"SuperSport Variety 4","za",0],[420,"SuperSport Action","za",0],[421,"SuperSport Rugby","za",0],[422,"SuperSport Golf","za",0],[423,"SuperSport Tennis","za",0],[424,"SuperSport Motorsport","za",0],[56,"Supersport Football","za",0],[368,"SuperSport Cricket","za",0],[572,"SuperSport MaXimo 1","za",0],[716,"Sporting TV Portugal","pt",0],[571,"SportDigital Fussball","de",0],[764,"Spectrum Sportsnet LA","ca",0],[640,"Sportdigital1+ Germany","de",0],[641,"Sport1 Germany","de",0],[670,"S4C UK","uk",0],[710,"Sport KLUB Golf Croatia","hr",0],[729,"SAT.1 DE","de",0],[671,"Sky Cinema Premiere UK","uk",0],[672,"Sky Cinema Select UK","uk",0],[673,"Sky Cinema Hits UK","uk",0],[674,"Sky Cinema Greats UK","uk",0],[675,"Sky Cinema Animation UK","uk",0],[676,"Sky Cinema Family UK","uk",0],[677,"Sky Cinema Action UK","uk",0],[678,"Sky Cinema Comedy UK","uk",0],[679,"Sky Cinema Thriller UK","uk",0],[680,"Sky Cinema Drama UK","uk",0],[681,"Sky Cinema Sci-Fi Horror UK","uk",0],[695,"Sky NEWS UK","uk",0],[811,"SEE Denmark","dk",0],[859,"Sky Cinema Collection Italy","it",0],[860,"Sky Cinema Uno Italy","it",0],[861,"Sky Cinema Action Italy","it",0],[862,"Sky Cinema Comedy Italy","it",0],[863,"Sky Cinema Uno +24 Italy","it",0],[864,"Sky Cinema Romance Italy","it",0],[865,"Sky Cinema Family Italy","it",0],[866,"CW Philly","us",0],[867,"Sky Cinema Drama Italy","it",0],[868,"8Sky Cinema Suspense Italy","it",""],[869,"Sky Sport 24 Italy","it",0],[870,"Sky Sport Calcio Italy","it",0],[871,"Sky Calcio 1 (251) Italy","it",0],[872,"Sky Calcio 2 (252) Italy","it",0],[873,"Sky Calcio 3 (253) Italy","it",0],[874,"Sky Calcio 4 (254) Italy","it",0],[875,"Sky Sport Basket Italy","it",0],[880,"Sky Serie Italy","it",0],[284,"StarzPlay CricLife 1 HD","us",""],[682,"Sky Showcase UK","uk",0],[683,"Sky Arts UK","uk",0],[684,"Sky Comedy UK","uk",0],[685,"Sky Crime","us",0],[686,"Sky History","us",0],[708,"Sky MAX UK","uk",0],[614,"SSC Sport 1","sa",0],[615,"SSC Sport 2","sa",0],[616,"SSC Sport 3","sa",0],[617,"SSC Sport 4","sa",0],[618,"SSC Sport 5","sa",0],[619,"SSC Sport Extra 1","sa",0],[620,"SSC Sport Extra 2","sa",0],[621,"SSC Sport Extra 3","sa",0],[140,"Sport 1 Israel","il",0],[141,"Sport 2 Israel","il",0],[142,"Sport 3 Israel","il",0],[143,"Sport 4 Israel","il",0],[144,"Sport 5 Israel","il",0],[145,"Sport 5 PLUS Israel","il",0],[146,"Sport 5 Live Israel","il",0],[147,"Sport 5 Star Israel","il",0],[148,"Sport 5 Gold Israel","il",0],[294,"Science Channel","us",0],[333,"Showtime USA","us",0],[335,"Starz","us",0],[361,"Sky Witness HD","uk",0],[732,"Sixx DE","de",0],[362,"Sky Atlantic","uk",0],[373,"SYFY USA","us",0],[658,"Sundance TV","us",0],[735,"SWR DE","de",0],[738,"SUPER RTL DE","de",0],[739,"SR Fernsehen DE","de",0],[785,"Sky Sports Golf DE","de",0],[603,"Smithsonian Channel","us",0],[274,"Sky Sports F1 DE","de",0],[884,"Sky Sports Tennis DE","de",0],[883,"SBS6 NL","nl",0],[267,"Star Sports 1 IN","in",0],[268,"Star Sports Hindi IN","in",0],[792,"Showtime 2 USA (SHO2) USA","us",0],[793,"Showtime Showcase USA","us",0],[794,"Showtime Extreme USA","us",0],[795,"Showtime Family Zone (SHO Family Zone) USA","us",0],[796,"Showtime Next (SHO Next) USA","us",0],[797,"Showtime Women USA","us",0],[921,"Space City Home Network","us",0],[922,"SportsNet Pittsburgh","ca",0],[1002,"Show TV Turkey","tr",0],[1004,"Star TV Turkey","tr",0],[31,"TNT Sports 1 UK","uk",0],[32,"TNT Sports 2 UK","uk",0],[33,"TNT Sports 3 UK","uk",0],[34,"TNT Sports 4 UK","uk",0],[111,"TSN1","ca",0],[112,"TSN2","ca",0],[113,"TSN3","ca",0],[114,"TSN4","ca",0],[115,"TSN5","ca",0],[565,"TVN HD Poland","pl",0],[444,"TVN24 Poland","pl",0],[560,"TVP1 Poland","pl",0],[561,"TVP2 Poland","pl",0],[532,"Telecinco Spain","es",0],[533,"TVE La 1 Spain","es",0],[536,"TVE La 2 Spain","es",0],[723,"TVI Portugal","pt",0],[724,"TVI Reality Portugal","pt",0],[529,"Teledeporte Spain (TDP)","es",0],[746,"TYC Sports Argentina","ar",0],[128,"TVP Sport Poland","pl",0],[87,"TNT Brasil","br",0],[388,"TNT Sports Argentina","ar",0],[642,"TNT Sports HD Chile","cl",0],[40,"Tennis Channel","us",0],[741,"Ten Sports PK","pk",0],[66,"TUDN USA","us",0],[131,"Telemundo","us",0],[336,"TBS USA","us",0],[337,"TLC","us",0],[338,"TNT USA","us",0],[469,"TF1 France","fr",0],[833,"TVA Sports","ca",0],[834,"TVA Sports 2","ca",0],[932,"TVC Deportes MX","mx",0],[935,"TUDN MX","mx",0],[955,"TMC France","fr",0],[340,"Travel Channel","us",0],[341,"TruTV USA","us",0],[342,"TVLAND","us",0],[644,"TCM USA","us",0],[698,"TMC Channel USA","us",0],[384,"The Food Network","us",0],[394,"The Weather Channel","us",0],[452,"TVP INFO","pl",0],[650,"TeenNick","us",0],[660,"TV ONE USA","us",0],[807,"TV2 Bornholm Denmark","dk",0],[808,"TV2 Sport X Denmark","dk",0],[809,"TV3 Sport Denmark","dk",0],[810,"TV2 Sport Denmark","dk",0],[817,"TV2 Denmark","dk",0],[818,"TV2 Zulu","no",0],[819,"TV3+ Denmark","dk",0],[842,"TVO CA","ca",0],[1005,"TV8 Turkey","tr",0],[700,"TV4 Hockey","se",0],[223,"TV3 Max Denmark","dk",0],[270,"T Sports BD","bd",0],[701,"TV4 Tennis","se",0],[702,"TV4 Motor","se",0],[703,"TV4 Sport Live 1","se",0],[704,"TV4 Sport Live 2","se",0],[705,"TV4 Sport Live 3","se",0],[706,"TV4 Sport Live 4","se",0],[707,"TV4 Sportkanalen","se",0],[747,"TV4 Football Sweden","se",0],[709,"Tennis+ 10","intl",0],[711,"Tennis+ 12","intl",0],[889,"TRT Spor TR","tr",0],[343,"USA Network","us",0],[668,"Universal Kids USA","us",0],[132,"Univision","us",0],[133,"Unimas","us",0],[451,"Viaplay Sports 1 UK","uk",0],[550,"Viaplay Sports 2 UK","uk",0],[521,"#Vamos Spain","es",0],[815,"V Film Premiere","se",0],[816,"V Film Family","se",0],[260,"Vodafone Sport","intl",0],[272,"V Sport Motor Sweden","se",0],[344,"VH1 USA","us",0],[378,"Veronica NL Netherland","nl",0],[391,"VTV+ Uruguay","uy",0],[659,"VICE TV","us",0],[346,"Willow Cricket","us",0],[598,"Willow 2 Cricket","us",0],[376,"WWE Network","us",0],[392,"Win Sports+ Columbia","co",0],[655,"WETV USA","us",0],[734,"WDR DE","de",0],[959,"W9 France","fr",0],[286,"YTV CA","ca",0],[763,"YES Network USA","us",0],[543,"Yes Movies Action Israel","il",0],[544,"Yes Movies Kids Israel","il",0],[545,"Yes Movies Comedy Israel","il",0],[837,"Yes TV CA","ca","/img/ch/837.jpg"],[393,"Ziggo Sport NL","nl",0],[398,"Ziggo Sport 2 NL","nl",0],[919,"Ziggo Sport 3 NL","nl",0],[396,"Ziggo Sport 4 NL","nl",0],[383,"Ziggo Sport 5 NL","nl",0],[901,"Ziggo Sport 6 NL","nl",0],[727,"ZDF DE","de",0],[728,"ZDF Info DE","de",0],[963,"6ter France","fr",0],[857,"20 Mediaset Italy","it",0],[800,"6'eren Denmark","dk",0],[360,"5 USA","us",0],[726,"3sat DE","de",0]];
+
+        const TV_CACHE_KEY = 'knr_tv_channels_v1';
+        const COUNTRY_LABELS = { us: 'USA', uk: 'UK', gb: 'UK', ca: 'Canada', au: 'Australia', in: 'India', fr: 'France', de: 'Germany', es: 'Spain', it: 'Italy', pt: 'Portugal', nl: 'Netherlands', ar: 'Argentina', br: 'Brazil', mx: 'Mexico', za: 'South Africa', nz: 'New Zealand', pk: 'Pakistan', ae: 'Arabic', sa: 'Arabic', tr: 'Turkey', pl: 'Poland', ru: 'Russia', ie: 'Ireland' };
+
+        async function fetchTVChannels() {
+            try {
+                const cached = JSON.parse(localStorage.getItem(TV_CACHE_KEY) || 'null');
+                if (cached && Date.now() - cached.t < 6 * 3600000 && cached.list.length) return cached.list;
+            } catch (e) {}
+            let data = await fetchJSONWithProxies(API_CONFIG.tvList);
+            const fromBuiltIn = !data;
+            if (!data) {
+                // Built-in snapshot of DamiTV's channel list, used when the live list can't be reached
+                data = { channels: BUILTIN_TV_CHANNELS.map(([id, name, country, image]) => ({ id, name, country, image: image || `/img/ch/${id}.png` })) };
+            }
+            const list = data.channels.filter(c => c && c.id != null && c.name).map(c => ({
+                id: 'dlhd-' + c.id,
+                channelId: c.id,
+                title: c.name,
+                poster: c.image ? (c.image.startsWith('http') ? c.image : API_CONFIG.base + c.image) : '',
+                category: 'Live TV',
+                tvLabel: (COUNTRY_LABELS[(c.country || '').toLowerCase()] || (c.country || '').toUpperCase() || 'Intl') + ' TV',
+                isTV: true,
+                isChannel: true,
+                date: 0
+            }));
+            if (!fromBuiltIn) try { localStorage.setItem(TV_CACHE_KEY, JSON.stringify({ t: Date.now(), list })); } catch (e) {}
+            return list;
+        }
+
+        async function loadTVChannels() {
+            appState.tvLoading = true;
+            const list = await fetchTVChannels();
+            appState.tvChannels = list;
+            appState.tvLoading = false;
+            if (appState.currentNavMode === '24-7') renderGrid();
+        }
+
+        // Converts DamiTV categories -> flat match list in the same shape the app already uses
+        function flattenDamiStreams(data) {
+            if (!data || !Array.isArray(data.streams)) return [];
+            const abs = (u) => !u ? '' : (u.startsWith('http') ? u : API_CONFIG.base + (u.startsWith('/') ? '' : '/') + u);
+            const out = [];
+            data.streams.forEach(cat => (cat.streams || []).forEach(st => {
+                const start = parseInt(st.starts_at) || 0;
+                const end = parseInt(st.ends_at) || 0;
+                const t = st.teams || {};
+                out.push({
+                    ...st,
+                    title: st.name || '',
+                    category: st.category_name || cat.category || 'Other',
+                    date: start * 1000,
+                    ...(end > 0 ? { endTime: end * 1000 } : {}),
+                    poster: abs(st.poster),
+                    viewers: parseInt(st.viewers) || 0,
+                    apiStatus: st.status,
+                    status: undefined,
+                    teams: (t.home || t.away) ? {
+                        home: t.home ? { ...t.home, badge: abs(t.home.badge) } : null,
+                        away: t.away ? { ...t.away, badge: abs(t.away.badge) } : null
+                    } : null
+                });
+            }));
+            return out;
+        }
+
+        async function fetchDamiData() {
+            const all = flattenDamiStreams(await safeFetch(API_CONFIG.streams));
+            const popular = all.filter(m => m.apiStatus === 'live' && m.viewers > 0).sort((a, b) => b.viewers - a.viewers);
+            return [all, popular];
+        }
+
+        const DOM = {
+            grid: document.getElementById('feed-content'),
+            categoryScroll: document.getElementById('categoryScroll'),
+            searchInput: document.getElementById('headerSearchInput'),
+            chatModalOverlay: document.getElementById('chatModalOverlay'),
+            chatModalPanel: document.getElementById('chatModalPanel'),
+            searchModalOverlay: document.getElementById('searchModalOverlay'),
+            searchModalContent: document.getElementById('searchModalContent'),
+            searchResultsGrid: document.getElementById('searchResultsGrid'),
+            searchResultsCount: document.getElementById('searchResultsCount')
+        };
+
+        function hideSkeletonLoaders() {
+            for (let i = 1; i <= 6; i++) {
+                const skeleton = document.getElementById(`skeleton-${i}`);
+                if (skeleton) {
+                    skeleton.classList.add('hidden');
+                }
+            }
+        }
+
+        function showSkeletonLoaders() {
+            for (let i = 1; i <= 6; i++) {
+                const skeleton = document.getElementById(`skeleton-${i}`);
+                if (skeleton) {
+                    skeleton.classList.remove('hidden');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            buildCategories();
+            fetchAllData();
+            loadTVChannels();
+            setupFirestoreListener();
+            setInterval(updateAllCountdowns, 1000);
+            setInterval(autoRefreshAPI, 45000);
+        });
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-toggle-header i');
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                themeBtn.classList.remove('fa-sun');
+                themeBtn.classList.add('fa-moon');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeBtn.classList.remove('fa-moon');
+                themeBtn.classList.add('fa-sun');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-toggle-header i');
+
+            if (savedTheme === 'light') {
+                body.classList.remove('dark-mode');
+                themeBtn.classList.remove('fa-moon');
+                themeBtn.classList.add('fa-sun');
+            } else {
+                body.classList.add('dark-mode');
+                themeBtn.classList.remove('fa-sun');
+                themeBtn.classList.add('fa-moon');
+            }
+        }
+
+        async function safeFetch(url) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                console.warn(`Fetch failed for ${url}:`, e.message);
+                return [];
+            }
+        }
+
+        function setupFirestoreListener() {
+            try {
+                if (!window.firestoreDB || !window.firestoreCollection || !window.firestoreOnSnapshot) {
+                    return;
+                }
+
+                const eventsRef = window.firestoreCollection(window.firestoreDB, 'events');
+                
+                window.firestoreOnSnapshot(eventsRef, (snapshot) => {
+                    const events = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        events.push({
+                            id: doc.id,
+                            ...data,
+                            isCustom: true,
+                            isFirestore: true
+                        });
+                    });
+                    
+                    processCustomEvents(events);
+                    renderGrid();
+                });
+            } catch (e) {
+                console.warn('Error setting up Firestore listener:', e.message);
+            }
+        }
+
+        async function autoRefreshAPI() {
+            try {
+                const [originalData, popularData] = await fetchDamiData();
+                
+                processMatchData(originalData, popularData);
+                renderGrid();
+            } catch (e) {
+                console.warn('Error during auto-refresh:', e);
+            }
+        }
+
+        async function fetchAllData() {
+            try {
+                const [originalData, popularData] = await fetchDamiData();
+
+                processMatchData(originalData, popularData);
+                appState.isDataLoaded = true;
+                renderGrid();
+            } catch (e) {
+                console.error('Error during data fetch:', e);
+                appState.isDataLoaded = true;
+                renderGrid();
+            }
+        }
+
+        function processMatchData(originalData, popularData) {
+            function normalizeCat(cat) {
+                return cat.toLowerCase() === 'football' ? 'Football' : 
+                       cat.toLowerCase() === 'soccer' ? 'Football' :
+                       cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+            }
+
+            appState.popularLiveMatches = Array.isArray(popularData) 
+                ? popularData
+                    .filter(m => {
+                        const timestamp = parseInt(m.date);
+                        return m.viewers > 0 && !isNaN(timestamp) && timestamp > 0;
+                    })
+                    .map(m => ({ ...m, category: normalizeCat(m.category), isPopular: true }))
+                : [];
+
+            const popTitles = new Set(appState.popularLiveMatches.map(m => m.title.trim().toLowerCase()));
+
+            const tvFromApi = Array.isArray(originalData) ? originalData.filter(m => parseInt(m.date) === 0).map(m => ({ ...m, isTV: true, category: normalizeCat(m.category) })) : [];
+            const tvFromPop = Array.isArray(popularData) ? popularData.filter(m => parseInt(m.date) === 0).map(m => ({ ...m, isTV: true, category: normalizeCat(m.category) })) : [];
+
+            const tvSeen = new Set();
+            const mergedTv = [];
+            [...tvFromPop, ...tvFromApi].forEach(m => {
+                const key = m.title.trim().toLowerCase();
+                if (!tvSeen.has(key)) {
+                    tvSeen.add(key);
+                    mergedTv.push(m);
+                }
+            });
+
+            const nonTvMatches = Array.isArray(originalData)
+                ? originalData
+                    .filter(m => {
+                        const timestamp = parseInt(m.date);
+                        return !isNaN(timestamp) && timestamp > 0 && !popTitles.has(m.title.trim().toLowerCase());
+                    })
+                    .map(m => ({ ...m, category: normalizeCat(m.category) }))
+                : [];
+
+            appState.tvMatches = mergedTv;
+            appState.allMatches = nonTvMatches;
+        }
+
+        function processCustomEvents(customEvents) {
+            appState.customMatches = [];
+            appState.customTvMatches = [];
+
+            customEvents.forEach(event => {
+                if (event.status === '24/7') {
+                    appState.customTvMatches.push({
+                        ...event,
+                        isTV: true,
+                        date: 0
+                    });
+                } else {
+                    appState.customMatches.push(event);
+                }
+            });
+        }
+
+        function getEventStatus(event, now) {
+            if (event.isTV || event.status === '24/7') {
+                return 'live';
+            }
+
+            const matchTime = event.date !== undefined 
+                ? parseInt(event.date) 
+                : (event.startTime ? parseInt(event.startTime) : null);
+            
+            const endTime = event.endTime ? parseInt(event.endTime) : null;
+
+            if (!matchTime) {
+                if (event.status === 'Live') {
+                    if (endTime && now > endTime) return 'ended';
+                    return 'live';
+                }
+                if (event.status === 'Upcoming') return 'upcoming';
+                return 'upcoming';
+            }
+
+            if (matchTime > 0) {
+                if (matchTime > now) {
+                    return 'upcoming';
+                }
+                
+                if (endTime && now > endTime) {
+                    return 'ended';
+                }
+                
+                if (now >= matchTime && (!endTime || now <= endTime)) {
+                    return 'live';
+                }
+            }
+
+            return 'upcoming';
+        }
+
+        function getEventImage(match) {
+            if (match.isFirestore || match.isCustom) {
+                if (match.image) {
+                    return { type: 'single', url: match.image };
+                }
+                if (match.customImage) {
+                    return { type: 'single', url: match.customImage };
+                }
+                if (match.homeTeamImage && match.awayTeamImage) {
+                    return { type: 'vs', home: match.homeTeamImage, away: match.awayTeamImage };
+                }
+                if (match.homeTeamImage) {
+                    return { type: 'single', url: match.homeTeamImage };
+                }
+            }
+
+            if (match.poster) {
+                let url = match.poster;
+                return { type: 'single', url: url };
+            }
+
+            if (match.teams) {
+                const hasHome = match.teams.home && match.teams.home.badge;
+                const hasAway = match.teams.away && match.teams.away.badge;
+                
+                if (hasHome && hasAway) {
+                    return {
+                        type: 'vs',
+                        home: match.teams.home.badge,
+                        away: match.teams.away.badge
+                    };
+                } else if (hasHome) {
+                    return { type: 'single', url: match.teams.home.badge };
+                }
+            }
+
+            return null;
+        }
+
+        function updateAllCountdowns() {
+            const now = Date.now();
+            document.querySelectorAll('[data-match-time]').forEach((el) => {
+                const matchTime = parseInt(el.getAttribute('data-match-time'));
+                const isTV = el.getAttribute('data-is-tv') === 'true';
+                const status = el.getAttribute('data-status');
+                
+                let timeText = '';
+                
+                if (isTV) {
+                    timeText = '24/7 Channel';
+                } else if (status === 'Ended') {
+                    timeText = 'Ended';
+                } else if (status === 'Live') {
+                    timeText = 'LIVE NOW';
+                } else if (!isNaN(matchTime) && matchTime > 0) {
+                    const diff = matchTime - now;
+                    if (diff > 0) {
+                        const days = Math.floor(diff / 86400000);
+                        const hours = Math.floor((diff % 86400000) / 3600000);
+                        const minutes = Math.floor((diff % 3600000) / 60000);
+                        const seconds = Math.floor((diff % 60000) / 1000);
+                        
+                        if (days > 0) {
+                            timeText = `${days}d ${hours}h ${minutes}m`;
+                        } else {
+                            timeText = `${hours}h ${minutes}m ${seconds}s`;
+                        }
+                    } else {
+                        timeText = 'LIVE NOW';
+                    }
+                }
+                
+                el.textContent = timeText;
+            });
+        }
+
+        function renderGrid() {
+            const now = Date.now();
+            let sourceArr = [];
+
+            if (appState.searchQuery) {
+                sourceArr = appState.allEventsForSearch.slice();
+            } else {
+                if (appState.currentNavMode === '24-7') {
+                    sourceArr = [...appState.customTvMatches, ...appState.tvMatches, ...(appState.tvChannels || [])].sort((a, b) => {
+                        return a.title.localeCompare(b.title);
+                    });
+                } else {
+                    const filterStatus = appState.currentNavMode === 'home' ? 'live' : 'upcoming';
+                    
+                    let apiMatches = appState.allMatches.filter(m => getEventStatus(m, now) === filterStatus);
+                    
+                    let customLiveMatches = [];
+                    let customUpcomingMatches = [];
+                    
+                    appState.customMatches.forEach(m => {
+                        const status = getEventStatus(m, now);
+                        
+                        if (filterStatus === 'live') {
+                            if (status === 'live') {
+                                customLiveMatches.push(m);
+                            } else if (status === 'upcoming') {
+                                const startTime = m.startTime ? parseInt(m.startTime) : null;
+                                if (startTime && startTime > now && (startTime - now) <= 3600000) {
+                                    customUpcomingMatches.push(m);
+                                }
+                            }
+                        } else {
+                            if (status === filterStatus) {
+                                customLiveMatches.push(m);
+                            }
+                        }
+                    });
+                    
+                    customLiveMatches.sort((a, b) => {
+                        const timeA = a.startTime ? parseInt(a.startTime) : (filterStatus === 'live' ? 0 : Infinity);
+                        const timeB = b.startTime ? parseInt(b.startTime) : (filterStatus === 'live' ? 0 : Infinity);
+                        return filterStatus === 'live' ? (timeB - timeA) : (timeA - timeB);
+                    });
+                    
+                    customUpcomingMatches.sort((a, b) => {
+                        const timeA = a.startTime ? parseInt(a.startTime) : Infinity;
+                        const timeB = b.startTime ? parseInt(b.startTime) : Infinity;
+                        return timeA - timeB;
+                    });
+
+                    sourceArr = [...customLiveMatches, ...customUpcomingMatches, ...appState.popularLiveMatches.filter(m => filterStatus === 'live'), ...apiMatches];
+                    
+                    const seen = new Set();
+                    sourceArr = sourceArr.filter(m => {
+                        const key = m.title.trim().toLowerCase();
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                    });
+                }
+            }
+
+            if (appState.currentCategory !== 'All' && !(appState.currentNavMode === '24-7' && !appState.searchQuery)) {
+                sourceArr = sourceArr.filter(m => {
+                    const category = m.category || m.sportType || '';
+                    return category === appState.currentCategory;
+                });
+            }
+
+            if (appState.searchQuery) {
+                const queryLower = appState.searchQuery.toLowerCase();
+                sourceArr = sourceArr.filter(m => m.title.toLowerCase().includes(queryLower));
+            }
+
+            if (appState.isDataLoaded) {
+                hideSkeletonLoaders();
+            }
+
+            const tvWaiting = appState.currentNavMode === '24-7' && appState.tvLoading && sourceArr.length === 0;
+            const html = sourceArr.length === 0 ? 
+                (tvWaiting ? `
+                    <div class="empty-feed">
+                        <i class="fas fa-satellite-dish"></i>
+                        <p>Loading live TV channels...</p>
+                    </div>
+                ` : appState.isDataLoaded ? `
+                    <div class="empty-feed">
+                        <i class="fas fa-inbox"></i>
+                        <p>No events found</p>
+                    </div>
+                ` : '')
+                : sourceArr.map(m => createCardHTML(m)).join('');
+
+            DOM.grid.innerHTML = html;
+            
+            if (sourceArr.length > 0) {
+                updateAllCountdowns();
+            }
+        }
+
+        function createCardHTML(match) {
+            const now = Date.now();
+            
+            const matchTime = match.date !== undefined 
+                ? parseInt(match.date) 
+                : (match.startTime ? parseInt(match.startTime) : null);
+            
+            const endTime = match.endTime ? parseInt(match.endTime) : null;
+            const status = getEventStatus(match, now);
+            const isValidTime = !isNaN(matchTime) && matchTime > 0;
+            
+            let badgeClass = '', badgeText = '';
+            
+            if (match.isTV || match.status === '24/7') {
+                badgeClass = 'status-tv';
+                badgeText = '<i class="fas fa-circle"></i> 24/7';
+            } else if (status === 'live') {
+                badgeClass = 'status-live';
+                badgeText = '<i class="fas fa-circle"></i> LIVE';
+            } else if (status === 'upcoming') {
+                badgeClass = 'status-upcoming';
+                badgeText = '<i class="fas fa-hourglass-end"></i> UPCOMING';
+            } else if (status === 'ended') {
+                badgeClass = 'status-ended';
+                badgeText = '<i class="fas fa-check-circle"></i> ENDED';
+            }
+
+            const badgeHtml = badgeText ? `<div class="feed-card-status-badge ${badgeClass}">${badgeText}</div>` : '';
+
+            const imageData = getEventImage(match);
+
+            let imgHtml = '';
+            if (imageData) {
+                if (imageData.type === 'vs') {
+                    imgHtml = `
+                        <div class="feed-card-image-vs-container">
+                            <img src="${imageData.home}" class="team-badge" alt="Home Team" loading="lazy" onerror="this.style.display='none'">
+                            <div class="vs-text">VS</div>
+                            <img src="${imageData.away}" class="team-badge" alt="Away Team" loading="lazy" onerror="this.style.display='none'">
+                        </div>
+                    `;
+                } else {
+                    imgHtml = `<img src="${imageData.url}" class="feed-card-image${match.isChannel ? ' tv-logo' : ''}" alt="${match.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.classList.remove('tv-logo');this.src='https://i.imgur.com/tMzl9kB.gif'">`;
+                }
+            } else {
+                imgHtml = `<img src="https://i.imgur.com/tMzl9kB.gif" class="feed-card-image" alt="Event Image">`;
+            }
+
+            let timeText = '';
+            let categoryLabel = match.isChannel ? match.tvLabel : (match.category || match.sportType || '');
+            
+            if (match.isTV || match.status === '24/7') {
+                timeText = '24/7 Channel';
+            } else if (status === 'ended') {
+                timeText = 'Ended';
+            } else if (status === 'live') {
+                timeText = 'LIVE NOW';
+            } else if (isValidTime) {
+                const diff = matchTime - now;
+                if (diff > 0) {
+                    const days = Math.floor(diff / 86400000);
+                    const hours = Math.floor((diff % 86400000) / 3600000);
+                    const minutes = Math.floor((diff % 3600000) / 60000);
+                    
+                    if (days > 0) {
+                        timeText = `in ${days}d ${hours}h`;
+                    } else {
+                        timeText = `in ${hours}h ${minutes}m`;
+                    }
+                }
+            }
+
+            const jsonStr = JSON.stringify(match).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+
+            const timeInfoHtml = (status === 'live' && !match.isTV && match.status !== '24/7') 
+                ? '' 
+                : `<div class="feed-card-time-info">
+                    <i class="fas fa-clock"></i>
+                    <span data-match-time="${matchTime || 0}" data-is-tv="${(match.isTV || match.status === '24/7') ? 'true' : 'false'}" data-status="${status || ''}">${timeText}</span>
+                </div>`;
+
+            return `
+                <div class="feed-card" onclick='handleCardClick(${jsonStr})'>
+                    <div class="feed-card-image-wrapper">
+                        ${imgHtml}
+                        ${badgeHtml}
+                    </div>
+                    <div class="feed-card-content">
+                        ${categoryLabel ? `<div class="feed-card-category"><i class="fas fa-tag"></i> ${categoryLabel}</div>` : ''}
+                        <h3 class="feed-card-name">
+                            ${match.title}
+                        </h3>
+                        ${timeInfoHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleCardClick(matchObj) {
+            if (matchObj.isChannel) {
+                openTVPlayer(matchObj);
+                return;
+            }
+            if (matchObj.isFirestore || matchObj.isCustom) {
+                if (matchObj.liveLink) {
+                    window.location.href = matchObj.liveLink;
+                } else {
+                    alert('Live link not available for this event');
+                }
+            } else {
+                const matchId = encodeURIComponent(matchObj.id);
+                window.location.href = `/p/knr-sports-stream.html?q=${matchId}`;
+            }
+        }
+
+        function buildCategories() {
+            const categories = [
+                "Football", "Cricket", "Tennis", "Basketball", 
+                "Fight/MMA", "Motor-sports", "Baseball", "Rugby", "Hockey", "Volleyball", "Other"
+            ];
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn';
+                btn.textContent = cat;
+                btn.onclick = (e) => setCategory(cat, e);
+                DOM.categoryScroll.appendChild(btn);
+            });
+        }
+
+        function setCategory(cat, event) {
+            appState.currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            requestAnimationFrame(() => {
+                renderGrid();
+            });
+        }
+
+        function scrollCategories(direction) {
+            const scroll = DOM.categoryScroll;
+            const scrollAmount = 300;
+            scroll.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        function setNavMode(mode, event) {
+            appState.currentNavMode = mode;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            requestAnimationFrame(() => {
+                renderGrid();
+            });
+        }
+
+        function openTVPlayer(ch) {
+            document.getElementById('tvPlayerTitle').textContent = ch.title;
+            document.getElementById('tvPlayerFrame').src = API_CONFIG.tvPlayer(ch.channelId, ch.title);
+            document.getElementById('tvPlayerOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTVPlayer() {
+            document.getElementById('tvPlayerOverlay').classList.remove('active');
+            document.getElementById('tvPlayerFrame').src = 'about:blank';
+            document.body.style.overflow = '';
+        }
+
+        function openDiscord() {
+            window.open('https://discord.gg/Q57TTcAuYu', '_blank');
+        }
+
+        function handleSearchInput() {
+            const query = DOM.searchInput.value.toLowerCase().trim();
+            
+            if (query === '') {
+                closeSearchModal();
+                appState.searchQuery = '';
+                requestAnimationFrame(() => renderGrid());
+                return;
+            }
+
+            appState.searchQuery = query;
+            
+            requestAnimationFrame(() => {
+                const allEvents = [
+                    ...appState.customMatches,
+                    ...appState.customTvMatches,
+                    ...appState.allMatches,
+                    ...appState.tvMatches,
+                    ...appState.popularLiveMatches
+                ];
+
+                const seen = new Set();
+                const filtered = allEvents.filter(m => {
+                    const key = m.title.trim().toLowerCase();
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return m.title.toLowerCase().includes(query);
+                });
+
+                appState.allEventsForSearch = filtered;
+                
+                DOM.searchModalOverlay.classList.add('active');
+                DOM.searchModalContent.classList.add('active');
+
+                if (filtered.length === 0) {
+                    DOM.searchResultsCount.innerHTML = '';
+                    DOM.searchResultsGrid.innerHTML = `
+                        <div class="search-empty">
+                            <i class="fas fa-search"></i>
+                            <p>No results found</p>
+                        </div>
+                    `;
+                } else {
+                    DOM.searchResultsCount.innerHTML = `<strong>${filtered.length}</strong> result${filtered.length !== 1 ? 's' : ''} found`;
+                    DOM.searchResultsGrid.innerHTML = filtered.map(m => createSearchResultItem(m)).join('');
+                }
+
+                updateAllCountdowns();
+            });
+        }
+
+        function createSearchResultItem(match) {
+            const now = Date.now();
+            const matchTime = match.date !== undefined 
+                ? parseInt(match.date) 
+                : (match.startTime ? parseInt(match.startTime) : null);
+            const endTime = match.endTime ? parseInt(match.endTime) : null;
+            const status = getEventStatus(match, now);
+            
+            let statusClass = '';
+            let statusText = '';
+            
+            if (match.isTV || match.status === '24/7') {
+                statusClass = 'tv';
+                statusText = '24/7';
+            } else if (status === 'live') {
+                statusClass = 'live';
+                statusText = 'LIVE';
+            } else if (status === 'upcoming') {
+                statusClass = 'upcoming';
+                statusText = 'UPCOMING';
+            }
+
+            const imageData = getEventImage(match);
+            let imageHtml = '';
+            
+            if (imageData) {
+                if (imageData.type === 'vs') {
+                    imageHtml = `<img src="${imageData.home}" class="search-result-image" alt="${match.title}" loading="lazy" onerror="this.style.display='none'">`;
+                } else {
+                    imageHtml = `<img src="${imageData.url}" class="search-result-image" alt="${match.title}" loading="lazy" onerror="this.style.display='none'">`;
+                }
+            } else {
+                imageHtml = `<div class="search-result-image" style="background: linear-gradient(135deg, rgba(30,136,229,0.15) 0%, rgba(30,136,229,0.05) 100%); display: flex; align-items: center; justify-content: center;"><i class="fas fa-tv" style="color: var(--primary-blue);"></i></div>`;
+            }
+
+            const jsonStr = JSON.stringify(match).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+
+            return `
+                <div class="search-result-item" onclick="handleCardClick(${jsonStr})">
+                    ${imageHtml}
+                    <div class="search-result-text">
+                        <div class="search-result-title">${match.title}</div>
+                        <div class="search-result-info">
+                            <span>${match.category || match.sportType || 'Sports'}</span>
+                            <span class="search-result-status ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeSearchModal(e) {
+            if (e && e.target.id !== 'searchModalOverlay') return;
+            DOM.searchModalOverlay.classList.remove('active');
+            DOM.searchModalContent.classList.remove('active');
+            DOM.searchInput.value = '';
+            appState.searchQuery = '';
+            renderGrid();
+        }
+
+        function openChatModal() {
+            appState.isChatOpen = true;
+            DOM.chatModalOverlay.classList.add('active');
+            DOM.chatModalPanel.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeChatModal() {
+            appState.isChatOpen = false;
+            DOM.chatModalPanel.classList.add('closing');
+            DOM.chatModalOverlay.classList.add('closing');
+            setTimeout(() => {
+                DOM.chatModalOverlay.classList.remove('active');
+                DOM.chatModalOverlay.classList.remove('closing');
+                DOM.chatModalPanel.classList.remove('active');
+                DOM.chatModalPanel.classList.remove('closing');
+                document.body.style.overflow = 'auto';
+            }, 400);
+        }
+
+        window.appState = appState;
+        window.renderGrid = renderGrid;
+        window.handleCardClick = handleCardClick;
+        window.handleSearchInput = handleSearchInput;
+        window.closeSearchModal = closeSearchModal;
+        window.toggleTheme = toggleTheme;
+        window.setNavMode = setNavMode;
+        window.setCategory = setCategory;
+        window.scrollCategories = scrollCategories;
+        window.openChatModal = openChatModal;
+        window.closeChatModal = closeChatModal;
+        window.openDiscord = openDiscord;
+    </script>
+</body>
+</html>
