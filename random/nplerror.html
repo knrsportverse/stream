@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPL Live Notice</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+/* Centered 16:9 screen */
+.screen {
+    width: min(100vw, 177.7778vh);
+    aspect-ratio: 16 / 9;
+    background: radial-gradient(
+        circle at center,
+        #182333 0%,
+        #0b1019 65%,
+        #05070b 100%
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+/* Background glow */
+.screen::before {
+    content: "";
+    position: absolute;
+    width: 55%;
+    aspect-ratio: 1;
+    background: #e5092630;
+    filter: blur(100px);
+    border-radius: 50%;
+    animation: glow 4s infinite alternate;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    width: 100%;
+}
+
+.tag {
+    display: inline-block;
+    background: #e50926;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: clamp(9px, 1.2vw, 16px);
+    font-weight: bold;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    animation: slideDown 1s ease;
+}
+
+h1 {
+    font-size: clamp(25px, 5vw, 70px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    animation: fadeUp 1.2s ease;
+}
+
+h1 span {
+    color: #ff3048;
+}
+
+.description {
+    font-size: clamp(11px, 1.5vw, 21px);
+    color: #c5cbd5;
+    line-height: 1.8;
+    margin: 20px auto 30px;
+    animation: fadeUp 1.6s ease;
+}
+
+.watch-btn {
+    display: inline-block;
+    background: #e50926;
+    color: white;
+    text-decoration: none;
+    padding: 15px 35px;
+    border-radius: 8px;
+    font-size: clamp(11px, 1.4vw, 19px);
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 0 20px #e5092670;
+    transition: 0.3s;
+    animation: fadeUp 2s ease,
+               pulse 2s infinite 2s;
+}
+
+.watch-btn:hover {
+    background: #ff3048;
+    transform: scale(1.08);
+    box-shadow: 0 0 35px #ff3048;
+}
+
+.footer {
+    margin-top: 30px;
+    color: #687487;
+    font-size: clamp(8px, 1vw, 13px);
+    letter-spacing: 3px;
+    animation: fadeUp 2.2s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 15px #e5092670;
+    }
+    50% {
+        box-shadow: 0 0 30px #e50926;
+    }
+}
+
+@keyframes glow {
+    from {
+        transform: scale(0.8);
+        opacity: 0.4;
+    }
+    to {
+        transform: scale(1.3);
+        opacity: 0.9;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="screen">
+    <div class="content">
+
+        <div class="tag">🏏 NPL LIVE NOTICE</div>
+
+        <h1>
+            WE DON'T STREAM<br>
+            <span>NPL MATCHES</span>
+        </h1>
+
+        <p class="description">
+            We don't stream NPL matches on our website.<br>
+            Watch every moment on the official streaming platform.
+        </p>
+
+        <a
+          class="watch-btn"
+          href="https://www.nettv.com.np/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ▶ WATCH ON NETTV ↗
+        </a>
+
+        <div class="footer">
+            OFFICIAL NPL STREAMING PARTNER
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
