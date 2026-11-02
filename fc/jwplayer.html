@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JW Player - Live Stream</title>
+  <!-- JW Player CDN Library -->
+  <script src="https://cdn.jwplayer.com/libraries/SAH0KWId.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; }
+    .jw-player-wrapper { aspect-ratio: 16/9; max-height: 80vh; background: #000; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Top Bar -->
+  <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
+    <a href="fcstream.html" class="flex items-center gap-2 text-gray-300 hover:text-white text-sm font-semibold transition">
+      <i class="fa-solid fa-arrow-left"></i> Back to Matches
+    </a>
+    <h1 id="stream-title" class="text-sm font-bold text-red-500 truncate max-w-md">FanCode Player</h1>
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+      <span class="text-xs font-semibold text-gray-400">LIVE</span>
+    </div>
+  </header>
+
+  <!-- Player Container -->
+  <main class="flex-grow flex flex-col items-center justify-center p-2 sm:p-6">
+    <div class="w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+      <div class="jw-player-wrapper w-full relative">
+        <div id="jwplayer-container"></div>
+      </div>
+      
+      <!-- Multi-Server Selector Control Bar -->
+      <div class="bg-gray-900 p-4 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <label for="server-select" class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-server text-red-500"></i> Active Server:
+          </label>
+          <select id="server-select" onchange="switchServer(this.value)" class="bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-red-500 flex-grow sm:flex-grow-0">
+            <!-- Dynamic Server Options Added via JS -->
+          </select>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <button onclick="reloadPlayer()" class="hover:text-white transition flex items-center gap-1.5 bg-gray-800 px-3 py-1.5 rounded-md">
+            <i class="fa-solid fa-rotate-right"></i> Reload Player
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center py-4 text-xs text-gray-600 border-t border-gray-900">
+    FanCode High Dynamic Live Stream Engine &copy; 2026
+  </footer>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const directQueryUrl = urlParams.get('q');
+    const title = urlParams.get('title') || "Live Match Stream";
+    
+    document.getElementById('stream-title').innerText = title;
+
+    // Build list of servers dynamically based on incoming parameters
+    let servers = {};
+
+    if (directQueryUrl) {
+      servers["Direct Stream"] = directQueryUrl;
+    } else {
+      if (urlParams.get('primary')) servers["Primary Tokenized (1080p)"] = urlParams.get('primary');
+      if (urlParams.get('sonu_px')) servers["Proxy Auto Stream (Fast)"] = urlParams.get('sonu_px');
+      if (urlParams.get('fancode_cdn')) servers["FanCode Standard CDN"] = urlParams.get('fancode_cdn');
+      if (urlParams.get('fancode_np_cdn')) servers["FanCode Regional CDN"] = urlParams.get('fancode_np_cdn');
+    }
+
+    const selectEl = document.getElementById('server-select');
+    const serverKeys = Object.keys(servers);
+
+    if (serverKeys.length === 0) {
+      servers["Default Live Fallback"] = "https://in-mc-flive.fancode.com/mumbai/index.m3u8";
+    }
+
+    // Populate dropdown options
+    Object.keys(servers).forEach((key, index) => {
+      const opt = document.createElement('option');
+      opt.value = servers[key];
+      opt.innerText = key;
+      if (index === 0) opt.selected = true;
+      selectEl.appendChild(opt);
+    });
+
+    // JW Player Initialization Logic
+    let playerInstance = jwplayer("jwplayer-container").setup({
+      file: selectEl.value || Object.values(servers)[0],
+      type: "hls",
+      autostart: true,
+      width: "100%",
+      height: "100%",
+      stretching: "uniform",
+      cast: {},
+      hlshtml: true
+    });
+
+    // Auto-fallback Logic: If active server errors out, auto-switch to next server
+    playerInstance.on('error', function(e) {
+      console.warn("Stream error encountered on current server. Triggering auto-fallback logic...", e);
+      const currentIndex = selectEl.selectedIndex;
+      if (currentIndex < selectEl.options.length - 1) {
+        const nextIndex = currentIndex + 1;
+        selectEl.selectedIndex = nextIndex;
+        switchServer(selectEl.options[nextIndex].value);
+      }
+    });
+
+    function switchServer(streamUrl) {
+      playerInstance.load([{
+        file: streamUrl,
+        type: "hls"
+      }]);
+      playerInstance.play();
+    }
+
+    function reloadPlayer() {
+      switchServer(selectEl.value);
+    }
+  </script>
+</body>
+</html>
