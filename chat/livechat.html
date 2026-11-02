@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>KNR CHAT</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-gradient: radial-gradient(circle at 50% 0%, #0f172a 0%, #05080f 100%);
+    --glass-bg: rgba(15, 23, 42, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-panel: rgba(11, 18, 32, 0.75);
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.4);
+    --input-bg: rgba(30, 41, 59, 0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg-gradient); color: var(--text); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; }
+
+  /* App container styled with glassmorphism */
+  .app {
+    height: 100dvh;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-panel);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--glass-border);
+    border-right: 1px solid var(--glass-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+
+  .app.blur {
+    filter: blur(12px);
+    pointer-events: none;
+    user-select: none;
+    transform: scale(0.99);
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(15, 23, 42, 0.4);
+    border-bottom: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+  }
+
+  .brand {
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.16em;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #60a5fa;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 0 10px #3b82f6;
+    animation: pulseGlow 1.5s infinite;
+  }
+
+  @keyframes pulseGlow { 50% { opacity: 0.3; transform: scale(0.9); } }
+
+  .me {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid var(--glass-border);
+    transition: all 0.2s;
+  }
+  .me:hover { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+  /* Chat Wrap & Messages */
+  .wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }
+  
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+
+  .msg {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    margin-bottom: 4px;
+    animation: fadeIn 0.2s ease-out;
+    background: rgba(255, 255, 255, 0.01);
+  }
+  .msg:hover { background: rgba(59, 130, 246, 0.08); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } }
+
+  .u { font-weight: 800; margin-right: 6px; }
+  .msg img { display: block; max-width: 220px; max-height: 180px; border-radius: 8px; margin-top: 6px; border: 1px solid var(--glass-border); }
+
+  #jump {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    transition: transform 0.2s;
+  }
+  #jump:active { transform: translateX(-50%) scale(0.95); }
+
+  /* Input Form */
+  form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.5);
+    border-top: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+
+  .btn {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .gifbtn {
+    background: var(--input-bg);
+    color: #60a5fa;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 0 12px;
+    font-weight: 900;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .gifbtn:hover { background: rgba(59, 130, 246, 0.15); }
+
+  /* GIF Panel */
+  #gifPanel {
+    display: none;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(8, 13, 26, 0.9);
+    backdrop-filter: blur(16px);
+    padding: 10px;
+    height: 260px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #gifPanel input { flex: none; }
+  #gifGrid {
+    flex: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  #gifGrid img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; cursor: pointer; background: var(--input-bg); transition: transform 0.2s; }
+  #gifGrid img:hover { transform: scale(1.03); outline: 2px solid var(--accent); }
+  .gifnote { color: var(--muted); font-size: 12px; grid-column: 1/-1; text-align: center; padding: 20px; }
+
+  /* Username Gate Modal (Glassmorphism Pop-up) */
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(5, 8, 15, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: opacity 0.3s ease;
+  }
+  .gate.hidden { display: none; opacity: 0; pointer-events: none; }
+
+  .gate .box {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-glow);
+    text-align: center;
+    animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes popUp { from { opacity: 0; transform: scale(0.92) translateY(10px); } }
+
+  .gate .brand { font-size: 26px; margin-bottom: 8px; }
+  .gate p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .gate input { width: 100%; margin-bottom: 12px; text-align: center; font-weight: 600; font-size: 16px; }
+  .gate .btn { width: 100%; padding: 13px; font-size: 15px; }
+  .err { color: #f87171; font-size: 12px; margin: -6px 0 12px; min-height: 16px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- Username Entry Pop-up Gate -->
+<div class="gate" id="gate">
+  <div class="box">
+    <span class="brand">KNR CHAT</span>
+    <p>Choose a username to enter the live room</p>
+    <input id="nameInput" maxlength="25" placeholder="Your username..." autofocus autocomplete="off" />
+    <div class="err" id="nameErr"></div>
+    <button class="btn" id="saveName">Enter Chat</button>
+  </div>
+</div>
+
+<!-- Real Chat App Container (Blurred in background until username is set) -->
+<div class="app blur" id="app">
+  <header>
+    <span class="brand">KNR CHAT</span>
+    <span class="me" id="me" title="Click to change username"></span>
+    <span class="live"><span class="dot"></span>LIVE</span>
+  </header>
+  <div class="wrap">
+    <div id="chat"></div>
+    <button id="jump">New messages ↓</button>
+  </div>
+  <div id="gifPanel">
+    <input id="gifSearch" placeholder="Search GIFs..." autocomplete="off" />
+    <div id="gifGrid"></div>
+  </div>
+  <form id="form" autocomplete="off">
+    <button type="button" class="gifbtn" id="gifToggle">GIF</button>
+    <input id="text" maxlength="500" placeholder="Type a message..." autocomplete="off" />
+    <button class="btn" id="sendBtn">Send</button>
+  </form>
+</div>
+
+<script>
+  // ====== SUPABASE CONFIG ======
+  const SUPABASE_URL = "https://fmpcyqpeurqdsznxkdbq.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcGN5cXBldXJxZHN6bnhrZGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzgzMzUsImV4cCI6MjEwOTIxNDMzNX0.YCiZZb6GDNTW9nfZ_WQk0zR0Kt91cJi-iWBcbLDV94A";
+  const GIPHY_API_KEY = "YOUR-GIPHY-API-KEY"; // Optional: Add Giphy API key if you want GIFs
+  // =============================
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const COLORS = ["#60a5fa","#f43f5e","#fbbf24","#34d399","#ec4899","#a78bfa","#22d3ee","#fb923c","#4ade80","#facc15","#f43f5e","#2dd4bf"];
+  const $ = id => document.getElementById(id);
+  const chat = $("chat"), jump = $("jump");
+  const seen = new Set();
+  const GIF_PREFIX = "[gif]";
+  
+  function getStoredUsername() {
+    try { return localStorage.getItem("knr_username") || ""; } catch (e) { return ""; }
+  }
+  function setStoredUsername(val) {
+    try { localStorage.setItem("knr_username", val); } catch (e) {}
+  }
+
+  let username = getStoredUsername();
+  let started = false;
+
+  function colorFor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length];}
+  const nearBottom = () => chat.scrollHeight - chat.scrollTop - chat.clientHeight < 80;
+  const toBottom = () => { chat.scrollTop = chat.scrollHeight; jump.style.display="none"; };
+
+  function render(m){
+    if (seen.has(m.id)) return; seen.add(m.id);
+    const stick = nearBottom();
+    const d = document.createElement("div"); d.className="msg";
+    const u = document.createElement("span"); u.className="u"; u.style.color=colorFor(m.username); u.textContent=m.username+":";
+    d.append(u);
+    if (m.content.startsWith(GIF_PREFIX) && /^https:\/\/media\d*\.giphy\.com\//.test(m.content.slice(5))) {
+      const img = document.createElement("img"); img.src = m.content.slice(5); img.alt="GIF"; img.loading="lazy";
+      img.onload = () => { if (stick) toBottom(); };
+      d.append(img);
+    } else {
+      const c = document.createElement("span"); c.textContent = m.content; d.append(c);
+    }
+    chat.append(d);
+    while (chat.children.length > 300) chat.firstChild.remove();
+    if (stick) toBottom(); else jump.style.display="block";
+  }
+
+  async function loadHistory(){
+    const { data, error } = await sb.from("messages").select("*").order("created_at",{ascending:false}).limit(100);
+    if (error) { console.error("Supabase load error:", error); return; }
+    data.reverse().forEach(render); toBottom();
+  }
+
+  async function send(content){
+    const { data, error } = await sb.from("messages").insert({ username, content }).select().single();
+    if (error) { 
+      console.error("Supabase insert error:", error);
+      alert("Could not send message: " + error.message); 
+      return false; 
+    }
+    render(data); toBottom(); return true;
+  }
+
+  function initChat(){
+    if (started) return; started = true;
+    loadHistory();
+    sb.channel("knr-room")
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"}, p => render(p.new))
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error:", err);
+      });
+  }
+
+  function showGate(){ 
+    $("gate").classList.remove("hidden"); 
+    $("app").classList.add("blur"); 
+    $("nameInput").value = username;
+    $("nameInput").focus(); 
+  }
+
+  function startChat(){
+    initChat();
+    $("gate").classList.add("hidden"); 
+    $("app").classList.remove("blur");
+    $("me").textContent = "@" + username; 
+    $("me").style.color = colorFor(username);
+    $("text").focus();
+  }
+
+  $("saveName").onclick = ()=>{
+    const n = $("nameInput").value.trim().replace(/\s+/g,"_");
+    if (n.length < 2) { $("nameErr").textContent = "Username must be at least 2 characters"; return; }
+    username = n; 
+    setStoredUsername(n); 
+    startChat();
+  };
+
+  $("nameInput").addEventListener("keydown", e=>{ if(e.key==="Enter") $("saveName").click(); });
+  $("me").onclick = ()=> showGate();
+
+  // Load chat history immediately so it renders visibly behind the blurred background gate
+  initChat();
+
+  if (username && username.length >= 2) {
+    startChat();
+  } else {
+    showGate();
+  }
+
+  $("form").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const text = $("text").value.trim(); if (!text) return;
+    $("sendBtn").disabled = true; $("text").value = "";
+    const ok = await send(text);
+    $("sendBtn").disabled = false; $("text").focus();
+    if (!ok) $("text").value = text;
+  });
+
+  // GIFs handler
+  let gifTimer;
+  async function loadGifs(q){
+    const grid = $("gifGrid");
+    if (GIPHY_API_KEY.startsWith("YOUR")) { grid.innerHTML = '<div class="gifnote">Add your GIPHY API key to enable GIFs.</div>'; return; }
+    grid.innerHTML = '<div class="gifnote">Loading...</div>';
+    const ep = q ? "search" : "trending";
+    const url = `https://api.giphy.com/v1/gifs/${ep}?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13${q?"&q="+encodeURIComponent(q):""}`;
+    try {
+      const { data } = await (await fetch(url)).json();
+      grid.innerHTML = data.length ? "" : '<div class="gifnote">No GIFs found</div>';
+      data.forEach(g=>{
+        const img = document.createElement("img");
+        img.src = g.images.fixed_height_small.url; img.loading="lazy";
+        img.onclick = async ()=>{ $("gifPanel").style.display="none"; await send(GIF_PREFIX + g.images.fixed_height.url.split("?")[0]); };
+        grid.append(img);
+      });
+    } catch { grid.innerHTML = '<div class="gifnote">Could not load GIFs</div>'; }
+  }
+  $("gifToggle").onclick = ()=>{
+    const p = $("gifPanel"), open = p.style.display === "flex";
+    p.style.display = open ? "none" : "flex";
+    if (!open) { loadGifs($("gifSearch").value.trim()); $("gifSearch").focus(); }
+  };
+  $("gifSearch").addEventListener("input", e=>{ clearTimeout(gifTimer); gifTimer = setTimeout(()=>loadGifs(e.target.value.trim()), 350); });
+</script>
+</body>
+</html>
