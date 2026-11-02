@@ -6,21 +6,6 @@
 <title>KNR CHAT</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!--
-  ===== SUPABASE SETUP (run once in Supabase SQL editor) =====
-
-  create table public.messages (
-    id bigint generated always as identity primary key,
-    username text not null check (char_length(username) between 1 and 25),
-    content  text not null check (char_length(content) between 1 and 1000),
-    created_at timestamptz not null default now()
-  );
-  grant select, insert on public.messages to anon, authenticated;
-  alter table public.messages enable row level security;
-  create policy "read all"   on public.messages for select using (true);
-  create policy "insert all" on public.messages for insert with check (true);
-  alter publication supabase_realtime add table public.messages;
--->
 <style>
   :root{
     --bg:#05080f; --panel:#0b1220; --line:#16223a; --text:#e6ecf7; --muted:#7f8ba3;
@@ -103,11 +88,11 @@
 </div>
 
 <script>
-  // ====== PUT YOUR KEYS HERE ======
+  // ====== SUPABASE CONFIG ======
   const SUPABASE_URL = "https://fmpcyqpeurqdsznxkdbq.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcGN5cXBldXJxZHN6bnhrZGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzgzMzUsImV4cCI6MjEwOTI" /* paste full key */;
-  const GIPHY_API_KEY = "YOUR-GIPHY-API-KEY"; // free at developers.giphy.com
-  // =================================
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcGN5cXBldXJxZHN6bnhrZGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzgzMzUsImV4cCI6MjEwOTI..."; // Make sure your full key is here
+  const GIPHY_API_KEY = "YOUR-GIPHY-API-KEY"; 
+  // =============================
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const COLORS = ["#5fb0ff","#ff4f6d","#ffc02e","#3dffb4","#ff6bd6","#a58bff","#00e1ff","#ff8a3d","#7dff5c","#f5f749","#ff3d7f","#2ee6d6"];
@@ -116,19 +101,11 @@
   const seen = new Set();
   const GIF_PREFIX = "[gif]";
   
-  // Safe localStorage helper
   function getStoredUsername() {
-    try {
-      return localStorage.getItem("knr_username") || "";
-    } catch (e) {
-      return "";
-    }
+    try { return localStorage.getItem("knr_username") || ""; } catch (e) { return ""; }
   }
-
   function setStoredUsername(val) {
-    try {
-      localStorage.setItem("knr_username", val);
-    } catch (e) {}
+    try { localStorage.setItem("knr_username", val); } catch (e) {}
   }
 
   let username = getStoredUsername();
@@ -158,20 +135,28 @@
 
   async function loadHistory(){
     const { data, error } = await sb.from("messages").select("*").order("created_at",{ascending:false}).limit(100);
-    if (error) { console.error(error); return; }
+    if (error) { console.error("Supabase load error:", error); return; }
     data.reverse().forEach(render); toBottom();
   }
 
   async function send(content){
     const { data, error } = await sb.from("messages").insert({ username, content }).select().single();
-    if (error) { alert("Could not send"); return false; }
+    if (error) { 
+      console.error("Supabase insert error:", error);
+      alert("Could not send message: " + error.message); 
+      return false; 
+    }
     render(data); toBottom(); return true;
   }
 
   function initChat(){
     if (started) return; started = true;
     loadHistory();
-    sb.channel("knr-room").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>render(p.new)).subscribe();
+    sb.channel("knr-room")
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"}, p => render(p.new))
+      .subscribe((status, err) => {
+        if (err) console.error("Realtime subscription error:", err);
+      });
   }
 
   function showGate(){ 
@@ -190,7 +175,6 @@
     $("text").focus();
   }
 
-  // Username gate event listeners
   $("saveName").onclick = ()=>{
     const n = $("nameInput").value.trim().replace(/\s+/g,"_");
     if (n.length < 2) { $("nameErr").textContent = "Username must be at least 2 characters"; return; }
@@ -202,17 +186,14 @@
   $("nameInput").addEventListener("keydown", e=>{ if(e.key==="Enter") $("saveName").click(); });
   $("me").onclick = ()=> showGate();
 
-  // Always load chat history in the background so it's visible behind the blur overlay
   initChat();
 
-  // Check username state on load
   if (username && username.length >= 2) {
     startChat();
   } else {
     showGate();
   }
 
-  // Send text
   $("form").addEventListener("submit", async e=>{
     e.preventDefault();
     const text = $("text").value.trim(); if (!text) return;
@@ -226,7 +207,7 @@
   let gifTimer;
   async function loadGifs(q){
     const grid = $("gifGrid");
-    if (GIPHY_API_KEY.startsWith("YOUR")) { grid.innerHTML = '<div class="gifnote">Add your GIPHY API key in the file to enable GIFs.</div>'; return; }
+    if (GIPHY_API_KEY.startsWith("YOUR")) { grid.innerHTML = '<div class="gifnote">Add your GIPHY API key to enable GIFs.</div>'; return; }
     grid.innerHTML = '<div class="gifnote">Loading...</div>';
     const ep = q ? "search" : "trending";
     const url = `https://api.giphy.com/v1/gifs/${ep}?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13${q?"&q="+encodeURIComponent(q):""}`;
