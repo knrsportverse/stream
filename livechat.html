@@ -28,8 +28,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
-  .app{height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line);transition:filter 0.25s ease}
-  .app.blur{filter:blur(6px);pointer-events:none;user-select:none}
+  .app{height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line);transition:filter 0.3s ease}
+  .app.blur{filter:blur(8px);pointer-events:none;user-select:none}
   
   header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
   .brand{font-weight:900;font-size:15px;letter-spacing:.14em;color:var(--blue-glow);text-shadow:0 0 12px #2f8cff88}
@@ -59,7 +59,7 @@
   .gifnote{color:var(--muted);font-size:12px;grid-column:1/-1;text-align:center;padding:12px}
   
   /* Username gate modal */
-  .gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,8,15,0.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:opacity 0.25s ease}
+  .gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,8,15,0.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:opacity 0.25s ease}
   .gate.hidden{display:none;opacity:0;pointer-events:none}
   .gate .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;width:100%;max-width:340px;box-shadow:0 20px 60px #000a,0 0 40px #2f8cff22}
   .gate .brand{display:block;text-align:center;font-size:24px;margin-bottom:6px}
@@ -115,7 +115,23 @@
   const chat = $("chat"), jump = $("jump");
   const seen = new Set();
   const GIF_PREFIX = "[gif]";
-  let username = localStorage.getItem("knr_username") || "";
+  
+  // Safe localStorage helper
+  function getStoredUsername() {
+    try {
+      return localStorage.getItem("knr_username") || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function setStoredUsername(val) {
+    try {
+      localStorage.setItem("knr_username", val);
+    } catch (e) {}
+  }
+
+  let username = getStoredUsername();
   let started = false;
 
   function colorFor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length];}
@@ -161,6 +177,7 @@
   function showGate(){ 
     $("gate").classList.remove("hidden"); 
     $("app").classList.add("blur"); 
+    $("nameInput").value = username;
     $("nameInput").focus(); 
   }
 
@@ -174,22 +191,22 @@
   }
 
   // Username gate event listeners
-  $("nameInput").value = username;
   $("saveName").onclick = ()=>{
     const n = $("nameInput").value.trim().replace(/\s+/g,"_");
     if (n.length < 2) { $("nameErr").textContent = "Username must be at least 2 characters"; return; }
     username = n; 
-    localStorage.setItem("knr_username", n); 
+    setStoredUsername(n); 
     startChat();
   };
+
   $("nameInput").addEventListener("keydown", e=>{ if(e.key==="Enter") $("saveName").click(); });
-  $("me").onclick = ()=>{ $("nameInput").value = username; showGate(); };
+  $("me").onclick = ()=> showGate();
 
   // Always load chat history in the background so it's visible behind the blur overlay
   initChat();
 
   // Check username state on load
-  if (username.length >= 2) {
+  if (username && username.length >= 2) {
     startChat();
   } else {
     showGate();
