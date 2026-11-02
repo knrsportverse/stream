@@ -28,7 +28,9 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
-  .app{height:100dvh;max-width:480px;margin:0 auto;display:none;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+  .app{height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line);transition:filter 0.25s ease}
+  .app.blur{filter:blur(6px);pointer-events:none;user-select:none}
+  
   header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
   .brand{font-weight:900;font-size:15px;letter-spacing:.14em;color:var(--blue-glow);text-shadow:0 0 12px #2f8cff88}
   .live{display:flex;align-items:center;gap:6px;color:var(--blue-glow);font-size:11px;font-weight:800}
@@ -55,10 +57,10 @@
   #gifGrid img{width:100%;height:90px;object-fit:cover;border-radius:6px;cursor:pointer;background:#111c30}
   #gifGrid img:hover{outline:2px solid var(--blue)}
   .gifnote{color:var(--muted);font-size:12px;grid-column:1/-1;text-align:center;padding:12px}
-  /* Username gate */
-  .gate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(6,16,40,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-  .gate.show{display:flex}
-  .app.blur{filter:blur(4px);pointer-events:none}
+  
+  /* Username gate modal */
+  .gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,8,15,0.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:opacity 0.25s ease}
+  .gate.hidden{display:none;opacity:0;pointer-events:none}
   .gate .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;width:100%;max-width:340px;box-shadow:0 20px 60px #000a,0 0 40px #2f8cff22}
   .gate .brand{display:block;text-align:center;font-size:24px;margin-bottom:6px}
   .gate p{color:var(--muted);font-size:13px;margin-bottom:16px;text-align:center}
@@ -79,7 +81,7 @@
   </div>
 </div>
 
-<div class="app" id="app">
+<div class="app blur" id="app">
   <header>
     <span class="brand">KNR CHAT</span>
     <span class="me" id="me" title="Change username"></span>
@@ -103,7 +105,7 @@
 <script>
   // ====== PUT YOUR KEYS HERE ======
   const SUPABASE_URL = "https://fmpcyqpeurqdsznxkdbq.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcGN5cXBldXJxZHN6bnhrZGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzgzMzUsImV4cCI6MjEwOTI" /* looks cut off - paste the full key */;
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcGN5cXBldXJxZHN6bnhrZGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzgzMzUsImV4cCI6MjEwOTI" /* paste full key */;
   const GIPHY_API_KEY = "YOUR-GIPHY-API-KEY"; // free at developers.giphy.com
   // =================================
 
@@ -152,30 +154,46 @@
 
   function initChat(){
     if (started) return; started = true;
-    $("app").style.display="flex";
     loadHistory();
     sb.channel("knr-room").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},p=>render(p.new)).subscribe();
   }
-  function showGate(){ $("gate").classList.add("show"); $("app").classList.add("blur"); $("nameInput").focus(); }
+
+  function showGate(){ 
+    $("gate").classList.remove("hidden"); 
+    $("app").classList.add("blur"); 
+    $("nameInput").focus(); 
+  }
+
   function startChat(){
     initChat();
-    $("gate").classList.remove("show"); $("app").classList.remove("blur");
-    $("me").textContent="@"+username; $("me").style.color=colorFor(username);
+    $("gate").classList.add("hidden"); 
+    $("app").classList.remove("blur");
+    $("me").textContent = "@" + username; 
+    $("me").style.color = colorFor(username);
     $("text").focus();
   }
 
-  // Username gate
+  // Username gate event listeners
   $("nameInput").value = username;
   $("saveName").onclick = ()=>{
     const n = $("nameInput").value.trim().replace(/\s+/g,"_");
     if (n.length < 2) { $("nameErr").textContent = "Username must be at least 2 characters"; return; }
-    username = n; localStorage.setItem("knr_username", n); startChat();
+    username = n; 
+    localStorage.setItem("knr_username", n); 
+    startChat();
   };
   $("nameInput").addEventListener("keydown", e=>{ if(e.key==="Enter") $("saveName").click(); });
   $("me").onclick = ()=>{ $("nameInput").value = username; showGate(); };
-  // Remembered on this device: skip the name box
+
+  // Always load chat history in the background so it's visible behind the blur overlay
   initChat();
-  if (username.length >= 2) startChat(); else showGate();
+
+  // Check username state on load
+  if (username.length >= 2) {
+    startChat();
+  } else {
+    showGate();
+  }
 
   // Send text
   $("form").addEventListener("submit", async e=>{
@@ -212,8 +230,6 @@
     if (!open) { loadGifs($("gifSearch").value.trim()); $("gifSearch").focus(); }
   };
   $("gifSearch").addEventListener("input", e=>{ clearTimeout(gifTimer); gifTimer = setTimeout(()=>loadGifs(e.target.value.trim()), 350); });
-
-  if (username) $("nameInput").focus();
 </script>
 </body>
 </html>
