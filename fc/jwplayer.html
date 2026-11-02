@@ -3,59 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JW Player - Live Stream</title>
+  <title>JW Player - Live Stream Debugger</title>
   <!-- JW Player CDN Library -->
   <script src="https://cdn.jwplayer.com/libraries/SAH0KWId.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; }
-    .jw-player-wrapper { aspect-ratio: 16/9; max-height: 80vh; background: #000; }
+    .jw-player-wrapper { aspect-ratio: 16/9; max-height: 75vh; background: #000; }
+    .debug-scroll::-webkit-scrollbar { width: 4px; }
+    .debug-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-  <!-- Top Bar -->
+  <!-- Top Header -->
   <header class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
     <a href="fcstream.html" class="flex items-center gap-2 text-gray-300 hover:text-white text-sm font-semibold transition">
       <i class="fa-solid fa-arrow-left"></i> Back to Matches
     </a>
-    <h1 id="stream-title" class="text-sm font-bold text-red-500 truncate max-w-md">FanCode Player</h1>
+    <h1 id="stream-title" class="text-sm font-bold text-red-500 truncate max-w-md">FanCode Live Engine</h1>
     <div class="flex items-center gap-2">
-      <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
-      <span class="text-xs font-semibold text-gray-400">LIVE</span>
+      <span id="live-indicator" class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
+      <span id="status-text" class="text-xs font-semibold text-gray-400">INITIALIZING</span>
     </div>
   </header>
 
-  <!-- Player Container -->
+  <!-- Player & Control Section -->
   <main class="flex-grow flex flex-col items-center justify-center p-2 sm:p-6">
-    <div class="w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+    <div class="w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800 relative">
+      
+      <!-- Loading / Status Overlay Banner -->
+      <div id="player-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center gap-3 transition-opacity duration-300">
+        <i class="fa-solid fa-circle-notch fa-spin text-red-500 text-4xl"></i>
+        <p id="overlay-msg" class="text-sm font-medium text-gray-300">Testing stream connection & tokens...</p>
+      </div>
+
       <div class="jw-player-wrapper w-full relative">
         <div id="jwplayer-container"></div>
       </div>
       
-      <!-- Multi-Server Selector Control Bar -->
+      <!-- Control Bar -->
       <div class="bg-gray-900 p-4 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-3 w-full sm:w-auto">
           <label for="server-select" class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i class="fa-solid fa-server text-red-500"></i> Active Server:
+            <i class="fa-solid fa-server text-red-500"></i> Server:
           </label>
-          <select id="server-select" onchange="switchServer(this.value)" class="bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-red-500 flex-grow sm:flex-grow-0">
-            <!-- Dynamic Server Options Added via JS -->
+          <select id="server-select" onchange="manualSwitchServer(this.value)" class="bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-red-500 flex-grow sm:flex-grow-0">
+            <!-- Dynamically populated servers -->
           </select>
         </div>
 
         <div class="flex items-center gap-3 text-xs text-gray-400">
-          <button onclick="reloadPlayer()" class="hover:text-white transition flex items-center gap-1.5 bg-gray-800 px-3 py-1.5 rounded-md">
-            <i class="fa-solid fa-rotate-right"></i> Reload Player
+          <button onclick="toggleDebugConsole()" class="hover:text-white transition flex items-center gap-1.5 bg-gray-800 px-3 py-1.5 rounded-md border border-gray-700">
+            <i class="fa-solid fa-terminal text-green-400"></i> Debug Logs
+          </button>
+          <button onclick="retryCurrentStream()" class="hover:text-white transition flex items-center gap-1.5 bg-red-600/20 text-red-400 border border-red-800/50 px-3 py-1.5 rounded-md">
+            <i class="fa-solid fa-rotate-right"></i> Force Retry
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Collapsible Debug Terminal Drawer -->
+    <div id="debug-console" class="w-full max-w-5xl mt-4 bg-gray-950 border border-gray-800 rounded-xl p-4 hidden">
+      <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-800">
+        <span class="text-xs font-mono font-bold text-gray-400 flex items-center gap-2">
+          <i class="fa-solid fa-bug text-yellow-500"></i> LIVE STREAM DIAGNOSTICS & LOGS
+        </span>
+        <button onclick="clearLogs()" class="text-xs text-gray-500 hover:text-gray-300">Clear</button>
+      </div>
+      <div id="log-container" class="h-32 overflow-y-auto font-mono text-[11px] text-gray-300 space-y-1 debug-scroll">
+        [System] Page initialized. Parsing URL parameters...
       </div>
     </div>
   </main>
 
   <footer class="text-center py-4 text-xs text-gray-600 border-t border-gray-900">
-    FanCode High Dynamic Live Stream Engine &copy; 2026
+    FanCode Stream Diagnostic Engine &copy; 2026
   </footer>
 
   <script>
@@ -65,7 +90,6 @@
     
     document.getElementById('stream-title').innerText = title;
 
-    // Build list of servers dynamically based on incoming parameters
     let servers = {};
 
     if (directQueryUrl) {
@@ -74,7 +98,9 @@
       if (urlParams.get('primary')) servers["Primary Tokenized (1080p)"] = urlParams.get('primary');
       if (urlParams.get('sonu_px')) servers["Proxy Auto Stream (Fast)"] = urlParams.get('sonu_px');
       if (urlParams.get('fancode_cdn')) servers["FanCode Standard CDN"] = urlParams.get('fancode_cdn');
-      if (urlParams.get('fancode_np_cdn')) servers["FanCode Regional CDN"] = urlParams.get('fancode_np_cdn');
+      if (urlParams.get('fancode_np_cdn')) servers["FanCode Nepal CDN"] = urlParams.get('fancode_np_cdn');
+      if (urlParams.get('fancode_bd_cdn')) servers["FanCode Bangladesh CDN"] = urlParams.get('fancode_bd_cdn');
+      if (urlParams.get('fancode_lk_cdn')) servers["FanCode Sri Lanka CDN"] = urlParams.get('fancode_lk_cdn');
     }
 
     const selectEl = document.getElementById('server-select');
@@ -93,39 +119,142 @@
       selectEl.appendChild(opt);
     });
 
-    // JW Player Initialization Logic
+    function logMessage(msg, type = 'info') {
+      const container = document.getElementById('log-container');
+      const time = new Date().toLocaleTimeString();
+      let colorClass = "text-gray-300";
+      if (type === 'error') colorClass = "text-red-400 font-bold";
+      if (type === 'success') colorClass = "text-green-400";
+      if (type === 'warn') colorClass = "text-yellow-400";
+
+      container.innerHTML += `<div class="${colorClass}">[${time}] ${msg}</div>`;
+      container.scrollTop = container.scrollHeight;
+      console.log(`[StreamDebugger] ${msg}`);
+    }
+
+    function toggleDebugConsole() {
+      const consoleEl = document.getElementById('debug-console');
+      consoleEl.classList.toggle('hidden');
+    }
+
+    function clearLogs() {
+      document.getElementById('log-container').innerHTML = '';
+    }
+
+    function setUIStatus(state, msg) {
+      const indicator = document.getElementById('live-indicator');
+      const txt = document.getElementById('status-text');
+      const overlay = document.getElementById('player-overlay');
+      const overlayMsg = document.getElementById('overlay-msg');
+
+      overlayMsg.innerText = msg;
+
+      if (state === 'loading') {
+        indicator.className = "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse";
+        txt.innerText = "CONNECTING";
+        overlay.style.opacity = "1";
+        overlay.style.pointerEvents = "auto";
+      } else if (state === 'live') {
+        indicator.className = "w-2.5 h-2.5 rounded-full bg-green-500";
+        txt.innerText = "LIVE PLAYING";
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+      } else if (state === 'error') {
+        indicator.className = "w-2.5 h-2.5 rounded-full bg-red-600";
+        txt.innerText = "FAILED / OFFLINE";
+        overlay.style.opacity = "1";
+        overlay.style.pointerEvents = "auto";
+      }
+    }
+
+    // Initialize JW Player
     let playerInstance = jwplayer("jwplayer-container").setup({
-      file: selectEl.value || Object.values(servers)[0],
+      file: selectEl.value,
       type: "hls",
       autostart: true,
       width: "100%",
       height: "100%",
       stretching: "uniform",
-      cast: {},
       hlshtml: true
     });
 
-    // Auto-fallback Logic: If active server errors out, auto-switch to next server
-    playerInstance.on('error', function(e) {
-      console.warn("Stream error encountered on current server. Triggering auto-fallback logic...", e);
+    playerInstance.on('ready', () => {
+      logMessage("JW Player engine successfully initialized.", "success");
+      testAndPlayServer(selectEl.value);
+    });
+
+    playerInstance.on('play', () => {
+      setUIStatus('live', 'Stream playing smoothly.');
+      logMessage("Playback started successfully.", "success");
+    });
+
+    playerInstance.on('error', (err) => {
+      logMessage(`JW Player Error Event Triggered: ${JSON.stringify(err)}`, "error");
+      triggerAutoFallback("JW Player playback error");
+    });
+
+    // Proactive Stream Testing Before Playing
+    async function testAndPlayServer(url) {
+      if (!url || url === "UNAVAILABLE") {
+        logMessage("Selected stream URL is empty or marked UNAVAILABLE.", "error");
+        triggerAutoFallback("Empty stream URL");
+        return;
+      }
+
+      setUIStatus('loading', `Connecting to server: ${selectEl.options[selectEl.selectedIndex].text}...`);
+      logMessage(`Testing stream URL: ${url}`, "info");
+
+      try {
+        // Fetch manifest with mode no-cors or standard GET to test reachability
+        const response = await fetch(url, { method: 'GET', mode: 'cors' }).catch(() => null);
+        
+        if (response && response.status === 403) {
+          logMessage(`Server responded with 403 Forbidden. Tokens likely expired.`, "error");
+          triggerAutoFallback("Token expired (403 Forbidden)");
+          return;
+        }
+        if (response && response.status === 404) {
+          logMessage(`Server responded with 404 Not Found. Match stream ended or unavailable.`, "error");
+          triggerAutoFallback("Stream not found (404)");
+          return;
+        }
+
+        logMessage("Stream check passed or bypassed. Loading into player...", "success");
+        playerInstance.load([{ file: url, type: "hls" }]);
+        playerInstance.play();
+
+      } catch (e) {
+        logMessage(`Network probe warning: ${e.message}. Forcing JW Player direct load...`, "warn");
+        playerInstance.load([{ file: url, type: "hls" }]);
+        playerInstance.play();
+      }
+    }
+
+    function manualSwitchServer(url) {
+      logMessage(`Manual server switch requested to: ${url}`, "info");
+      testAndPlayServer(url);
+    }
+
+    function retryCurrentStream() {
+      logMessage("Manual retry triggered by user.", "info");
+      testAndPlayServer(selectEl.value);
+    }
+
+    // Automated Sequential Fallback Loop
+    function triggerAutoFallback(reason) {
+      logMessage(`Triggering failover due to: ${reason}`, "warn");
       const currentIndex = selectEl.selectedIndex;
+      
       if (currentIndex < selectEl.options.length - 1) {
         const nextIndex = currentIndex + 1;
         selectEl.selectedIndex = nextIndex;
-        switchServer(selectEl.options[nextIndex].value);
+        const nextUrl = selectEl.options[nextIndex].value;
+        logMessage(`Switching automatically to fallback server option [${nextIndex + 1}/${selectEl.options.length}]: ${selectEl.options[nextIndex].text}`, "warn");
+        testAndPlayServer(nextUrl);
+      } else {
+        setUIStatus('error', 'All available servers and fallback CDNs failed to load. The match stream might be offline or geoblocked.');
+        logMessage("All fallback servers exhausted. Playback failed completely.", "error");
       }
-    });
-
-    function switchServer(streamUrl) {
-      playerInstance.load([{
-        file: streamUrl,
-        type: "hls"
-      }]);
-      playerInstance.play();
-    }
-
-    function reloadPlayer() {
-      switchServer(selectEl.value);
     }
   </script>
 </body>
