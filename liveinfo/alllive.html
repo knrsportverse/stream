@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart JSON Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans pb-10">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 py-3 shadow-xs">
+        <div class="max-w-md mx-auto">
+            <h1 class="text-base font-bold text-slate-900 flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i> Smart JSON Dashboard
+            </h1>
+            <div class="flex gap-2">
+                <input type="url" id="jsonUrl" placeholder="Paste JSON API link here..." 
+                    class="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+                <button onclick="fetchAndTransform()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-semibold rounded-xl transition shadow-sm">
+                    Generate
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 px-4 py-5 max-w-md mx-auto w-full">
+        <div id="errorMsg" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation text-base"></i> <span id="errorText"></span>
+        </div>
+        <div id="loading" class="hidden text-center py-16 text-slate-400 text-xs flex flex-col items-center gap-2">
+            <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-xl"></i>
+            Analyzing and building your dashboard...
+        </div>
+        <div id="dashboardContainer" class="space-y-4">
+            <!-- Initial State -->
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-8 text-center shadow-xs">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-lg">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-800 mb-1">Ready to Transform</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Paste any public JSON link above. We'll automatically turn it into clean, readable cards with proper layouts.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function fetchAndTransform() {
+            const urlInput = document.getElementById('jsonUrl').value.trim();
+            const errorDiv = document.getElementById('errorMsg');
+            const loadingDiv = document.getElementById('loading');
+            const container = document.getElementById('dashboardContainer');
+
+            errorDiv.classList.add('hidden');
+            if (!urlInput) {
+                showError("Please provide a valid JSON link.");
+                return;
+            }
+
+            loadingDiv.classList.remove('hidden');
+            container.innerHTML = '';
+
+            try {
+                let response = await fetch(urlInput);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                let data = await response.json();
+                
+                loadingDiv.classList.add('hidden');
+                renderDashboard(data, container);
+            } catch (err) {
+                // CORS Fallback proxy
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`;
+                    const proxyRes = await fetch(proxyUrl);
+                    const proxyData = await proxyRes.json();
+                    let data = JSON.parse(proxyData.contents);
+                    
+                    loadingDiv.classList.add('hidden');
+                    renderDashboard(data, container);
+                } catch (proxyErr) {
+                    loadingDiv.classList.add('hidden');
+                    showError(`Could not fetch link. Note: Make sure the server allows cross-origin requests. Details: ${err.message}`);
+                }
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorMsg').classList.remove('hidden');
+        }
+
+        function renderDashboard(data, container) {
+            container.innerHTML = '';
+
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    container.innerHTML = `<div class="text-center text-xs text-slate-400 py-10">Array is empty.</div>`;
+                    return;
+                }
+                data.forEach((item, index) => {
+                    container.appendChild(createCard(item, `Item #${index + 1}`));
+                });
+            } else if (typeof data === 'object' && data !== null) {
+                container.appendChild(createCard(data, "Overview Details"));
+            } else {
+                container.innerHTML = `<div class="bg-white p-4 rounded-xl text-xs text-slate-700 shadow-xs">Value: ${data}</div>`;
+            }
+        }
+
+        function createCard(obj, title) {
+            const card = document.createElement('div');
+            card.className = 'bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs space-y-3';
+
+            if (title) {
+                const titleEl = document.createElement('div');
+                titleEl.className = 'text-xs font-bold uppercase tracking-wider text-indigo-600 border-b border-slate-100 pb-2 flex items-center justify-between';
+                titleEl.innerHTML = `<span><i class="fa-solid fa-layer-group mr-1.5"></i> ${title}</span>`;
+                card.appendChild(titleEl);
+            }
+
+            const list = document.createElement('div');
+            list.className = 'space-y-2.5';
+
+            for (let [key, value] of Object.entries(obj)) {
+                list.appendChild(renderField(key, value));
+            }
+
+            card.appendChild(list);
+            return card;
+        }
+
+        function renderField(key, value) {
+            const row = document.createElement('div');
+            row.className = 'flex flex-col text-xs bg-slate-50/70 p-2.5 rounded-xl border border-slate-100';
+
+            const lowerKey = key.toLowerCase();
+            let formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ');
+            formattedKey = formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1);
+
+            // 1. Clean up IDs
+            if (lowerKey === 'id' || lowerKey.endsWith('_id') || lowerKey === 'uuid') {
+                row.innerHTML = `
+                    <div class="text-slate-400 font-medium text-[10px] uppercase mb-0.5">${formattedKey}</div>
+                    <div class="font-mono text-slate-600 font-semibold bg-indigo-50/60 text-indigo-700 px-2 py-0.5 rounded-md inline-block w-max text-[11px]">
+                        <i class="fa-solid fa-fingerprint mr-1"></i> #${value}
+                    </div>
+                `;
+                return row;
+            }
+
+            // 2. Handle Links / URLs (Clean text view instead of auto-visiting page)
+            if (typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+                // If it's an image link, optionally show a subtle preview without forcing external navigation
+                if (/\.(jpeg|jpg|gif|png|webp|svg)$/i.test(value) || lowerKey.includes('image') || lowerKey.includes('avatar') || lowerKey.includes('photo')) {
+                    row.innerHTML = `
+                        <div class="text-slate-400 font-medium text-[10px] uppercase mb-1">${formattedKey}</div>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200">
+                                <span class="text-slate-600 font-mono text-[11px] truncate select-all"><i class="fa-solid fa-link mr-1 text-indigo-500"></i>${value}</span>
+                                <button onclick="navigator.clipboard.writeText('${value}')" class="text-slate-400 hover:text-indigo-600 text-[10px] px-1" title="Copy Link"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                            <img src="${value}" alt="${key}" class="w-full h-28 object-cover rounded-lg border border-slate-200 bg-white" onerror="this.style.display='none'">
+                        </div>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <div class="text-slate-400 font-medium text-[10px] uppercase mb-0.5">${formattedKey}</div>
+                        <div class="flex items-center justify-between gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200">
+                            <span class="text-slate-600 font-mono text-[11px] truncate select-all"><i class="fa-solid fa-link mr-1 text-indigo-500"></i>${value}</span>
+                            <button onclick="navigator.clipboard.writeText('${value}')" class="text-slate-400 hover:text-indigo-600 text-[10px] px-1" title="Copy Link"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    `;
+                }
+                return row;
+            }
+
+            // 3. Nested Objects or Arrays
+            if (value !== null && typeof value === 'object') {
+                const subContainer = document.createElement('div');
+                subContainer.className = 'mt-1 pt-1 border-t border-slate-200/60 space-y-2';
+                
+                const label = document.createElement('div');
+                label.className = 'text-slate-400 font-medium text-[10px] uppercase';
+                label.innerHTML = `<i class="fa-solid fa-folder-tree mr-1"></i> ${formattedKey}`;
+                subContainer.appendChild(label);
+
+                if (Array.isArray(value)) {
+                    value.forEach((subItem, idx) => {
+                        if (typeof subItem === 'object') {
+                            subContainer.appendChild(createCard(subItem, `[${idx}]`));
+                        } else {
+                            const badge = document.createElement('span');
+                            badge.className = 'inline-block bg-slate-200 text-slate-700 px-2 py-0.5 rounded text-[10px] mr-1 mb-1';
+                            badge.textContent = subItem;
+                            subContainer.appendChild(badge);
+                        }
+                    });
+                } else {
+                    subContainer.appendChild(createCard(value, ''));
+                }
+                
+                row.innerHTML = '';
+                row.appendChild(subContainer);
+                return row;
+            }
+
+            // 4. Standard text, numbers, booleans
+            let valueClass = "text-slate-700 font-medium";
+            if (typeof value === 'number') valueClass = "text-amber-600 font-mono font-bold";
+            if (typeof value === 'boolean') valueClass = "text-purple-600 font-bold";
+            if (value === null) {
+                value = "None/Null";
+                valueClass = "text-slate-400 italic";
+            }
+
+            row.innerHTML = `
+                <div class="text-slate-400 font-medium text-[10px] uppercase mb-0.5">${formattedKey}</div>
+                <div class="${valueClass} text-xs break-words">${value}</div>
+            `;
+
+            return row;
+        }
+    </script>
+</body>
+</html>
