@@ -1,15 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KNR SPORTVERSE - Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary-blue: #1e88e5;
+      --primary-dark-blue: #1565c0;
+      --secondary-blue: #42a5f5;
+      --light-blue: #e3f2fd;
+      --text-dark: #1a1a1a;
+      --text-light: #666666;
+      --bg-light: #f5f7fa;
+      --bg-card: #ffffff;
+      --header-bg: #0d1b2a;
+      --border-color: #e0e0e0;
+      --dark-text: #f0f0f0;
+      --dark-bg: #0a0e27;
+      --dark-bg-card: #1a1f3a;
+      --dark-header-bg: #0a0d16;
+      --dark-border-color: #2a3a4a;
+    }
+
     html, body {
-      background: #f5f5f5;
-      font-family: system-ui, -apple-system, sans-serif;
-      color: #333;
+      background: var(--dark-bg);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-text);
+      min-height: 100vh;
     }
 
     .container {
@@ -20,40 +42,48 @@
 
     /* Header */
     .header {
-      background: linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%);
-      color: white;
+      background: linear-gradient(135deg, var(--dark-header-bg) 0%, #111827 100%);
+      color: #fff;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: 12px;
       margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 15px;
+      box-shadow: 0 4px 20px rgba(30, 136, 229, 0.1);
+      border: 1px solid rgba(66, 165, 245, 0.15);
     }
 
     .header h1 {
-      font-size: 24px;
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .header .user-info {
-      font-size: 14px;
-      opacity: 0.9;
+      font-size: 13px;
+      color: #94a3b8;
     }
 
     .logout-btn {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid white;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 5px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      padding: 6px 14px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
 
     .logout-btn:hover {
-      background: rgba(255,255,255,0.3);
+      background: rgba(239, 68, 68, 0.3);
+      color: #fff;
     }
 
     /* Auth Page */
@@ -61,82 +91,96 @@
       display: flex;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
 
     .auth-box {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
+      background: var(--dark-bg-card);
+      padding: 35px;
+      border-radius: 15px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 420px;
+      box-shadow: 0 10px 40px rgba(30, 136, 229, 0.2);
+      border: 1px solid var(--dark-border-color);
     }
 
     .auth-box h2 {
-      margin-bottom: 20px;
-      color: #1D4ED8;
+      margin-bottom: 10px;
+      color: var(--dark-text);
       text-align: center;
+      font-weight: 700;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
     }
 
     .form-group input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--dark-border-color);
+      border-radius: 10px;
       font-size: 14px;
+      color: var(--dark-text);
+      font-family: 'Poppins', sans-serif;
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: #1D4ED8;
-      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.1);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 15px rgba(30, 136, 229, 0.3);
     }
 
     .btn {
       width: 100%;
-      padding: 10px;
-      background: #1D4ED8;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark-blue) 100%);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 14px;
-      font-weight: 500;
-      transition: background 0.3s;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
     }
 
     .btn:hover {
-      background: #1e40af;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30, 136, 229, 0.5);
     }
 
     .btn.secondary {
-      background: #6b7280;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--dark-border-color);
+      color: #cbd5e1;
       margin-top: 10px;
+      box-shadow: none;
     }
 
     .btn.secondary:hover {
-      background: #4b5563;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
     }
 
     .error {
-      color: #dc2626;
-      font-size: 13px;
+      color: #ef4444;
+      font-size: 12px;
       margin-top: 5px;
+      font-weight: 500;
     }
 
     .loading {
@@ -155,18 +199,23 @@
 
     /* Sections */
     .section {
-      background: white;
+      background: var(--dark-bg-card);
       padding: 25px;
-      border-radius: 8px;
+      border-radius: 15px;
       margin-bottom: 25px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(30, 136, 229, 0.15);
+      border: 1px solid var(--dark-border-color);
     }
 
     .section h2 {
-      color: #1D4ED8;
+      color: var(--dark-text);
+      font-size: 1.2rem;
       margin-bottom: 20px;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 10px;
+      border-bottom: 1px solid var(--dark-border-color);
+      padding-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .form-row {
@@ -176,53 +225,59 @@
       margin-bottom: 15px;
     }
 
-    .form-row.full {
-      grid-template-columns: 1fr;
-    }
-
-    /* Streams Table */
+    /* Streams Grid / Cards */
     .streams-grid {
       display: grid;
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
 
     .stream-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      padding: 15px;
-      transition: border-color 0.3s;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--dark-border-color);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .stream-card:hover {
-      border-color: #1D4ED8;
+      border-color: var(--primary-blue);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(30, 136, 229, 0.2);
     }
 
     .stream-id {
-      font-weight: 600;
-      color: #1D4ED8;
-      font-size: 15px;
-      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--secondary-blue);
+      font-size: 1.1rem;
     }
 
     .stream-url {
       font-size: 12px;
-      color: #6b7280;
+      color: #94a3b8;
       word-break: break-all;
-      margin-bottom: 10px;
       font-family: monospace;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .stream-actions {
       display: flex;
       gap: 8px;
+      margin-top: auto;
     }
 
     .btn-small {
       padding: 6px 12px;
       font-size: 12px;
+      font-weight: 600;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
       display: inline-flex;
@@ -230,46 +285,44 @@
       gap: 6px;
     }
 
-    .btn-small svg {
-      width: 14px;
-      height: 14px;
+    .btn-edit {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
     }
 
-    .btn-edit {
+    .btn-edit:hover {
       background: #3b82f6;
       color: white;
     }
 
-    .btn-edit:hover {
-      background: #2563eb;
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
     }
 
-    .btn-delete {
+    .btn-delete:hover {
       background: #ef4444;
       color: white;
     }
 
-    .btn-delete:hover {
-      background: #dc2626;
-    }
-
     .btn-copy {
-      background: #10b981;
-      color: white;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
     }
 
     .btn-copy:hover {
-      background: #059669;
+      background: #10b981;
+      color: white;
     }
 
     .empty-state {
       text-align: center;
       padding: 40px 20px;
-      color: #9ca3af;
-    }
-
-    .empty-state p {
-      font-size: 14px;
+      color: #94a3b8;
+      grid-column: 1 / -1;
     }
 
     /* Modal */
@@ -277,7 +330,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(8px);
       z-index: 999;
       align-items: center;
       justify-content: center;
@@ -288,61 +342,49 @@
     }
 
     .modal-content {
-      background: white;
-      padding: 25px;
-      border-radius: 8px;
+      background: var(--dark-bg-card);
+      padding: 30px;
+      border-radius: 15px;
       width: 100%;
       max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      border: 1px solid var(--dark-border-color);
     }
 
     .modal-content h3 {
-      color: #1D4ED8;
-      margin-bottom: 15px;
+      color: var(--dark-text);
+      margin-bottom: 20px;
+      font-size: 1.25rem;
+      border-bottom: 1px solid var(--dark-border-color);
+      padding-bottom: 10px;
     }
 
     .modal-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
       margin-top: 20px;
     }
 
     .success {
-      background: #d1fae5;
-      color: #065f46;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
       padding: 12px;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 13px;
       margin-bottom: 15px;
+      font-weight: 500;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-
-      .header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .auth-box {
-        margin: 20px;
-        max-width: none;
-      }
-
-      .modal-content {
-        margin: 20px;
-        max-width: none;
-      }
+      .container { padding: 15px; }
+      .header { flex-direction: column; text-align: center; }
+      .form-row { grid-template-columns: 1fr; }
+      .auth-box, .modal-content { margin: 15px; max-width: none; }
     }
   </style>
 </head>
@@ -351,20 +393,11 @@
   <!-- Auth Modal -->
   <div class="auth-container" id="authContainer">
     <div class="auth-box">
-      <div style="text-align: center; margin-bottom: 25px;">
-        <svg width="60" height="60" viewBox="0 0 60 60" style="margin: 0 auto; display: block;">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#1D4ED8"/>
-              <stop offset="100%" stop-color="#60A5FA"/>
-            </linearGradient>
-          </defs>
-          <rect x="4" y="4" width="52" height="52" rx="12" fill="url(#grad)" stroke="white" stroke-width="1.5"/>
-          <text x="30" y="38" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="white">KNR</text>
-        </svg>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 48px; color: var(--primary-blue);"></i>
       </div>
-      <h2 style="text-align: center; margin-bottom: 10px;">KNR SPORTVERSE</h2>
-      <p style="text-align: center; color: #6b7280; margin-bottom: 25px; font-size: 14px;">Admin Access</p>
+      <h2>KNR SPORTVERSE</h2>
+      <p style="text-align: center; color: #94a3b8; margin-bottom: 25px; font-size: 13px;">Admin Access Control</p>
       
       <div id="loginForm">
         <div class="form-group">
@@ -376,7 +409,7 @@
           <input type="password" id="loginPassword" placeholder="Enter your password">
         </div>
         <div id="loginError" class="error"></div>
-        <button class="btn" id="loginBtn">Sign In</button>
+        <button class="btn" id="loginBtn" style="margin-top: 10px;">Sign In</button>
       </div>
     </div>
   </div>
@@ -386,14 +419,11 @@
     <div class="container">
       <div class="header">
         <h1>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-            <polygon points="23 7 16 12 23 17 23 7"></polygon>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-          </svg>
-          KNR SPORTVERSE - Admin
+          <i class="fa-solid fa-tv" style="color: var(--secondary-blue);"></i>
+          KNR SPORTVERSE - Admin Panel
         </h1>
-        <div>
-          <div class="user-info">Logged in: <span id="userEmail"></span></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div class="user-info">Logged in: <span id="userEmail" style="color: var(--dark-text); font-weight: 500;"></span></div>
           <button class="logout-btn" id="logoutBtn">Sign Out</button>
         </div>
       </div>
@@ -401,10 +431,7 @@
       <!-- Add New Stream -->
       <div class="section">
         <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
+          <i class="fa-solid fa-plus-circle" style="color: var(--primary-blue);"></i>
           Add New Stream
         </h2>
         <div class="form-row">
@@ -445,16 +472,7 @@
       <!-- Streams List -->
       <div class="section">
         <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-            <line x1="7" y1="2" x2="7" y2="22"></line>
-            <line x1="17" y1="2" x2="17" y2="22"></line>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <line x1="2" y1="7" x2="7" y2="7"></line>
-            <line x1="2" y1="17" x2="7" y2="17"></line>
-            <line x1="17" y1="17" x2="22" y2="17"></line>
-            <line x1="17" y1="7" x2="22" y2="7"></line>
-          </svg>
+          <i class="fa-solid fa-list-check" style="color: var(--primary-blue);"></i>
           Manage Streams
         </h2>
         <div class="streams-grid" id="streamsContainer">
@@ -472,7 +490,7 @@
       <h3>Edit Stream</h3>
       <div class="form-group">
         <label>Stream ID</label>
-        <input type="text" id="editStreamId" disabled>
+        <input type="text" id="editStreamId" disabled style="opacity: 0.7;">
       </div>
       <div class="form-group">
         <label>MPD Link</label>
@@ -537,6 +555,7 @@
 
     let currentUser = null;
     let currentEditId = null;
+    let streamsDataMap = {}; // FIX: Store full stream data objects safely to avoid string quoting/escaping breakdown in inline HTML attributes.
 
     // Check if user is already logged in (from localStorage)
     function checkLoginState() {
@@ -576,7 +595,6 @@
       }
     });
 
-    // Check if already logged in on page load
     checkLoginState();
 
     // Login
@@ -599,8 +617,6 @@
       }
       loginBtn.classList.remove('loading');
     });
-
-
 
     // Logout
     logoutBtn.addEventListener('click', async () => {
@@ -672,8 +688,12 @@
         }
 
         streamsContainer.innerHTML = '';
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
+        streamsDataMap = {}; // Reset local cache map
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          streamsDataMap[docSnap.id] = data; // Store data in map by document ID
+          
           const streamUrl = `https://knrstream.pages.dev/strm/player/?q=${data.stream_id}`;
           
           const card = document.createElement('div');
@@ -684,25 +704,22 @@
             <div class="stream-url">MPD: ${data.mpd_url}</div>
             <div class="stream-actions">
               <button class="btn-small btn-copy" onclick="copyToClipboard('${streamUrl}')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                Copy URL
+                <i class="fa-solid fa-copy"></i> Copy
               </button>
-              <button class="btn-small btn-edit" onclick="editStream('${doc.id}', ${JSON.stringify(data).replace(/'/g, "&apos;")})">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                Edit
+              <button class="btn-small btn-edit" data-id="${docSnap.id}">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
               </button>
-              <button class="btn-small btn-delete" onclick="deleteStream('${doc.id}')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                Delete
+              <button class="btn-small btn-delete" onclick="deleteStream('${docSnap.id}')">
+                <i class="fa-solid fa-trash"></i> Delete
               </button>
             </div>
           `;
+          
+          // Attach safe event listener for the edit button to avoid inline JSON parsing errors
+          card.querySelector('.btn-edit').addEventListener('click', () => {
+            editStream(docSnap.id, streamsDataMap[docSnap.id]);
+          });
+
           streamsContainer.appendChild(card);
         });
       } catch (error) {
@@ -711,20 +728,28 @@
       }
     }
 
-    // Edit Stream
-    window.editStream = function(docId, data) {
+    // Edit Stream function fix
+    function editStream(docId, data) {
       currentEditId = docId;
-      document.getElementById('editStreamId').value = data.stream_id;
-      document.getElementById('editStreamMpd').value = data.mpd_url;
+      document.getElementById('editStreamId').value = data.stream_id || '';
+      document.getElementById('editStreamMpd').value = data.mpd_url || '';
       
-      const keys = Object.keys(data.drm_keys);
-      if (keys.length > 0) {
-        document.getElementById('editStreamDrm1').value = keys[0];
-        document.getElementById('editStreamDrmVal1').value = data.drm_keys[keys[0]];
-      }
-      if (keys.length > 1) {
-        document.getElementById('editStreamDrm2').value = keys[1];
-        document.getElementById('editStreamDrmVal2').value = data.drm_keys[keys[1]];
+      // Clear previous modal inputs
+      document.getElementById('editStreamDrm1').value = '';
+      document.getElementById('editStreamDrmVal1').value = '';
+      document.getElementById('editStreamDrm2').value = '';
+      document.getElementById('editStreamDrmVal2').value = '';
+
+      if (data.drm_keys) {
+        const keys = Object.keys(data.drm_keys);
+        if (keys.length > 0) {
+          document.getElementById('editStreamDrm1').value = keys[0];
+          document.getElementById('editStreamDrmVal1').value = data.drm_keys[keys[0]] || '';
+        }
+        if (keys.length > 1) {
+          document.getElementById('editStreamDrm2').value = keys[1];
+          document.getElementById('editStreamDrmVal2').value = data.drm_keys[keys[1]] || '';
+        }
       }
 
       editModal.classList.add('show');
